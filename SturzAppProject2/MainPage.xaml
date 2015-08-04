@@ -1,14 +1,26 @@
 ﻿<Page
-    x:Class="SturzAppProject2.MainPage"
+    x:Class="BackgroundTask.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SturzAppProject2"
+    xmlns:local="using:BackgroundTask"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:valueConverter="using:BackgroundTask.Common.Converter"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <valueConverter:NotifiedLevelToColorBrushConverter x:Key="NotifiedColorConverter"/>
+    </Page.Resources>
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        
+        <Frame Grid.Row="0" x:Name="ContentFrame" Background="{x:Null}"/>
+        <Grid x:Name="NotifyMessageGrid" Grid.Row="1" Background="{Binding Path=Level, Converter={StaticResource NotifiedColorConverter}}">
+            <TextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="10,0" MaxLines="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"></TextBlock>
+        </Grid>
     </Grid>
 </Page>

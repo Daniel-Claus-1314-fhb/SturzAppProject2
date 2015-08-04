@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 // Die Vorlage "Leere Anwendung" ist unter http://go.microsoft.com/fwlink/?LinkId=391641 dokumentiert.
 
-namespace SturzAppProject2
+namespace BackgroundTask
 {
     /// <summary>
     /// Stellt das anwendungsspezifische Verhalten bereit, um die Standardanwendungsklasse zu ergänzen.
