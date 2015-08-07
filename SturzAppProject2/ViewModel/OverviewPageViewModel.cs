@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace BackgroundTask.ViewModel
 {
@@ -19,7 +20,8 @@ namespace BackgroundTask.ViewModel
 
         public OverviewPageViewModel()
         {
-            this._measurements = new ObservableCollection<MeasurementViewModel>();
+            this._measurementViewModels = new ObservableCollection<MeasurementViewModel>();
+            this.CreateMeasurementCommand = new CreateMeasurementClick();
         }
 
         #endregion
@@ -30,12 +32,14 @@ namespace BackgroundTask.ViewModel
 
         #region Properties
 
-        private ObservableCollection<MeasurementViewModel> _measurements;
-        public ObservableCollection<MeasurementViewModel> Measurements
+        private ObservableCollection<MeasurementViewModel> _measurementViewModels;
+        public ObservableCollection<MeasurementViewModel> MeasurementViewModels
         {
-            get { return _measurements; }
-            set { this.SetProperty(ref this._measurements, value); }
+            get { return _measurementViewModels; }
+            set { this.SetProperty(ref this._measurementViewModels, value); }
         }
+
+        public ICommand CreateMeasurementCommand { get; set; }
 
         #endregion
 
@@ -44,6 +48,24 @@ namespace BackgroundTask.ViewModel
         //###################################################################################
 
         #region Methods
+
+        public void InsertMeasurement(MeasurementViewModel measurementViewModel)
+        {
+            if (measurementViewModel != null)
+            {
+                this.MeasurementViewModels.Insert(0, measurementViewModel);
+            }
+        }
+
+        public void DeleteMeasurement(MeasurementViewModel measurementViewModel)
+        {
+
+            if (measurementViewModel != null)
+            {
+                this.MeasurementViewModels.Remove(measurementViewModel);
+            }
+        }
+
 
         // property changed logic by jump start
         public event PropertyChangedEventHandler PropertyChanged;
@@ -61,6 +83,45 @@ namespace BackgroundTask.ViewModel
             if (eventHandler != null)
                 eventHandler(this, new PropertyChangedEventArgs(propertyName));
         }
+
         #endregion
+
     }
+    
+    //###################################################################################
+    //##################################### Commands ####################################
+    //###################################################################################
+
+    #region Commands
+
+    public class CreateMeasurementClick : ICommand
+    {
+        public bool CanExecute(object parameter)
+        {
+            bool canExecute = false;
+
+            if (parameter != null && 
+                parameter.GetType() == typeof(OverviewPageViewModel))
+            {
+                OverviewPageViewModel overviewPageViewModel = parameter as OverviewPageViewModel;
+
+                if (overviewPageViewModel != null &&
+                    overviewPageViewModel.MeasurementViewModels != null &&
+                    overviewPageViewModel.MeasurementViewModels.Count < 5 )
+                {
+                    canExecute = true;
+                }
+            }
+            return canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void Execute(object parameter)
+        {
+            
+        }
+    }
+
+    #endregion
 }

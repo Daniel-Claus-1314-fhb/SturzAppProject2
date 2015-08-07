@@ -1,7 +1,9 @@
 ﻿using BackgroundTask.Common;
+using BackgroundTask.DataModel;
 using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -31,9 +33,13 @@ namespace BackgroundTask
 
         private OverviewPageViewModel _overViewPageViewModel = new OverviewPageViewModel();
 
+        private MainPage _mainPage;
+
         public OverviewPage()
         {
             this.InitializeComponent();
+
+            this._mainPage = MainPage.Current;
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
@@ -75,7 +81,7 @@ namespace BackgroundTask
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            // TODO Load list of Measurements
+            _overViewPageViewModel.MeasurementViewModels = _mainPage.mapping.mapTo(_mainPage.MeasurementList.Measurements);
         }
 
         /// <summary>
@@ -119,7 +125,16 @@ namespace BackgroundTask
 
         private void NewMeasurementAppBarButton_Click(object sender, RoutedEventArgs e)
         {
+            // create new measurementModel
+            Measurement createdMeasurement = new Measurement();
 
+            // add measurementModel to mainpage modelList
+            _mainPage.MeasurementList.Insert(createdMeasurement);
+
+            // map created measurementModel to viewModel and add measuermentViewmodel to viewmodelList
+            this._overViewPageViewModel.InsertMeasurement(new MeasurementViewModel(createdMeasurement));            
+
+            _mainPage.ShowNotifyMessage("Messung wurde erstellt.", NotifyLevel.Info);
         }
     }
 }

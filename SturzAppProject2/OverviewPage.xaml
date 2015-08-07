@@ -20,7 +20,8 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
-                <AppBarButton x:Name="NewMeasurementAppBarButton" Icon="Add" Label="Neue Messung" />
+                <AppBarButton x:Name="NewMeasurementAppBarButton" Icon="Add" Label="Neue Messung" Click="NewMeasurementAppBarButton_Click" 
+                              Command="{Binding CreateMeasurementCommand}" CommandParameter="{Binding}" />
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
@@ -45,7 +46,7 @@
         </StackPanel>
         
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <ListView x:Name="MeasurementList" ItemsSource="{Binding Path=Measurements}"
+            <ListView x:Name="MeasurementList" ItemsSource="{Binding Path=MeasurementViewModels}"
                           ItemTemplateSelector="{StaticResource MeasurementTypeSelector}">
             </ListView>
         </Grid>

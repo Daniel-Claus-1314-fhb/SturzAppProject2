@@ -11,22 +11,27 @@ namespace BackgroundTask.Common.Selector
 {
     class MeasurementTypeSelector : DataTemplateSelector
     {
-        public DataTemplate MutableMeasurementTemplate { get; set; }
-        public DataTemplate ImmutableMeasurementTemplate { get; set; }
+        public DataTemplate InitializedMeasurementTemplate { get; set; }
+        public DataTemplate StartedMeasurementTemplate { get; set; }
+        public DataTemplate StoppedMeasurementTemplate { get; set; }
 
         protected override DataTemplate SelectTemplateCore(object item)
         {
 
             if (item.GetType() == typeof(MeasurementViewModel))
             {
-                MeasurementViewModel measurementViewModel = (MeasurementViewModel) item;
-                if (measurementViewModel.IsMutable)
+                MeasurementViewModel measurementViewModel = (MeasurementViewModel)item;
+
+                switch (measurementViewModel.MeasurementState)
                 {
-                    return MutableMeasurementTemplate;
-                }
-                else
-                {
-                    return ImmutableMeasurementTemplate;
+                    case MeasurementState.Initialized:
+                        return InitializedMeasurementTemplate;
+
+                    case MeasurementState.Started:
+                        return StartedMeasurementTemplate;
+
+                    case MeasurementState.Stopped:
+                        return StoppedMeasurementTemplate;
                 }
             }
             return base.SelectTemplateCore(item);

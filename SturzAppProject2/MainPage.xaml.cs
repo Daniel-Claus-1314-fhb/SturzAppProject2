@@ -1,5 +1,6 @@
 ﻿using BackgroundTask.Common;
 using BackgroundTask.DataModel;
+using BackgroundTask.Service;
 using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,11 @@ namespace BackgroundTask
         public static MainPage Current;
 
         private BackgroundTaskRegistration _backgroundTaskRegistration;
-        private NotifyViewModel _notifyViewModel = new NotifyViewModel();
 
-        private MeasurementList _measurementList;
+        private NotifyViewModel _notifyViewModel = new NotifyViewModel();
+        private MeasurementList _measurementList = new MeasurementList();
+
+        public MappingService mapping = new MappingService();
 
         public MainPage()
         {

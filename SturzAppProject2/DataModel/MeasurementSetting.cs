@@ -6,11 +6,35 @@ using System.Threading.Tasks;
 
 namespace BackgroundTask.DataModel
 {
-    class MeasurementSetting
+    public class MeasurementSetting
     {
+        //###################################################################################
+        //################################### Construtors ###################################
+        //###################################################################################
+
+        #region construtors
+
+        public MeasurementSetting()
+        {
+            this.ReportInterval = 20;
+            this.ProcessedSamplesCount = 0;
+            this.UseAccelerometer = true;
+            this.UseGyrometer = false;
+        }
+
+        #endregion
+
+        //###################################################################################
+        //################################### Properties ####################################
+        //###################################################################################
+
+        #region Properties
+
         public uint ReportInterval { get; set; }
-        public uint ProcessSamplesCount { get; set; }
+        public uint ProcessedSamplesCount { get; set; }
         public bool UseAccelerometer { get; set; }
         public bool UseGyrometer { get; set; }
+
+        #endregion
     }
 }

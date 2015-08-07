@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackgroundTask.DataModel
 {
-    class MeasurementEvaluation
+    public class MeasurementEvaluation
     {
         public string Source { get; set; }
         public long SamplesCount { get; set;}

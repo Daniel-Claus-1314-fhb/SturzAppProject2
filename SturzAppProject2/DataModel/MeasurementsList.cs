@@ -8,6 +8,23 @@ namespace BackgroundTask.DataModel
 {
     public class MeasurementList
     {
+        //###################################################################################
+        //################################### Construtors ###################################
+        //###################################################################################
+
+        #region Construtors
+
+        public MeasurementList()
+        {
+            this.Measurements = new List<Measurement>();
+        }
+
+        #endregion
+
+        //###################################################################################
+        //################################### Properties ####################################
+        //###################################################################################
+
         private List<Measurement> _measurements;
         public List<Measurement> Measurements
         {
@@ -18,9 +35,14 @@ namespace BackgroundTask.DataModel
         /// <summary>
         /// Adds a certain measurement to the list of measurements.
         /// </summary>
-        public void Add(Measurement measurement)
+        public void Insert(Measurement measurement)
         {
-            this._measurements.Add(measurement);
+            this._measurements.Insert(0, measurement);
+        }
+
+        public void Update(Measurement measurement)
+        {
+            // suchen und updaten( copy values) 
         }
 
         /// <summary>

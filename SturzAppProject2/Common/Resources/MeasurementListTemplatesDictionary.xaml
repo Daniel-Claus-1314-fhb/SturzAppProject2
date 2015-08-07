@@ -6,22 +6,31 @@
     
     <templateSelector:MeasurementTypeSelector x:Key="MeasurementTypeSelector">
         
-        <templateSelector:MeasurementTypeSelector.MutableMeasurementTemplate>
+        <templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
             <DataTemplate>
                 <Grid>
                     <TextBlock Text="{Binding Path=Name}"/>
                 </Grid>
             </DataTemplate>
-        </templateSelector:MeasurementTypeSelector.MutableMeasurementTemplate>
+        </templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
 
 
-        <templateSelector:MeasurementTypeSelector.ImmutableMeasurementTemplate>
+        <templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
             <DataTemplate>
                 <Grid>
                     <TextBlock Text="{Binding Path=Name}"/>
                 </Grid>                
             </DataTemplate>
-        </templateSelector:MeasurementTypeSelector.ImmutableMeasurementTemplate>
+        </templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
 
+        
+        <templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
+            <DataTemplate>
+                <Grid>
+                    <TextBlock Text="{Binding Path=Name}"/>
+                </Grid>
+            </DataTemplate>
+        </templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
+        
     </templateSelector:MeasurementTypeSelector>    
 </ResourceDictionary>

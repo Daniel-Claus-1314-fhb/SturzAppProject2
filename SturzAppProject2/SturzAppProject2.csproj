@@ -110,6 +110,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\FileService.cs" />
+    <Compile Include="Service\MappingService.cs" />
     <Compile Include="ViewModel\MeasurementViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\OverviewPageViewModel.cs" />
