@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackgroundTask.DataModel
 {
-    class MeasurementList
+    public class MeasurementList
     {
         private List<Measurement> _measurements;
         public List<Measurement> Measurements
