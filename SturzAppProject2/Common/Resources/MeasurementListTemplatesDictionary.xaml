@@ -1,0 +1,27 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:templateSelector="using:BackgroundTask.Common.Selector"
+    xmlns:local="using:BackgroundTask.Common.Resources">
+    
+    <templateSelector:MeasurementTypeSelector x:Key="MeasurementTypeSelector">
+        
+        <templateSelector:MeasurementTypeSelector.MutableMeasurementTemplate>
+            <DataTemplate>
+                <Grid>
+                    <TextBlock Text="{Binding Path=Name}"/>
+                </Grid>
+            </DataTemplate>
+        </templateSelector:MeasurementTypeSelector.MutableMeasurementTemplate>
+
+
+        <templateSelector:MeasurementTypeSelector.ImmutableMeasurementTemplate>
+            <DataTemplate>
+                <Grid>
+                    <TextBlock Text="{Binding Path=Name}"/>
+                </Grid>                
+            </DataTemplate>
+        </templateSelector:MeasurementTypeSelector.ImmutableMeasurementTemplate>
+
+    </templateSelector:MeasurementTypeSelector>    
+</ResourceDictionary>

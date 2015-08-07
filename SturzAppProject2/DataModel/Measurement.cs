@@ -4,48 +4,62 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SturzAppProject2.DataModel
+namespace BackgroundTask.DataModel
 {
     class Measurement
     {
+        //###################################################################################
+        //################################### Construtors ###################################
+        //###################################################################################
+
+        #region Construtors
+
         public Measurement(String name, MeasurementSetting setting)
         {
             this.Name = name;
-            this._measurementId = String.Format("Measurement_{0}", DateTime.Now.Ticks);
-            this._accelerometerId = String.Format("{0}_Accelerometer", this._measurementId);
-            this._gyrometerId = String.Format("{0}_Gyrometer", this._measurementId);
+            this._id = String.Format("Measurement_{0}", DateTime.Now.Ticks);
+            this._accelerometerFilename = String.Format("{0}_Accelerometer", this._id);
+            this._gyrometerFilename = String.Format("{0}_Gyrometer", this._id);
             this._setting = setting;
             this._isStarted = false;
             this._isFinished = false;
         }
-        
+
+        #endregion
+
+        //###################################################################################
+        //################################### Properties ####################################
+        //###################################################################################
+
+        #region Properties
+
         public string Name { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private string _measurementId;
-        public string MeasurementId
+        private string _id;
+        public string Id
         {
-            get { return _measurementId; }
+            get { return _id; }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private string _accelerometerId;
-        public string AccelerometerId
+        private string _accelerometerFilename;
+        public string AccelerometerFilename
         {
-            get { return _accelerometerId; }
+            get { return _accelerometerFilename; }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private string _gyrometerId;
-        public string Gyrometer
+        private string _gyrometerFilename;
+        public string GyrometerFilename
         {
-            get { return _gyrometerId; }
+            get { return _gyrometerFilename; }
         }
 
         /// <summary>
@@ -67,45 +81,53 @@ namespace SturzAppProject2.DataModel
             get { return _evaluation; }
             set { _evaluation = value; }
         }
-        
-
 
         /// <summary>
         /// 
         /// </summary>
-        private DateTime _startDateTime;
-        public DateTime StartDateTime
+        private DateTime _startTime;
+        public DateTime StartTime
         {
-            get { return _startDateTime; }
+            get { return _startTime; }
         }
         private bool _isStarted;
         public bool IsStared
         {
             get { return _isStarted; }
         }
-        public void StartMeasurement()
-        {
-            this._isStarted = true;
-            this._startDateTime = DateTime.Now;
-        }
 
         /// <summary>
         /// 
         /// </summary>
-        private DateTime _finishDateTime;
-        public DateTime FinishDateTime
+        private DateTime _endTime;
+        public DateTime EndTime
         {
-            get { return _finishDateTime; }
+            get { return _endTime; }
         }
         private bool _isFinished;
         public bool IsFinished
         {
             get { return _isFinished; }
         }
+
+        #endregion
+
+        //###################################################################################
+        //##################################### Methods #####################################
+        //###################################################################################
+
+        #region Methods
+
+        public void StartMeasurement()
+        {
+            this._isStarted = true;
+            this._startTime = DateTime.Now;
+        }
+
         public void FinishMeasurement()
         {
             this._isFinished = true;
-            this._finishDateTime = DateTime.Now;
+            this._endTime = DateTime.Now;
         }
 
         public TimeSpan Duration 
@@ -113,12 +135,14 @@ namespace SturzAppProject2.DataModel
             get 
             {
                 if (_isStarted && _isFinished)
-                    return _finishDateTime.Subtract(_startDateTime);
+                    return _endTime.Subtract(_startTime);
                 else if (_isStarted && !_isFinished)
-                    return DateTime.Now.Subtract(_startDateTime);
+                    return DateTime.Now.Subtract(_startTime);
                 else
                     return new TimeSpan(0L);
             }
         }
+
+        #endregion
     }
 }

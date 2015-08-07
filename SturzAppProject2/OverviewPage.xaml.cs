@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.Common;
+using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +29,8 @@ namespace BackgroundTask
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        private OverviewPageViewModel _overViewPageViewModel = new OverviewPageViewModel();
+
         public OverviewPage()
         {
             this.InitializeComponent();
@@ -35,6 +38,11 @@ namespace BackgroundTask
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+        }
+
+        public OverviewPageViewModel OverviewPageViewModel
+        {
+            get { return _overViewPageViewModel; }
         }
 
         /// <summary>
@@ -67,6 +75,7 @@ namespace BackgroundTask
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            // TODO Load list of Measurements
         }
 
         /// <summary>
@@ -107,5 +116,10 @@ namespace BackgroundTask
         }
 
         #endregion
+
+        private void NewMeasurementAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

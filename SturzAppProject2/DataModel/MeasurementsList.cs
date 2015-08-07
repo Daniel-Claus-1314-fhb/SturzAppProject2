@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SturzAppProject2.DataModel
+namespace BackgroundTask.DataModel
 {
-    class MeasurementsList
+    class MeasurementList
     {
         private List<Measurement> _measurements;
         public List<Measurement> Measurements

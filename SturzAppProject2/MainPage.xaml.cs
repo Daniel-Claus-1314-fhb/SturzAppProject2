@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.Common;
+using BackgroundTask.DataModel;
 using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -32,9 +33,10 @@ namespace BackgroundTask
         private BackgroundTaskRegistration _backgroundTaskRegistration;
         private NotifyViewModel _notifyViewModel = new NotifyViewModel();
 
+        private MeasurementList _measurementList;
+
         public MainPage()
         {
-            
             this.InitializeComponent();
 
             NotifyMessageGrid.DataContext = NotifyViewModel;
@@ -45,12 +47,20 @@ namespace BackgroundTask
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }
 
+        public MeasurementList MeasurementList
+        {
+            get { return _measurementList; }
+            set { _measurementList = value; }
+        }
+
+        #region Notify
+          
         public NotifyViewModel NotifyViewModel
         {
             get { return _notifyViewModel; }
         }
 
-        public void ShowMessage(string message, NotifyLevel level)
+        public void ShowNotifyMessage(string message, NotifyLevel level)
         {
             if (message != null && message.Length > 0) 
             {
@@ -58,10 +68,12 @@ namespace BackgroundTask
             }
         }
 
-        public void ResetMessage()
+        public void ResetNotifyMessage()
         {
             this._notifyViewModel.ResetMessage();
         }
+
+        #endregion
 
         /// <summary>
         /// Wird aufgerufen, wenn diese Seite in einem Rahmen angezeigt werden soll.
@@ -73,7 +85,7 @@ namespace BackgroundTask
             SuspensionManager.RegisterFrame(ContentFrame, "ContentFrame");
             if (ContentFrame.Content == null)
             {
-                if (!ContentFrame.Navigate(typeof(AccelerometerPage)))
+                if (!ContentFrame.Navigate(typeof(OverviewPage)))
                 {
                     throw new Exception("Failed to create page");
                 }
@@ -91,7 +103,8 @@ namespace BackgroundTask
             }
         }
 
-
+        #region Start/Stop BackgroundTask
+        
         //#############################################################################
         //########################## Start Background Task ############################
         //#############################################################################
@@ -110,7 +123,7 @@ namespace BackgroundTask
                 }
                 else
                 {
-                    ShowMessage("App darf keine Background Tasks starten.", NotifyLevel.Error);
+                    ShowNotifyMessage("App darf keine Background Tasks starten.", NotifyLevel.Error);
                 }
             }
         }
@@ -154,16 +167,16 @@ namespace BackgroundTask
                 switch (deviceTriggerResult)
                 {
                     case DeviceTriggerResult.Allowed:
-                        ShowMessage("Background Task wurde gestartet.", NotifyLevel.Info);
+                        ShowNotifyMessage("Background Task wurde gestartet.", NotifyLevel.Info);
                         return true;
                     case DeviceTriggerResult.DeniedBySystem:
-                        ShowMessage("Background Task wurde vom System verweigert.", NotifyLevel.Warn);
+                        ShowNotifyMessage("Background Task wurde vom System verweigert.", NotifyLevel.Warn);
                         break;
                     case DeviceTriggerResult.DeniedByUser:
-                        ShowMessage("Background Task wurde vom Nutzer verweigert.", NotifyLevel.Warn);
+                        ShowNotifyMessage("Background Task wurde vom Nutzer verweigert.", NotifyLevel.Warn);
                         break;
                     case DeviceTriggerResult.LowBattery:
-                        ShowMessage("Background Task wurde wegen geringer Batterie verweigert.", NotifyLevel.Warn);
+                        ShowNotifyMessage("Background Task wurde wegen geringer Batterie verweigert.", NotifyLevel.Warn);
                         break;
                 }
             }
@@ -187,11 +200,13 @@ namespace BackgroundTask
                     if (currentTask.Value.Name == taskName)
                     {
                         currentTask.Value.Unregister(true);
-                        ShowMessage("Background Task wurde beendet.", NotifyLevel.Info);
+                        ShowNotifyMessage("Background Task wurde beendet.", NotifyLevel.Info);
                     }
                 }
                 this._backgroundTaskRegistration = null;
             }
         }
+
+        #endregion
     }
 }

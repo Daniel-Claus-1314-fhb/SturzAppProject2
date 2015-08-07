@@ -96,6 +96,7 @@
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
+    <Compile Include="Common\Selector\MeasurementTypeSelector.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="DataModel\Measurement.cs" />
     <Compile Include="DataModel\MeasurementEvaluation.cs" />
@@ -109,7 +110,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\FileService.cs" />
+    <Compile Include="ViewModel\MeasurementViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
+    <Compile Include="ViewModel\OverviewPageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -132,6 +135,11 @@
     <Page Include="AccelerometerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Common\Resources\MeasurementListTemplatesDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
