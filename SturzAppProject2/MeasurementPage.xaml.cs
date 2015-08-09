@@ -120,7 +120,7 @@ namespace BackgroundTask
             string measurementId = e.Parameter as string;
             if (measurementId != null)
             {
-                Measurement measurement = _mainPage.MeasurementList.GetById(measurementId);
+                Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
                     _measurementPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
@@ -140,30 +140,89 @@ namespace BackgroundTask
 
         private bool StartMeasurement(MeasurementViewModel measurementViewModel)
         {
-            _mainPage.ShowNotifyMessage("Messung wurde gestarted.", NotifyLevel.Info);
-            _measurementPageViewModel.MeasurementViewModel.StartMeasurement();
-            RaiseCanExecuteChanged();
+            bool isStarted = false;
+            // first update for settings
+            _mainPage.MainMeasurementListModel.Update(measurementViewModel);
+
+            //TODO Insert start functionality
+            //string arguments = JsonConvert.SerializeObject(new TaskArguments("MeasurementAccelero", "MeasurementGyro", 20));
+            //_mainPage.StartAccelerometerTask("accelerometerTask", arguments);
+            isStarted = _mainPage.StartMeasurement(measurementViewModel.Id);
+
+            if (isStarted)
+            {
+                _measurementPageViewModel.MeasurementViewModel.StartMeasurement();
+                //secound update for successfully started measurement.
+                _mainPage.MainMeasurementListModel.Update(measurementViewModel);
+                // its importent to raise the change of measurementstate to all commands
+                RaiseCanExecuteChanged();
+                _mainPage.ShowNotifyMessage("Messung wurde gestarted.", NotifyLevel.Info);
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage("Messung konnte nicht gestarted werden.", NotifyLevel.Error);
+            }
             return true;
         }
 
         private bool StopMeasurement(MeasurementViewModel measurementViewModel)
         {
-            _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info); 
-            _measurementPageViewModel.MeasurementViewModel.StopMeasurement();
-            RaiseCanExecuteChanged();
-            return true;
+            bool isStopped = false;
+            //TODO Insert stop functionality
+            //_mainPage.DeregisterAccelerometerTask("accelerometerTask");
+            isStopped = _mainPage.StopMeasurement(measurementViewModel.Id);
+
+            if (isStopped)
+            {
+                _measurementPageViewModel.MeasurementViewModel.StopMeasurement();
+                _mainPage.MainMeasurementListModel.Update(measurementViewModel);
+                // its importent to raise the change of measurementstate to all commands
+                RaiseCanExecuteChanged();
+                _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info);
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage("Messung konnte nicht gestoppt werden.", NotifyLevel.Error);
+            }
+
+            return isStopped;
         }
 
         private bool ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
-            _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
-            return true;
+            bool isExported = false;
+
+            //TODO Insert Export functionality
+
+            if (isExported)
+            {
+                _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
+            }
+            return isExported;
         }
 
         private bool DeleteMeasurement(MeasurementViewModel measurementViewModel)
         {
-            _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
-            return true;
+            bool isDeleted = false;
+
+            isDeleted = _mainPage.MainMeasurementListModel.Delete(measurementViewModel.Id);
+
+            if (isDeleted)
+            {
+                _measurementPageViewModel.MeasurementViewModel.DeleteMeasurement();
+                // its importent to raise the change of measurementstate to all commands
+                RaiseCanExecuteChanged();
+                _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Warn);
+            }
+            return isDeleted;
         }
 
         private void RaiseCanExecuteChanged()
@@ -172,17 +231,6 @@ namespace BackgroundTask
             ((StopMeasurementCommand)_measurementPageViewModel.StopMeasurementCommand).OnCanExecuteChanged();
             ((ExportMeasurementCommand)_measurementPageViewModel.ExportMeasurementCommand).OnCanExecuteChanged();
             ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
-        }
-
-        private void startAcc_Click(object sender, RoutedEventArgs e)
-        {
-            string arguments = JsonConvert.SerializeObject(new TaskArguments("MeasurementAccelero", "MeasurementGyro", 20));
-            _mainPage.StartAccelerometerTask("accelerometerTask", arguments);
-        }
-
-        private void stopAcc_Click(object sender, RoutedEventArgs e)
-        {
-            _mainPage.DeregisterAccelerometerTask("accelerometerTask");
         }
     }
 }

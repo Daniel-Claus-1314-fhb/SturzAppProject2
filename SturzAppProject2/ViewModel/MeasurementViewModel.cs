@@ -21,7 +21,7 @@ namespace BackgroundTask.ViewModel
 
         public MeasurementViewModel()
         {
-            this.MeasurementState = determineMeasurementState(this.StartTime, this.EndTime);
+            this.MeasurementState = determineMeasurementState();
         }
 
         public MeasurementViewModel(Measurement measurement) : this()
@@ -32,7 +32,7 @@ namespace BackgroundTask.ViewModel
             this.StartTime = measurement.StartTime;
             this.EndTime = measurement.EndTime;
 
-            this.MeasurementState = determineMeasurementState(measurement.StartTime, measurement.EndTime);
+            this.MeasurementState = determineMeasurementState();
         }
 
         #endregion
@@ -106,34 +106,47 @@ namespace BackgroundTask.ViewModel
 
         #region Methods
 
-        private MeasurementState determineMeasurementState(DateTime startTime, DateTime endTime)
+        private MeasurementState determineMeasurementState()
         {
-            if (startTime.CompareTo(DateTime.MinValue) == 0 &&
-                endTime.CompareTo(DateTime.MinValue) == 0)
+            if (CreateDateTime.CompareTo(DateTime.MinValue) > 0)
             {
-                return MeasurementState.Initialized;
-            }
-            else if (startTime.CompareTo(DateTime.MinValue) > 0 && 
-                endTime.CompareTo(DateTime.MinValue) == 0)
-            {
-                return MeasurementState.Started;
+                if (this.StartTime.CompareTo(DateTime.MinValue) == 0 &&
+                    this.EndTime.CompareTo(DateTime.MinValue) == 0)
+                {
+                    return MeasurementState.Initialized;
+                }
+                else if (this.StartTime.CompareTo(DateTime.MinValue) > 0 &&
+                    this.EndTime.CompareTo(DateTime.MinValue) == 0)
+                {
+                    return MeasurementState.Started;
+                }
+                else
+                {
+                    return MeasurementState.Stopped;
+                }
             }
             else
             {
-                return MeasurementState.Stopped;
+                return MeasurementState.Deleted;
             }
         }
 
         public void StartMeasurement()
         {
             this.StartTime = DateTime.Now;
-            this.MeasurementState = MeasurementState.Started;
+            this.MeasurementState = this.determineMeasurementState();
         }
 
         public void StopMeasurement()
         {
-            this.EndTime = DateTime.Now; 
-            this.MeasurementState = MeasurementState.Stopped;
+            this.EndTime = DateTime.Now;
+            this.MeasurementState = this.determineMeasurementState();
+        }
+
+        public void DeleteMeasurement()
+        {
+            this.CreateDateTime = DateTime.MinValue;
+            this.MeasurementState = this.determineMeasurementState();
         }
 
         // property changed logic by jump start
@@ -160,6 +173,7 @@ namespace BackgroundTask.ViewModel
     {
         Initialized,
         Started,
-        Stopped
+        Stopped,
+        Deleted
     }
 }

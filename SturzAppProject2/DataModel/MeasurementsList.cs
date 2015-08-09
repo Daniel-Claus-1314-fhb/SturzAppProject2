@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BackgroundTask.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -55,17 +56,62 @@ namespace BackgroundTask.DataModel
             this._measurements.Insert(0, measurement);
         }
 
-        public void Update(Measurement measurement)
+        public bool Update(Measurement updateMeasurement)
         {
-            // suchen und updaten( copy values) 
+            bool isUpdated = false;
+
+            if (updateMeasurement != null)
+            {
+                Measurement measurementFromList = GetById(updateMeasurement.Id);
+                if (measurementFromList != null)
+                {
+                    isUpdated = true;
+                    // update relevant informations
+                    measurementFromList.Name = updateMeasurement.Name;
+                    measurementFromList.StartTime = updateMeasurement.StartTime;
+                    measurementFromList.EndTime = updateMeasurement.EndTime;
+                    measurementFromList.Setting = updateMeasurement.Setting;
+                }
+            }
+            return isUpdated;
+        }
+
+        public bool Update(MeasurementViewModel updateMeasurementViewModel)
+        {
+            bool isUpdated = false;
+
+            if (updateMeasurementViewModel != null)
+            {
+                Measurement measurementFromList = GetById(updateMeasurementViewModel.Id);
+                if (measurementFromList != null)
+                {
+                    isUpdated = true;
+                    // update relevant informations
+                    measurementFromList.Name = updateMeasurementViewModel.Name;
+                    measurementFromList.StartTime = updateMeasurementViewModel.StartTime;
+                    measurementFromList.EndTime = updateMeasurementViewModel.EndTime;
+                    //measurementFromList.Setting = updateMeasurementViewModel.Setting;
+                }
+            }
+            return isUpdated;
         }
 
         /// <summary>
         /// removes a certain measurement from the list of measurements.
         /// </summary>
-        public void Remove(Measurement measurement)
+        public bool Delete(string deleteId)
         {
-            this._measurements.Remove(measurement);
+            bool isDeleted = false;
+
+            if (deleteId != null && deleteId.Length > 0)
+            {
+                Measurement measurementFromList = GetById(deleteId);
+                if (measurementFromList != null)
+                {
+                    isDeleted = this._measurements.Remove(measurementFromList);
+                }
+            }
+            return isDeleted;
         }
     }
 }

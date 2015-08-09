@@ -105,7 +105,8 @@ namespace BackgroundTask.ViewModel
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
 
                 if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Initialized)
+                    measurementViewModel.MeasurementState == MeasurementState.Initialized &&
+                    measurementViewModel.MeasurementState != MeasurementState.Deleted)
                 {
                     canExecute = true;
                 }
@@ -159,7 +160,8 @@ namespace BackgroundTask.ViewModel
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
 
                 if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Started)
+                    measurementViewModel.MeasurementState == MeasurementState.Started &&
+                    measurementViewModel.MeasurementState != MeasurementState.Deleted)
                 {
                     canExecute = true;
                 }
@@ -213,7 +215,8 @@ namespace BackgroundTask.ViewModel
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
 
                 if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Stopped)
+                    measurementViewModel.MeasurementState == MeasurementState.Stopped && 
+                    measurementViewModel.MeasurementState != MeasurementState.Deleted)
                 {
                     canExecute = true;
                 }
@@ -268,7 +271,8 @@ namespace BackgroundTask.ViewModel
 
                 if (measurementViewModel != null &&
                     (measurementViewModel.MeasurementState == MeasurementState.Initialized ||
-                    measurementViewModel.MeasurementState == MeasurementState.Stopped))
+                    measurementViewModel.MeasurementState == MeasurementState.Stopped) &&
+                    measurementViewModel.MeasurementState != MeasurementState.Deleted)
                 {
                     canExecute = true;
                 }

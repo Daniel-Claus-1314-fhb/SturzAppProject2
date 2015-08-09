@@ -85,7 +85,7 @@ namespace BackgroundTask
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            _overViewPageViewModel.MeasurementViewModels = _mainPage.mapping.mapTo(_mainPage.MeasurementList.Measurements);
+            _overViewPageViewModel.MeasurementViewModels = _mainPage.mapping.mapTo(_mainPage.MainMeasurementListModel.Measurements);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace BackgroundTask
             Measurement createdMeasurement = new Measurement();
 
             // add measurementModel to mainpage modelList
-            _mainPage.MeasurementList.Insert(createdMeasurement);
+            _mainPage.MainMeasurementListModel.Insert(createdMeasurement);
 
             // map created measurementModel to viewModel and add measuermentViewmodel to viewmodelList
             this._overViewPageViewModel.InsertMeasurement(new MeasurementViewModel(createdMeasurement));

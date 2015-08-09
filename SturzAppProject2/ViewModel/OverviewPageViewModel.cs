@@ -109,7 +109,7 @@ namespace BackgroundTask.ViewModel
 
                 if (overviewPageViewModel != null &&
                     overviewPageViewModel.MeasurementViewModels != null &&
-                    overviewPageViewModel.MeasurementViewModels.Count < 15 )
+                    overviewPageViewModel.MeasurementViewModels.Count < 10 )
                 {
                     return true;
                 }

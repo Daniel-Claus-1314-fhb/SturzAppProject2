@@ -31,12 +31,11 @@ namespace BackgroundTask
     {
         public static MainPage Current;
 
-        private BackgroundTaskRegistration _backgroundTaskRegistration;
-
         private NotifyViewModel _notifyViewModel = new NotifyViewModel();
-        private MeasurementList _measurementList = new MeasurementList();
+        private MeasurementList _mainMeasurementListModel = new MeasurementList();
 
         public MappingService mapping = new MappingService();
+        private BackgroundTaskService _backgroundTaskService = new BackgroundTaskService();
 
         public MainPage()
         {
@@ -50,10 +49,10 @@ namespace BackgroundTask
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }
 
-        public MeasurementList MeasurementList
+        public MeasurementList MainMeasurementListModel
         {
-            get { return _measurementList; }
-            set { _measurementList = value; }
+            get { return _mainMeasurementListModel; }
+            set { _mainMeasurementListModel = value; }
         }
 
         #region Notify
@@ -106,110 +105,30 @@ namespace BackgroundTask
             }
         }
 
-        #region Start/Stop BackgroundTask
-        
-        //#############################################################################
-        //########################## Start Background Task ############################
-        //#############################################################################
-
-        public async void StartAccelerometerTask(string taskName, string arguments)
+        public bool StartMeasurement(string measurementId)
         {
-            Accelerometer accelerometer = Accelerometer.GetDefault();
-            if (accelerometer != null && taskName != null && taskName.Length > 0)
+            bool isStarted = false;
+            if (measurementId != null && measurementId.Length > 0 &&
+                _backgroundTaskService != null)
             {
-                BackgroundAccessStatus backgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
-
-                if ((BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity.Equals(backgroundAccessStatus))
-                    || (BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity.Equals(backgroundAccessStatus)))
-                {
-                    await RegisterAccelerometerTask(accelerometer.DeviceId, taskName, arguments);
-                }
-                else
-                {
-                    ShowNotifyMessage("App darf keine Background Tasks starten.", NotifyLevel.Error);
-                }
+                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                isStarted = _backgroundTaskService.StartBackgroundTaskForMeasurement(measurement);
             }
+            return isStarted;
         }
 
-        private async Task<bool> RegisterAccelerometerTask(string deviceId, string taskName, string arguments)
+
+        public bool StopMeasurement(string measurementId)
         {
-            String taskEntryPoint = "BackgroundTask.TaskAction";
-            DeviceUseTrigger trigger = new DeviceUseTrigger();
-
-            foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
+            bool isStopped = false;
+            if (measurementId != null && measurementId.Length > 0 &&
+                _backgroundTaskService != null)
             {
-                if (currentTask.Value.Name == taskName)
-                {
-                    _backgroundTaskRegistration = (BackgroundTaskRegistration)(currentTask.Value);
-                }
+                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                isStopped = _backgroundTaskService.StopBackgroundTaskForMeasurement(measurement);
             }
-
-            if (_backgroundTaskRegistration == null)
-            {
-                var builder = new BackgroundTaskBuilder();
-                builder.Name = taskName;
-                builder.TaskEntryPoint = taskEntryPoint;
-                builder.SetTrigger(trigger);
-
-                _backgroundTaskRegistration = builder.Register();
-
-                if (!await RequestDeviceUseTrigger(deviceId, trigger, taskName, arguments))
-                {
-                    DeregisterAccelerometerTask(taskName);
-                    return false;
-                }
-            }
-            return true;
+            return isStopped;
         }
 
-        private async Task<bool> RequestDeviceUseTrigger(string deviceId, DeviceUseTrigger deviceUseTrigger, string taskName, string arguments)
-        {
-            try
-            {
-                DeviceTriggerResult deviceTriggerResult = await deviceUseTrigger.RequestAsync(deviceId, arguments);
-                switch (deviceTriggerResult)
-                {
-                    case DeviceTriggerResult.Allowed:
-                        ShowNotifyMessage("Background Task wurde gestartet.", NotifyLevel.Info);
-                        return true;
-                    case DeviceTriggerResult.DeniedBySystem:
-                        ShowNotifyMessage("Background Task wurde vom System verweigert.", NotifyLevel.Warn);
-                        break;
-                    case DeviceTriggerResult.DeniedByUser:
-                        ShowNotifyMessage("Background Task wurde vom Nutzer verweigert.", NotifyLevel.Warn);
-                        break;
-                    case DeviceTriggerResult.LowBattery:
-                        ShowNotifyMessage("Background Task wurde wegen geringer Batterie verweigert.", NotifyLevel.Warn);
-                        break;
-                }
-            }
-            catch (InvalidOperationException)
-            {
-                DeregisterAccelerometerTask(taskName);
-            }
-            return false;
-        }
-
-        //#############################################################################
-        //########################## Stop Background Task #############################
-        //#############################################################################
-
-        public void DeregisterAccelerometerTask(string taskName)
-        {
-            if (taskName != null && taskName.Length > 0)
-            {
-                foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
-                {
-                    if (currentTask.Value.Name == taskName)
-                    {
-                        currentTask.Value.Unregister(true);
-                        ShowNotifyMessage("Background Task wurde beendet.", NotifyLevel.Info);
-                    }
-                }
-                this._backgroundTaskRegistration = null;
-            }
-        }
-
-        #endregion
     }
 }
