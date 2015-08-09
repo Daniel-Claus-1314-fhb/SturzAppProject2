@@ -21,11 +21,7 @@ namespace BackgroundTask.ViewModel
 
         public MeasurementViewModel()
         {
-            this.MeasurementState = MeasurementState.Initialized;
-            this.StartMeasurementCommand = new StartMeasurementCommand();
-            this.StopMeasurementCommand = new StopMeasurementCommand();
-            this.ExportMeasurementCommand = new ExportMeasurmentCommand();
-            this.DeleteMeasurementCommand = new DeleteMeasurementCommand();
+            this.MeasurementState = determineMeasurementState(this.StartTime, this.EndTime);
         }
 
         public MeasurementViewModel(Measurement measurement) : this()
@@ -102,11 +98,6 @@ namespace BackgroundTask.ViewModel
             }
         }
 
-        public ICommand StartMeasurementCommand { get; set; }
-        public ICommand StopMeasurementCommand { get; set; }
-        public ICommand ExportMeasurementCommand { get; set; }
-        public ICommand DeleteMeasurementCommand { get; set; }
-
         #endregion
 
         //###################################################################################
@@ -117,11 +108,13 @@ namespace BackgroundTask.ViewModel
 
         private MeasurementState determineMeasurementState(DateTime startTime, DateTime endTime)
         {
-            if (startTime == null && endTime == null)
+            if (startTime.CompareTo(DateTime.MinValue) == 0 &&
+                endTime.CompareTo(DateTime.MinValue) == 0)
             {
                 return MeasurementState.Initialized;
             }
-            else if (startTime != null && endTime == null)
+            else if (startTime.CompareTo(DateTime.MinValue) > 0 && 
+                endTime.CompareTo(DateTime.MinValue) == 0)
             {
                 return MeasurementState.Started;
             }
@@ -134,16 +127,13 @@ namespace BackgroundTask.ViewModel
         public void StartMeasurement()
         {
             this.StartTime = DateTime.Now;
+            this.MeasurementState = MeasurementState.Started;
         }
 
         public void StopMeasurement()
         {
-            this.EndTime = DateTime.Now;
-        }
-
-        public void ChangeMeasurementState(MeasurementState measurementState)
-        {
-            this.MeasurementState = measurementState;
+            this.EndTime = DateTime.Now; 
+            this.MeasurementState = MeasurementState.Stopped;
         }
 
         // property changed logic by jump start
@@ -172,154 +162,4 @@ namespace BackgroundTask.ViewModel
         Started,
         Stopped
     }
-
-    //###################################################################################
-    //##################################### Commands ####################################
-    //###################################################################################
-
-    #region Commands
-
-    /// <summary>
-    /// Decides whether a measurement could be started and started the measurement when its possible. 
-    /// A measurement can be started only, when the state of the measurement is 'initialized'.
-    /// </summary>
-    public class StartMeasurementCommand : ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            bool canExecute = false;
-
-            if (parameter.GetType() == typeof(MeasurementViewModel))
-            {
-                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
-
-                if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Initialized)
-                {
-                    canExecute = true;
-                }
-            }
-            return canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-            if (parameter.GetType() == typeof(MeasurementViewModel))
-            {
-                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
-                if (measurementViewModel != null)
-                {
-                    measurementViewModel.StartMeasurement();
-                    measurementViewModel.ChangeMeasurementState(MeasurementState.Started);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Decides whether a measurement could be stopped and stops the measurement when its possible. 
-    /// A measurement can be stopped only, when the state of the measurement is 'started'.
-    /// </summary>
-    public class StopMeasurementCommand : ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            bool canExecute = false;
-
-            if (parameter.GetType() == typeof(MeasurementViewModel))
-            {
-                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
-
-                if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Started)
-                {
-                    canExecute = true;
-                }
-            }
-            return canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-            if (parameter.GetType() == typeof(MeasurementViewModel))
-            {
-                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
-                if (measurementViewModel != null)
-                {
-                    measurementViewModel.StopMeasurement();
-                    measurementViewModel.ChangeMeasurementState(MeasurementState.Stopped);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Decides whether the data of a measurement could be exported and export the data when its possible. 
-    /// The data can be exported only, when the state of the measurement is 'stopped'.
-    /// </summary>
-    public class ExportMeasurmentCommand : ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            bool canExecute = false;
-
-            if (parameter.GetType() == typeof(MeasurementViewModel))
-            {
-                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
-
-                if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Stopped)
-                {
-                    canExecute = true;
-                }
-            }
-            return canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-            // TODO Export data of the measurement.
-        }
-    }
-
-    /// <summary>
-    /// Decides whether the measurement could be deleted and deletes the measurement when its possible. 
-    /// The measurement can be deleted only, when the state of the measurement is 'initialized' or 'stopped'.
-    /// </summary>
-    public class DeleteMeasurementCommand : ICommand
-    {
-        public bool CanExecute(object parameter)
-        {
-            bool canExecute = false;
-
-            if (parameter.GetType() == typeof(MeasurementViewModel))
-            {
-                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
-
-                if (measurementViewModel != null &&
-                    (measurementViewModel.MeasurementState == MeasurementState.Initialized ||
-                    measurementViewModel.MeasurementState == MeasurementState.Stopped))
-                {
-                    canExecute = true;
-                }
-            }
-            return canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged;
-
-        public void Execute(object parameter)
-        {
-            // TODO Delete measurement and all data.
-        }
-    }
-
-    #endregion
 }
-

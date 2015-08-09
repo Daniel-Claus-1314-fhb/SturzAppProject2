@@ -32,6 +32,21 @@ namespace BackgroundTask.DataModel
             set { _measurements = value; }
         }
 
+        public Measurement GetById(string id)
+        {
+            if (id != null)
+            {
+                foreach (Measurement measurement in this.Measurements)
+                {
+                    if (measurement.Id.Equals(id))
+                    {
+                        return measurement;
+                    }
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// Adds a certain measurement to the list of measurements.
         /// </summary>

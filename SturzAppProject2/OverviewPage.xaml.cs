@@ -41,6 +41,10 @@ namespace BackgroundTask
 
             this._mainPage = MainPage.Current;
 
+            CreateMeasurementClick createMeasurementCommend = new CreateMeasurementClick();
+            createMeasurementCommend.FuncPointer = AddNewMeasurement;
+            _overViewPageViewModel.CreateMeasurementCommand = createMeasurementCommend;
+
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
@@ -94,6 +98,7 @@ namespace BackgroundTask
         /// serialisierbarer Zustand.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+
         }
 
         #region NavigationHelper-Registrierung
@@ -123,7 +128,7 @@ namespace BackgroundTask
 
         #endregion
 
-        private void NewMeasurementAppBarButton_Click(object sender, RoutedEventArgs e)
+        public bool AddNewMeasurement()
         {
             // create new measurementModel
             Measurement createdMeasurement = new Measurement();
@@ -132,9 +137,25 @@ namespace BackgroundTask
             _mainPage.MeasurementList.Insert(createdMeasurement);
 
             // map created measurementModel to viewModel and add measuermentViewmodel to viewmodelList
-            this._overViewPageViewModel.InsertMeasurement(new MeasurementViewModel(createdMeasurement));            
+            this._overViewPageViewModel.InsertMeasurement(new MeasurementViewModel(createdMeasurement));
 
             _mainPage.ShowNotifyMessage("Messung wurde erstellt.", NotifyLevel.Info);
+            return true;
+        }
+
+        private void MeasurementList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListView listView = sender as ListView;
+            Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
+            if (listView != null && contentFrame != null)
+            {
+                MeasurementViewModel selectedMeasurementViewModel = listView.SelectedItem as MeasurementViewModel;
+                if (selectedMeasurementViewModel != null)
+                {
+                    _mainPage.ShowNotifyMessage(String.Format("Messung mit dem Namen '{0}' wurde ausgewählt.", selectedMeasurementViewModel.Name), NotifyLevel.Info);
+                    contentFrame.Navigate(typeof(MeasurementPage), selectedMeasurementViewModel.Id);
+                }
+            }
         }
     }
 }

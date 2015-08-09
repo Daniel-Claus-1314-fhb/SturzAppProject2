@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="BackgroundTask.OverviewPage"
+    x:Class="BackgroundTask.MeasurementPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:BackgroundTask"
@@ -7,21 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    DataContext="{Binding Path=OverviewPageViewModel, RelativeSource={RelativeSource Mode=Self}}">
-
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Common/Resources/MeasurementListTemplatesDictionary.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
+    DataContext="{Binding Path=MeasurementPageViewModel, RelativeSource={RelativeSource Mode=Self}}">
 
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
-                <AppBarButton x:Name="NewMeasurementAppBarButton" Icon="Add" Label="Neue Messung"
-                              Command="{Binding CreateMeasurementCommand}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="StartMeasurementAppBarButton" Icon="Play" Label="Starten" Command="{Binding StartMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="StopMeasurementAppBarButton" Icon="Stop" Label="Stoppen" Command="{Binding StopMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="ExportMeasurementAppBarButton" Icon="Upload" Label="Exportieren" Command="{Binding ExportMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="DeleteMeasurementAppBarButton" Icon="Delete" Label="Löschen" Command="{Binding DeleteMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
@@ -42,14 +36,11 @@
         <!-- Titelbereich -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
             <TextBlock Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <TextBlock Text="Messungen" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+            <TextBlock Text="{Binding Path=MeasurementViewModel.Name}" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
-        
-        <!-- MeasurementList -->
+
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <ListView x:Name="MeasurementList" ItemsSource="{Binding Path=MeasurementViewModels}"
-                          ItemTemplateSelector="{StaticResource MeasurementTypeSelector}" SelectionChanged="MeasurementList_SelectionChanged">
-            </ListView>
+            
         </Grid>
     </Grid>
 </Page>

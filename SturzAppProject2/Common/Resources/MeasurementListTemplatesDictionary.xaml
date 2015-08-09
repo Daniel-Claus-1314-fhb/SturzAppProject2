@@ -9,7 +9,10 @@
         <templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
             <DataTemplate>
                 <Grid>
-                    <TextBlock Text="{Binding Path=Name}"/>
+                    <StackPanel>
+                        <TextBlock Text="Initialized"/>
+                        <TextBlock Text="{Binding Path=Name}"/>
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
         </templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
@@ -18,7 +21,10 @@
         <templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
             <DataTemplate>
                 <Grid>
-                    <TextBlock Text="{Binding Path=Name}"/>
+                    <StackPanel>
+                        <TextBlock Text="Started"/>
+                        <TextBlock Text="{Binding Path=Name}"/>
+                    </StackPanel>
                 </Grid>                
             </DataTemplate>
         </templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
@@ -27,7 +33,10 @@
         <templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
             <DataTemplate>
                 <Grid>
-                    <TextBlock Text="{Binding Path=Name}"/>
+                    <StackPanel>
+                        <TextBlock Text="Stopped"/>
+                        <TextBlock Text="{Binding Path=Name}"/>
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
         </templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>

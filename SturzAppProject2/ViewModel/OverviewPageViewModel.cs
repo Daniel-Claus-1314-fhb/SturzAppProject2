@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -96,30 +97,40 @@ namespace BackgroundTask.ViewModel
 
     public class CreateMeasurementClick : ICommand
     {
+        public Func<bool> FuncPointer { get; set; }
+
         public bool CanExecute(object parameter)
         {
-            bool canExecute = false;
-
-            if (parameter != null && 
+            if (FuncPointer != null &&
+                parameter != null && 
                 parameter.GetType() == typeof(OverviewPageViewModel))
             {
                 OverviewPageViewModel overviewPageViewModel = parameter as OverviewPageViewModel;
 
                 if (overviewPageViewModel != null &&
                     overviewPageViewModel.MeasurementViewModels != null &&
-                    overviewPageViewModel.MeasurementViewModels.Count < 5 )
+                    overviewPageViewModel.MeasurementViewModels.Count < 15 )
                 {
-                    canExecute = true;
+                    return true;
                 }
             }
-            return canExecute;
+            return false;
         }
 
         public event EventHandler CanExecuteChanged;
+        public void OnCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
+        }
 
         public void Execute(object parameter)
         {
-            
+            if (FuncPointer != null)
+            {
+                FuncPointer(); 
+                OnCanExecuteChanged();
+            }
         }
     }
 

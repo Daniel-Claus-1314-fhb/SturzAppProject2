@@ -17,7 +17,7 @@ namespace BackgroundTask.DataModel
         public Measurement()
         {
             this.Name = "Unbenannte Messung";
-            this._id = String.Format("Measurement_{0}", DateTime.Now.Ticks);
+            this._id = String.Format("{0}", DateTime.Now.Ticks);
             this._accelerometerFilename = String.Format("Accelerometer_{0}.csv", this._id);
             this._gyrometerFilename = String.Format("Gyrometer_{0}.csv", this._id);
             this.CreateDateTime = DateTime.Now;

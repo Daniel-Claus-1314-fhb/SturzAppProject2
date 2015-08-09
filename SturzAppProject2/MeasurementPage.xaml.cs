@@ -1,5 +1,6 @@
 ﻿using BackgroundTask.Common;
 using BackgroundTask.DataModel;
+using BackgroundTask.ViewModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -28,16 +29,21 @@ namespace BackgroundTask
     /// <summary>
     /// Eine leere Seite, die eigenständig verwendet werden kann oder auf die innerhalb eines Frames navigiert werden kann.
     /// </summary>
-    public sealed partial class AccelerometerPage : Page
+    public sealed partial class MeasurementPage : Page
     {
 
-        MainPage rootPage = MainPage.Current;
+        MainPage _mainPage = MainPage.Current;
 
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        public AccelerometerPage()
+        private MeasurementPageViewModel _measurementPageViewModel;
+
+
+        public MeasurementPage()
         {
+            _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, DeleteMeasurement);
+            
             this.InitializeComponent();
 
             this.navigationHelper = new NavigationHelper(this);
@@ -60,6 +66,11 @@ namespace BackgroundTask
         public ObservableDictionary DefaultViewModel
         {
             get { return this.defaultViewModel; }
+        }
+
+        public MeasurementPageViewModel MeasurementPageViewModel
+        {
+            get { return this._measurementPageViewModel; } 
         }
 
         /// <summary>
@@ -106,6 +117,15 @@ namespace BackgroundTask
         /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            string measurementId = e.Parameter as string;
+            if (measurementId != null)
+            {
+                Measurement measurement = _mainPage.MeasurementList.GetById(measurementId);
+                if (measurement != null)
+                {
+                    _measurementPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
+                }
+            }
             this.navigationHelper.OnNavigatedTo(e);
         }
 
@@ -118,15 +138,51 @@ namespace BackgroundTask
 
 
 
+        private bool StartMeasurement(MeasurementViewModel measurementViewModel)
+        {
+            _mainPage.ShowNotifyMessage("Messung wurde gestarted.", NotifyLevel.Info);
+            _measurementPageViewModel.MeasurementViewModel.StartMeasurement();
+            RaiseCanExecuteChanged();
+            return true;
+        }
+
+        private bool StopMeasurement(MeasurementViewModel measurementViewModel)
+        {
+            _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info); 
+            _measurementPageViewModel.MeasurementViewModel.StopMeasurement();
+            RaiseCanExecuteChanged();
+            return true;
+        }
+
+        private bool ExportMeasurement(MeasurementViewModel measurementViewModel)
+        {
+            _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
+            return true;
+        }
+
+        private bool DeleteMeasurement(MeasurementViewModel measurementViewModel)
+        {
+            _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
+            return true;
+        }
+
+        private void RaiseCanExecuteChanged()
+        {
+            ((StartMeasurementCommand)_measurementPageViewModel.StartMeasurementCommand).OnCanExecuteChanged();
+            ((StopMeasurementCommand)_measurementPageViewModel.StopMeasurementCommand).OnCanExecuteChanged();
+            ((ExportMeasurementCommand)_measurementPageViewModel.ExportMeasurementCommand).OnCanExecuteChanged();
+            ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
+        }
+
         private void startAcc_Click(object sender, RoutedEventArgs e)
         {
             string arguments = JsonConvert.SerializeObject(new TaskArguments("MeasurementAccelero", "MeasurementGyro", 20));
-            rootPage.StartAccelerometerTask("accelerometerTask", arguments);
+            _mainPage.StartAccelerometerTask("accelerometerTask", arguments);
         }
 
         private void stopAcc_Click(object sender, RoutedEventArgs e)
         {
-            rootPage.DeregisterAccelerometerTask("accelerometerTask");
+            _mainPage.DeregisterAccelerometerTask("accelerometerTask");
         }
     }
 }
