@@ -13,23 +13,25 @@ namespace BackgroundTask.DataModel
             ReportInterval = 16;
         }
 
-        public TaskArguments(string accelerometerDataId, string gyrometerDataId, uint reportInterval)
+        public TaskArguments(string measurementId, string accelerometerFilename, string gyrometerFilename, uint reportInterval)
         {
-            this.AccelerometerDataId = accelerometerDataId;
-            this.GyrometerDataId = gyrometerDataId;
+            this.MeasurementId = measurementId;
+            this.AccelerometerFilename = accelerometerFilename;
+            this.GyrometerFilename = gyrometerFilename;
             this.ReportInterval = reportInterval;
             this.ProcessingListSize = 1000;
         }
 
-        public TaskArguments(string accelerometerDataId, string gyrometerDataId, uint reportInterval, int processingListSize)
-            : this(accelerometerDataId, gyrometerDataId, reportInterval)
+        public TaskArguments(string measurementId, string accelerometerFilename, string gyrometerFilename, uint reportInterval, uint processingListSize)
+            : this(measurementId, accelerometerFilename, gyrometerFilename, reportInterval)
         {
             this.ProcessingListSize = processingListSize;
         }
 
-        public string AccelerometerDataId{ get; set; }
-        public string GyrometerDataId { get; set; }
+        public string MeasurementId { get; set; }
+        public string AccelerometerFilename { get; set; }
+        public string GyrometerFilename { get; set; }
         public uint ReportInterval{ get; set; }
-        public int ProcessingListSize { get; set; }
+        public uint ProcessingListSize { get; set; }
     }
 }

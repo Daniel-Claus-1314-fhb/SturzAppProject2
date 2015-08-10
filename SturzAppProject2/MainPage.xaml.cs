@@ -4,6 +4,7 @@ using BackgroundTask.Service;
 using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -32,10 +33,11 @@ namespace BackgroundTask
         public static MainPage Current;
 
         private NotifyViewModel _notifyViewModel = new NotifyViewModel();
-        private MeasurementList _mainMeasurementListModel = new MeasurementList();
+        private MeasurementList _mainMeasurementListModel;
 
         public MappingService mapping = new MappingService();
         private BackgroundTaskService _backgroundTaskService = new BackgroundTaskService();
+        private FileService _fileService = new FileService();
 
         public MainPage()
         {
@@ -82,8 +84,18 @@ namespace BackgroundTask
         /// </summary>
         /// <param name="e">Ereignisdaten, die beschreiben, wie diese Seite erreicht wurde.
         /// Dieser Parameter wird normalerweise zum Konfigurieren der Seite verwendet.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            if (_mainMeasurementListModel == null)
+            {
+                _mainMeasurementListModel = new MeasurementList();
+                _mainMeasurementListModel.Measurements = await _fileService.LoadMeasurementListAsync();
+                
+                _mainMeasurementListModel.MeasurementListUpdated += SaveMeasurementList;
+            }
+
+            _backgroundTaskService.SynchronizeMeasurementsWithActiveBackgroundTasks(_mainMeasurementListModel.Measurements);
+
             SuspensionManager.RegisterFrame(ContentFrame, "ContentFrame");
             if (ContentFrame.Content == null)
             {
@@ -92,6 +104,12 @@ namespace BackgroundTask
                     throw new Exception("Failed to create page");
                 }
             }
+        }
+
+        private void SaveMeasurementList(object sender, EventArgs e)
+        {
+            Debug.WriteLine("'{0}' Measurement has been saved.", _mainMeasurementListModel.Measurements.Count);
+            _fileService.SaveMeasurementsAsync(_mainMeasurementListModel.Measurements);
         }
 
         void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
@@ -105,6 +123,8 @@ namespace BackgroundTask
             }
         }
 
+
+
         public bool StartMeasurement(string measurementId)
         {
             bool isStarted = false;
@@ -116,7 +136,6 @@ namespace BackgroundTask
             }
             return isStarted;
         }
-
 
         public bool StopMeasurement(string measurementId)
         {

@@ -1,4 +1,5 @@
-﻿using BackgroundTask.ViewModel;
+﻿using BackgroundTask.DataModel;
+using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,9 @@ namespace BackgroundTask.Common.Selector
                         return StartedMeasurementTemplate;
 
                     case MeasurementState.Stopped:
+                        return StoppedMeasurementTemplate;
+
+                    case MeasurementState.Aborted:
                         return StoppedMeasurementTemplate;
                 }
             }

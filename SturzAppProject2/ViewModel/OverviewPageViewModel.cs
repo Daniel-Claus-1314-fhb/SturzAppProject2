@@ -58,15 +58,6 @@ namespace BackgroundTask.ViewModel
             }
         }
 
-        public void DeleteMeasurement(MeasurementViewModel measurementViewModel)
-        {
-
-            if (measurementViewModel != null)
-            {
-                this.MeasurementViewModels.Remove(measurementViewModel);
-            }
-        }
-
 
         // property changed logic by jump start
         public event PropertyChangedEventHandler PropertyChanged;

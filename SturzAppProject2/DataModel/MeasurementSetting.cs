@@ -17,7 +17,7 @@ namespace BackgroundTask.DataModel
         public MeasurementSetting()
         {
             this.ReportInterval = 20;
-            this.ProcessedSamplesCount = 0;
+            this.ProcessedSamplesCount = 1000;
             this.UseAccelerometer = true;
             this.UseGyrometer = false;
         }

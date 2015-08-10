@@ -37,8 +37,8 @@ namespace BackgroundTask
             _taskArguments = getTaskArgumentsFromTriggerDetails((DeviceUseDetails)_taskInstance.TriggerDetails);
 
             if (_taskArguments != null && 
-                _taskArguments.AccelerometerDataId != null &&
-                _taskArguments.AccelerometerDataId.Length > 0 &&
+                _taskArguments.AccelerometerFilename != null &&
+                _taskArguments.AccelerometerFilename.Length > 0 &&
                 _taskArguments.ReportInterval > 0)
             {
                 _deferral = _taskInstance.GetDeferral();
@@ -46,7 +46,7 @@ namespace BackgroundTask
                 taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
 
                 // CREATE NEW ACCELEROMETERDATA MODEL
-                _accelerometerData = new AccelerometerData(_taskArguments.AccelerometerDataId);
+                _accelerometerData = new AccelerometerData(_taskArguments.AccelerometerFilename);
                 _accelerometerData.ReadingsListsHasSwitched += _accelerometerData_ReadingsListsHasSwitched;
 
                 Debug.WriteLine(

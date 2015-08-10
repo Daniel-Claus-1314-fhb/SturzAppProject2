@@ -145,8 +145,6 @@ namespace BackgroundTask
             _mainPage.MainMeasurementListModel.Update(measurementViewModel);
 
             //TODO Insert start functionality
-            //string arguments = JsonConvert.SerializeObject(new TaskArguments("MeasurementAccelero", "MeasurementGyro", 20));
-            //_mainPage.StartAccelerometerTask("accelerometerTask", arguments);
             isStarted = _mainPage.StartMeasurement(measurementViewModel.Id);
 
             if (isStarted)
@@ -169,7 +167,6 @@ namespace BackgroundTask
         {
             bool isStopped = false;
             //TODO Insert stop functionality
-            //_mainPage.DeregisterAccelerometerTask("accelerometerTask");
             isStopped = _mainPage.StopMeasurement(measurementViewModel.Id);
 
             if (isStopped)
@@ -214,6 +211,7 @@ namespace BackgroundTask
             if (isDeleted)
             {
                 _measurementPageViewModel.MeasurementViewModel.DeleteMeasurement();
+                // TODO Delete all Files of the measurement
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);

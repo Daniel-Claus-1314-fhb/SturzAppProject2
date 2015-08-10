@@ -38,18 +38,21 @@ namespace BackgroundTask.DataModel
         public string Id
         {
             get { return _id; }
+            set { _id = value; }
         }
 
         private string _accelerometerFilename;
         public string AccelerometerFilename
         {
             get { return _accelerometerFilename; }
+            set { _accelerometerFilename = value; }
         }
 
         private string _gyrometerFilename;
         public string GyrometerFilename
         {
             get { return _gyrometerFilename; }
+            set { _gyrometerFilename = value; }
         }
 
         private MeasurementSetting _setting;
@@ -64,6 +67,13 @@ namespace BackgroundTask.DataModel
         {
             get { return _evaluation; }
             set { _evaluation = value; }
+        }
+
+        private MeasurementState _measurementState;
+        public MeasurementState MeasurementState
+        {
+            get { return _measurementState; }
+            set { _measurementState = value; }
         }
 
         private DateTime _createDateTime;

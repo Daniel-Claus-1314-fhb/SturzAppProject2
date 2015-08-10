@@ -123,8 +123,9 @@ namespace BackgroundTask
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-
+            
             // TODO: Anwendungszustand speichern und alle Hintergrundaktivitäten beenden
+
             deferral.Complete();
         }
     }

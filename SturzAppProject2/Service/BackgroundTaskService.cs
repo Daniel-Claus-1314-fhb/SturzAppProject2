@@ -1,8 +1,10 @@
 ﻿using BackgroundTask.DataModel;
 using BackgroundTask.ViewModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,13 +15,60 @@ namespace BackgroundTask.Service
 {
     public class BackgroundTaskService
     {
-        private BackgroundTaskRegistration _backgroundTaskRegistration;
 
+        internal void SynchronizeMeasurementsWithActiveBackgroundTasks(List<Measurement> measurements)
+        {
+            List<String> pairedMeasurementIds = new List<string>();
 
-        public bool StartBackgroundTaskForMeasurement(Measurement measurement) 
+            // Consider all started measurements of active background tasks.
+            // All started measurements without active background tasks will aborted;
+            foreach (Measurement measurement in measurements)
+            {
+                if (measurement.MeasurementState == MeasurementState.Started)
+                {
+                    if (isBackgroundTaskRegistered(measurement.Id))
+                    {
+                        pairedMeasurementIds.Add(measurement.Id);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Measurement with Id '{0}' will be aborted.", measurement.Id);
+                        measurement.EndTime = DateTime.Now;
+                        measurement.MeasurementState = MeasurementState.Aborted;
+                    }
+                }
+            }
+
+            // All background tasks without started measurements will be deregistered.
+            foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
+            {
+                if (!pairedMeasurementIds.Contains(currentTask.Value.Name))
+                {
+                    Debug.WriteLine("Background Task with name '{0}' will be deregisterd.", currentTask.Value.Name);
+                    DeregisterBackgroundTask(currentTask.Value.Name);
+                }
+            }
+        }
+
+        public bool StartBackgroundTaskForMeasurement(Measurement measurement)
         {
             bool isStarted = false;
+            if (measurement != null &&
+                measurement.Id != null &&
+                measurement.Id.Length > 0 &&
+                canRegisterBackgroundTask() &&
+                measurement.Setting != null)
+            {
+                TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.AccelerometerFilename, measurement.GyrometerFilename,
+                    measurement.Setting.ReportInterval, measurement.Setting.ProcessedSamplesCount);
 
+                string arguments = JsonConvert.SerializeObject(taskArguments);
+                if (measurement.Setting.UseAccelerometer)
+                {
+                    StartAccelerometerTask(measurement.Id, arguments);
+                }
+                isStarted = true;
+            }
             return isStarted;
         }
 
@@ -27,10 +76,36 @@ namespace BackgroundTask.Service
         {
             bool isStopped = false;
 
+            if (measurement != null &&
+                measurement.Id != null &&
+                measurement.Id.Length > 0)
+            {
+                isStopped = DeregisterBackgroundTask(measurement.Id);
+            }
             return isStopped;
         }
 
-    
+
+
+
+
+        private bool canRegisterBackgroundTask()
+        {
+            return BackgroundTaskRegistration.AllTasks.Count == 0 ? true : false;
+        }
+
+        private bool isBackgroundTaskRegistered(string taskName)
+        {
+            Debug.WriteLine("Anzahl BackgroundTasks '{0}'", BackgroundTaskRegistration.AllTasks.Count);
+            foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
+            {
+                if (currentTask.Value.Name.Equals(taskName))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         //#############################################################################
         //########################## Start Background Task ############################
@@ -48,7 +123,7 @@ namespace BackgroundTask.Service
                 if ((BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity.Equals(backgroundAccessStatus))
                     || (BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity.Equals(backgroundAccessStatus)))
                 {
-                    await RegisterAccelerometerTask(accelerometer.DeviceId, taskName, arguments);
+                    await RegisterAccelerometerTaskAsync(accelerometer.DeviceId, taskName, arguments);
                 }
                 else
                 {
@@ -57,38 +132,30 @@ namespace BackgroundTask.Service
             }
         }
 
-        private async Task<bool> RegisterAccelerometerTask(string deviceId, string taskName, string arguments)
+        private async Task<bool> RegisterAccelerometerTaskAsync(string deviceId, string taskName, string arguments)
         {
             String taskEntryPoint = "BackgroundTask.TaskAction";
             DeviceUseTrigger trigger = new DeviceUseTrigger();
 
-            foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
-            {
-                if (currentTask.Value.Name == taskName)
-                {
-                    _backgroundTaskRegistration = (BackgroundTaskRegistration)(currentTask.Value);
-                }
-            }
-
-            if (_backgroundTaskRegistration == null)
+            if (!isBackgroundTaskRegistered(taskName))
             {
                 var builder = new BackgroundTaskBuilder();
                 builder.Name = taskName;
                 builder.TaskEntryPoint = taskEntryPoint;
                 builder.SetTrigger(trigger);
 
-                _backgroundTaskRegistration = builder.Register();
+                BackgroundTaskRegistration backgroundTaskregistration = builder.Register();
 
-                if (!await RequestDeviceUseTrigger(deviceId, trigger, taskName, arguments))
+                if (!await RequestDeviceUseTriggerAsync(deviceId, trigger, taskName, arguments))
                 {
-                    DeregisterAccelerometerTask(taskName);
+                    DeregisterBackgroundTask(taskName);
                     return false;
                 }
             }
             return true;
         }
 
-        private async Task<bool> RequestDeviceUseTrigger(string deviceId, DeviceUseTrigger deviceUseTrigger, string taskName, string arguments)
+        private async Task<bool> RequestDeviceUseTriggerAsync(string deviceId, DeviceUseTrigger deviceUseTrigger, string taskName, string arguments)
         {
             try
             {
@@ -111,7 +178,7 @@ namespace BackgroundTask.Service
             }
             catch (InvalidOperationException)
             {
-                DeregisterAccelerometerTask(taskName);
+                DeregisterBackgroundTask(taskName);
             }
             return false;
         }
@@ -124,20 +191,22 @@ namespace BackgroundTask.Service
 
         #region Stop BackgroundTask
 
-        public void DeregisterAccelerometerTask(string taskName)
+        public bool DeregisterBackgroundTask(string taskName)
         {
+            bool isDeregistered = false;
             if (taskName != null && taskName.Length > 0)
             {
                 foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
                 {
-                    if (currentTask.Value.Name == taskName)
+                    if (currentTask.Value.Name.Equals(taskName))
                     {
                         currentTask.Value.Unregister(true);
+                        isDeregistered = true;
                         //ShowNotifyMessage("Background Task wurde beendet.", NotifyLevel.Info);
                     }
                 }
-                this._backgroundTaskRegistration = null;
             }
+            return isDeregistered;
         }
 
         #endregion

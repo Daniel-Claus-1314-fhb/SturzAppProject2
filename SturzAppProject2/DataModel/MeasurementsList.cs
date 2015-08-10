@@ -33,6 +33,24 @@ namespace BackgroundTask.DataModel
             set { _measurements = value; }
         }
 
+        protected virtual void OnMeasurementListUpdated(EventArgs e)
+        {
+            EventHandler handler = MeasurementListUpdated;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public event EventHandler MeasurementListUpdated;
+
+
+
+
+        //###################################################################################
+        //##################################### Methods #####################################
+        //###################################################################################
+
         public Measurement GetById(string id)
         {
             if (id != null)
@@ -54,26 +72,7 @@ namespace BackgroundTask.DataModel
         public void Insert(Measurement measurement)
         {
             this._measurements.Insert(0, measurement);
-        }
-
-        public bool Update(Measurement updateMeasurement)
-        {
-            bool isUpdated = false;
-
-            if (updateMeasurement != null)
-            {
-                Measurement measurementFromList = GetById(updateMeasurement.Id);
-                if (measurementFromList != null)
-                {
-                    isUpdated = true;
-                    // update relevant informations
-                    measurementFromList.Name = updateMeasurement.Name;
-                    measurementFromList.StartTime = updateMeasurement.StartTime;
-                    measurementFromList.EndTime = updateMeasurement.EndTime;
-                    measurementFromList.Setting = updateMeasurement.Setting;
-                }
-            }
-            return isUpdated;
+            OnMeasurementListUpdated(EventArgs.Empty);
         }
 
         public bool Update(MeasurementViewModel updateMeasurementViewModel)
@@ -90,7 +89,9 @@ namespace BackgroundTask.DataModel
                     measurementFromList.Name = updateMeasurementViewModel.Name;
                     measurementFromList.StartTime = updateMeasurementViewModel.StartTime;
                     measurementFromList.EndTime = updateMeasurementViewModel.EndTime;
+                    measurementFromList.MeasurementState = updateMeasurementViewModel.MeasurementState;
                     //measurementFromList.Setting = updateMeasurementViewModel.Setting;
+                    OnMeasurementListUpdated(EventArgs.Empty);
                 }
             }
             return isUpdated;
@@ -109,6 +110,7 @@ namespace BackgroundTask.DataModel
                 if (measurementFromList != null)
                 {
                     isDeleted = this._measurements.Remove(measurementFromList);
+                    OnMeasurementListUpdated(EventArgs.Empty);
                 }
             }
             return isDeleted;
