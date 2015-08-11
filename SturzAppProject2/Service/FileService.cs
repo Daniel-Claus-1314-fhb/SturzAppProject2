@@ -27,12 +27,27 @@ namespace BackgroundTask.Service
 
         internal async Task<List<Measurement>> LoadMeasurementListAsync()
         {
+            bool isFileCorrupted = false;
             List<Measurement> measurements = new List<Measurement>();
             string jsonString = await LoadJsonStringFromFile(_fileName);
 
             if (jsonString != null && jsonString.Length > 0)
             {
-                measurements = JsonConvert.DeserializeObject<List<Measurement>>(jsonString);
+                try
+                {
+                    measurements = JsonConvert.DeserializeObject<List<Measurement>>(jsonString);
+                }
+                catch (JsonSerializationException)
+                {
+                    Debug.WriteLine("[BackgroundTask.Service.FileService] Sersialized list of measurements could not deserialized.");
+                    // Delete corrupted file.
+                    isFileCorrupted = true;
+                }
+
+                if (isFileCorrupted)
+                {
+                    await deleteFile(_fileName);
+                }
             }
             return measurements;
         }
@@ -108,6 +123,31 @@ namespace BackgroundTask.Service
                 Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
             }
             return jsonString;
+        }
+
+        private async Task deleteFile(string filename)
+        {
+            try 
+            {
+                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+                if (localFolder != null)
+                {
+                    StorageFile file = await localFolder.GetFileAsync(filename);
+                    if (file != null)
+                    {
+                        await file.DeleteAsync();
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: {0} konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
+            }
+            return;
         }
     }
 }
