@@ -32,6 +32,7 @@ namespace BackgroundTask.ViewModel
             this.StartTime = measurement.StartTime;
             this.EndTime = measurement.EndTime;
             this.MeasurementState = measurement.MeasurementState;
+            this.MeasurementSetting = new MeasurementSettingViewModel(measurement.Setting);
         }
 
         #endregion
@@ -62,6 +63,14 @@ namespace BackgroundTask.ViewModel
             get { return _measurementState; }
             set { this.SetProperty(ref this._measurementState, value); }
         }
+
+        private MeasurementSettingViewModel _measuermentSetting;
+        public MeasurementSettingViewModel MeasurementSetting
+        {
+            get { return _measuermentSetting; }
+            set { this.SetProperty(ref this._measuermentSetting, value); }
+        }
+        
 
         private DateTime _createDateTime;
         public DateTime CreateDateTime

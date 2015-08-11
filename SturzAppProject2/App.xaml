@@ -4,4 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:BackgroundTask">
 
+    <Application.Resources>
+        <x:String x:Key="AppName">Movement Meter</x:String>
+    </Application.Resources>
 </Application>

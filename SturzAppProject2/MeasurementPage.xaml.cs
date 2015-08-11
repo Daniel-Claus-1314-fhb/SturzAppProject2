@@ -132,6 +132,13 @@ namespace BackgroundTask
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedFrom(e);
+
+            if (_measurementPageViewModel.MeasurementViewModel.MeasurementState == MeasurementState.Initialized)
+            {
+                _mainPage.MainMeasurementListModel.Update(_measurementPageViewModel.MeasurementViewModel);
+                RaiseCanExecuteChanged();
+                _mainPage.ShowNotifyMessage("Messung wurde gespeichert.", NotifyLevel.Info);
+            }
         }
 
         #endregion
@@ -145,7 +152,7 @@ namespace BackgroundTask
             _mainPage.MainMeasurementListModel.Update(measurementViewModel);
 
             //TODO Insert start functionality
-            isStarted = _mainPage.StartMeasurement(measurementViewModel.Id);
+            isStarted = _mainPage.StartBackgroundTask(measurementViewModel.Id);
 
             if (isStarted)
             {
@@ -167,7 +174,7 @@ namespace BackgroundTask
         {
             bool isStopped = false;
             //TODO Insert stop functionality
-            isStopped = _mainPage.StopMeasurement(measurementViewModel.Id);
+            isStopped = _mainPage.StopBackgroundTask(measurementViewModel.Id);
 
             if (isStopped)
             {

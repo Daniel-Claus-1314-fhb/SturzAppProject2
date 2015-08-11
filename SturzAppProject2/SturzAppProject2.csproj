@@ -86,6 +86,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Converter\NumberToFormattedStringConverter.cs" />
     <Compile Include="Common\Converter\TimeToFormattedStringConverter.cs" />
     <Compile Include="DataModel\MeasurementState.cs" />
     <Compile Include="MeasurementPage.xaml.cs">
@@ -115,9 +116,13 @@
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\MappingService.cs" />
     <Compile Include="ViewModel\MeasurementPageViewModel.cs" />
+    <Compile Include="ViewModel\MeasurementSettingViewModel.cs" />
     <Compile Include="ViewModel\MeasurementViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\OverviewPageViewModel.cs" />
+    <Compile Include="View\SettingsControl.xaml.cs">
+      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -158,10 +163,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\SettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

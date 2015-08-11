@@ -20,7 +20,6 @@ namespace BackgroundTask
         private IBackgroundTaskInstance _taskInstance;
         private BackgroundTaskDeferral _deferral;
         private TaskArguments _taskArguments;
-        private FileService _fileService = new FileService();
 
         private AccelerometerData _accelerometerData;
             //string measurementId = String.Format("{0}_{1:yyyyMMdd}_{1:HHmmss}", _taskArguments.taskName, DateTime.Now);
@@ -39,14 +38,15 @@ namespace BackgroundTask
             if (_taskArguments != null && 
                 _taskArguments.AccelerometerFilename != null &&
                 _taskArguments.AccelerometerFilename.Length > 0 &&
-                _taskArguments.ReportInterval > 0)
+                _taskArguments.ReportInterval > 0 && 
+                _taskArguments.ProcessedSampleCount > 0)
             {
                 _deferral = _taskInstance.GetDeferral();
                 InitAccelerometer(_taskArguments.ReportInterval);
                 taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
 
                 // CREATE NEW ACCELEROMETERDATA MODEL
-                _accelerometerData = new AccelerometerData(_taskArguments.AccelerometerFilename);
+                _accelerometerData = new AccelerometerData(_taskArguments.AccelerometerFilename, _taskArguments.ProcessedSampleCount);
                 _accelerometerData.ReadingsListsHasSwitched += _accelerometerData_ReadingsListsHasSwitched;
 
                 Debug.WriteLine(
@@ -68,7 +68,7 @@ namespace BackgroundTask
             Debug.WriteLine("############# ReadingsList has switched ############");
             if (sender.GetType().Equals(typeof(AccelerometerData)))
             {
-                _fileService.AppendPassivReadingsToFileAsync((AccelerometerData) sender);
+                TaskFileService.AppendPassivAccelerometerReadingsToFileAsync((AccelerometerData) sender);
             }
         }
 
@@ -106,7 +106,7 @@ namespace BackgroundTask
 
             // save the current measurement.
             _accelerometerData.ReadingsListsHasSwitched -= _accelerometerData_ReadingsListsHasSwitched;
-            _fileService.AppendActivReadingsToFileAsync(_accelerometerData);
+            TaskFileService.AppendActivAccelerometerReadingsToFileAsync(_accelerometerData);
 
             _deferral.Complete();
         }

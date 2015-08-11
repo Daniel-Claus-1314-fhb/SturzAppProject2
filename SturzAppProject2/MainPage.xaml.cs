@@ -125,26 +125,32 @@ namespace BackgroundTask
 
 
 
-        public bool StartMeasurement(string measurementId)
+        public bool StartBackgroundTask(string measurementId)
         {
             bool isStarted = false;
             if (measurementId != null && measurementId.Length > 0 &&
                 _backgroundTaskService != null)
             {
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
-                isStarted = _backgroundTaskService.StartBackgroundTaskForMeasurement(measurement);
+                if (measurement != null)
+                {
+                    isStarted = _backgroundTaskService.StartBackgroundTaskForMeasurement(measurement);
+                }
             }
             return isStarted;
         }
 
-        public bool StopMeasurement(string measurementId)
+        public bool StopBackgroundTask(string measurementId)
         {
             bool isStopped = false;
             if (measurementId != null && measurementId.Length > 0 &&
                 _backgroundTaskService != null)
             {
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
-                isStopped = _backgroundTaskService.StopBackgroundTaskForMeasurement(measurement);
+                if (measurement != null)
+                {
+                    isStopped = _backgroundTaskService.StopBackgroundTaskForMeasurement(measurement);
+                }
             }
             return isStopped;
         }

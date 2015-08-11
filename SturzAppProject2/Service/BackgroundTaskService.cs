@@ -66,8 +66,14 @@ namespace BackgroundTask.Service
                 if (measurement.Setting.UseAccelerometer)
                 {
                     StartAccelerometerTask(measurement.Id, arguments);
+                    isStarted = true;
+                } 
+                if (measurement.Setting.UseGyrometer)
+                {
+                    //StartGyrometerTask(measurement.Id, arguments);
+                    //isStarted = true;
                 }
-                isStarted = true;
+                
             }
             return isStarted;
         }

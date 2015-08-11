@@ -81,7 +81,7 @@
   <ItemGroup>
     <Compile Include="DataModel\AccelerometerData.cs" />
     <Compile Include="DataModel\TaskArguments.cs" />
-    <Compile Include="Service\FileService.cs" />
+    <Compile Include="Service\TaskFileService.cs" />
     <Compile Include="TaskAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

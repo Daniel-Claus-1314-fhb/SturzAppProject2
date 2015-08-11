@@ -37,9 +37,9 @@ namespace BackgroundTask.Service
                 {
                     measurements = JsonConvert.DeserializeObject<List<Measurement>>(jsonString);
                 }
-                catch (JsonSerializationException)
+                catch (JsonReaderException)
                 {
-                    Debug.WriteLine("[BackgroundTask.Service.FileService] Sersialized list of measurements could not deserialized.");
+                    Debug.WriteLine("[BackgroundTask.Service.FileService] Sersialized list of measurements could not read.");
                     // Delete corrupted file.
                     isFileCorrupted = true;
                 }

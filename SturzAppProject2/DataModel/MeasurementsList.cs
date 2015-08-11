@@ -90,7 +90,7 @@ namespace BackgroundTask.DataModel
                     measurementFromList.StartTime = updateMeasurementViewModel.StartTime;
                     measurementFromList.EndTime = updateMeasurementViewModel.EndTime;
                     measurementFromList.MeasurementState = updateMeasurementViewModel.MeasurementState;
-                    //measurementFromList.Setting = updateMeasurementViewModel.Setting;
+                    measurementFromList.Setting = new MeasurementSetting(updateMeasurementViewModel.MeasurementSetting);
                     OnMeasurementListUpdated(EventArgs.Empty);
                 }
             }

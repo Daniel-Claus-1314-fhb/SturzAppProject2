@@ -19,19 +19,19 @@ namespace BackgroundTask.DataModel
             this.AccelerometerFilename = accelerometerFilename;
             this.GyrometerFilename = gyrometerFilename;
             this.ReportInterval = reportInterval;
-            this.ProcessingListSize = 1000;
+            this.ProcessedSampleCount = 1000;
         }
 
-        public TaskArguments(string measurementId, string accelerometerFilename, string gyrometerFilename, uint reportInterval, uint processingListSize)
+        public TaskArguments(string measurementId, string accelerometerFilename, string gyrometerFilename, uint reportInterval, uint processedSampleCount)
             : this(measurementId, accelerometerFilename, gyrometerFilename, reportInterval)
         {
-            this.ProcessingListSize = processingListSize;
+            this.ProcessedSampleCount = processedSampleCount;
         }
 
         public string MeasurementId { get; set; }
         public string AccelerometerFilename { get; set; }
         public string GyrometerFilename { get; set; }
         public uint ReportInterval{ get; set; }
-        public uint ProcessingListSize { get; set; }
+        public uint ProcessedSampleCount { get; set; }
     }
 }

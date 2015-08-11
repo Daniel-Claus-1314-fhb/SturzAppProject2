@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BackgroundTask.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,14 @@ namespace BackgroundTask.DataModel
             this.ProcessedSamplesCount = 1000;
             this.UseAccelerometer = true;
             this.UseGyrometer = false;
+        }
+
+        public MeasurementSetting(MeasurementSettingViewModel measurementSettingViewModel)
+        {
+            this.ReportInterval = measurementSettingViewModel.ReportInterval;
+            this.ProcessedSamplesCount = measurementSettingViewModel.ProcessedSampleCount;
+            this.UseAccelerometer = measurementSettingViewModel.UseAccelerometer;
+            this.UseGyrometer = measurementSettingViewModel.UseGyrometer;
         }
 
         #endregion

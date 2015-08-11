@@ -10,9 +10,9 @@ namespace BackgroundTask.DataModel
 
     class AccelerometerData
     {
-        public AccelerometerData(string accerlerometerDataId)
+        public AccelerometerData(string accerlerometerFilename)
         {
-            this._accelerometerDataId = accerlerometerDataId;
+            this._accelerometerFilename = accerlerometerFilename;
             this._listChangeCounter = 0;
             this._processingListCount = 1000;
             this._accelerometerReadingsListEven = new List<AccelerometerReading>();
@@ -25,10 +25,10 @@ namespace BackgroundTask.DataModel
             this._processingListCount = processingListSize;
         }
 
-        private string _accelerometerDataId;
-        public string AccelerometerDataId
+        private string _accelerometerFilename;
+        public string AccelerometerFilename
         {
-            get { return _accelerometerDataId; }
+            get { return _accelerometerFilename; }
         }
 
         private long _listChangeCounter;
