@@ -8,36 +8,48 @@
         
         <templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
             <DataTemplate>
-                <Grid>
-                    <StackPanel>
-                        <TextBlock Text="Initialized"/>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                    </StackPanel>
-                </Grid>
+                <Border BorderThickness="0,1" BorderBrush="White" Padding="0,4" Margin="8,6">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Path=MeasurementState}"/>
+                            <TextBlock Text="{Binding Path=Name}"/>
+                            <TextBlock Text="{Binding Path=StartTime}"/>
+                            <TextBlock Text="{Binding Path=Duration}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </DataTemplate>
         </templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
 
 
         <templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
             <DataTemplate>
-                <Grid>
-                    <StackPanel>
-                        <TextBlock Text="Started"/>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                    </StackPanel>
-                </Grid>                
+                <Border BorderThickness="0,1" BorderBrush="White" Padding="0,4" Margin="8,6">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Path=MeasurementState}"/>
+                            <TextBlock Text="{Binding Path=Name}"/>
+                            <TextBlock Text="{Binding Path=StartTime}"/>
+                            <TextBlock Text="{Binding Path=Duration}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>               
             </DataTemplate>
         </templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
 
         
         <templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
             <DataTemplate>
-                <Grid>
-                    <StackPanel>
-                        <TextBlock Text="Stopped"/>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                    </StackPanel>
-                </Grid>
+                <Border BorderThickness="0,1" BorderBrush="White" Padding="0,4" Margin="8,6">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Path=MeasurementState}"/>
+                            <TextBlock Text="{Binding Path=Name}"/>
+                            <TextBlock Text="{Binding Path=StartTime}"/>
+                            <TextBlock Text="{Binding Path=Duration}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </DataTemplate>
         </templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
         

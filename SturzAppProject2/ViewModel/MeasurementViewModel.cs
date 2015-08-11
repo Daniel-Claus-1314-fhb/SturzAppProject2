@@ -92,7 +92,7 @@ namespace BackgroundTask.ViewModel
                     this.EndTime.CompareTo(DateTime.MinValue) == 0)
                     return _endTime.Subtract(_startTime);
 
-                else if (this.StartTime.CompareTo(DateTime.MinValue) > 0 &&
+                else if (this.StartTime.CompareTo(DateTime.MinValue) != 0 &&
                     this.EndTime.CompareTo(DateTime.MinValue) == 0)
                     return DateTime.Now.Subtract(_startTime);
 
