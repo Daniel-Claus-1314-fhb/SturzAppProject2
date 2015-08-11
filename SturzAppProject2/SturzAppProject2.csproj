@@ -86,6 +86,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Converter\TimeToFormattedStringConverter.cs" />
     <Compile Include="DataModel\MeasurementState.cs" />
     <Compile Include="MeasurementPage.xaml.cs">
       <DependentUpon>MeasurementPage.xaml</DependentUpon>
@@ -124,6 +125,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Icons\play.png" />
+    <Content Include="Assets\Icons\plus-round.png" />
+    <Content Include="Assets\Icons\stop.png" />
     <Content Include="Assets\Logo.scale-240.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />

@@ -2,20 +2,29 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:templateSelector="using:BackgroundTask.Common.Selector"
-    xmlns:local="using:BackgroundTask.Common.Resources">
+    xmlns:local="using:BackgroundTask.Common.Resources"
+    xmlns:converter="using:BackgroundTask.Common.Converter">
     
+    <converter:TimeToFormattedStringConverter x:Key="TimeConverter"/>
+
     <templateSelector:MeasurementTypeSelector x:Key="MeasurementTypeSelector">
         
         <templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
             <DataTemplate>
-                <Border BorderThickness="0,1" BorderBrush="White" Padding="0,4" Margin="8,6">
+                <Border BorderThickness="0,2" BorderBrush="#FF253242" Background="#FF171F29" Padding="10,6">
                     <Grid>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Path=MeasurementState}"/>
-                            <TextBlock Text="{Binding Path=Name}"/>
-                            <TextBlock Text="{Binding Path=StartTime}"/>
-                            <TextBlock Text="{Binding Path=Duration}"/>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Source="Assets/Icons/plus-round.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=CreateDateTime, Converter={StaticResource TimeConverter}, ConverterParameter=create}"/>
                     </Grid>
                 </Border>
             </DataTemplate>
@@ -24,14 +33,22 @@
 
         <templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
             <DataTemplate>
-                <Border BorderThickness="0,1" BorderBrush="White" Padding="0,4" Margin="8,6">
+                <Border BorderThickness="0,2" BorderBrush="#FF94C56B" Background="#FF538D50" Padding="10,6">
                     <Grid>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Path=MeasurementState}"/>
-                            <TextBlock Text="{Binding Path=Name}"/>
-                            <TextBlock Text="{Binding Path=StartTime}"/>
-                            <TextBlock Text="{Binding Path=Duration}"/>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Source="Assets/Icons/play.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=start}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=duration}"/>
                     </Grid>
                 </Border>               
             </DataTemplate>
@@ -40,14 +57,22 @@
         
         <templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
             <DataTemplate>
-                <Border BorderThickness="0,1" BorderBrush="White" Padding="0,4" Margin="8,6">
+                <Border BorderThickness="0,2" BorderBrush="#FF253242" Background="#FF171F29" Padding="10,6">
                     <Grid>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Path=MeasurementState}"/>
-                            <TextBlock Text="{Binding Path=Name}"/>
-                            <TextBlock Text="{Binding Path=StartTime}"/>
-                            <TextBlock Text="{Binding Path=Duration}"/>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Source="Assets/Icons/stop.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=start}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=duration}"/>
                     </Grid>
                 </Border>
             </DataTemplate>

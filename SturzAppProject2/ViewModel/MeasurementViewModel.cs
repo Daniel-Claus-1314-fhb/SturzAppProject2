@@ -88,8 +88,8 @@ namespace BackgroundTask.ViewModel
         {
             get
             {
-                if (this.StartTime.CompareTo(DateTime.MinValue) == 0 &&
-                    this.EndTime.CompareTo(DateTime.MinValue) == 0)
+                if (this.StartTime.CompareTo(DateTime.MinValue) != 0 &&
+                    this.EndTime.CompareTo(DateTime.MinValue) != 0)
                     return _endTime.Subtract(_startTime);
 
                 else if (this.StartTime.CompareTo(DateTime.MinValue) != 0 &&

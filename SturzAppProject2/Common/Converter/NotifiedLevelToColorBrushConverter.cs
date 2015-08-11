@@ -15,7 +15,6 @@ namespace BackgroundTask.Common.Converter
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             string colorCode = "{x:Null}";
-            //string colorCode = "#FF538D50";
 
             if (value != null)
             {
@@ -24,15 +23,15 @@ namespace BackgroundTask.Common.Converter
                 switch (level)
                 {
                     case NotifyLevel.Info:
-                        // #FFC0F792 Green
+                        // Green
                         colorCode = "#FF538D50";
                         break;
                     case NotifyLevel.Warn:
-                        // #FFFFFA98 Yellow
+                        // Yellow
                         colorCode = "#FF8F8334";
                         break;
                     case NotifyLevel.Error:
-                        // #FFFF5A52 Red
+                        // Red
                         colorCode = "#FF9B4444";
                         break;
                 }
