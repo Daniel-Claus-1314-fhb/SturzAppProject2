@@ -30,14 +30,9 @@ namespace BackgroundTask.Service
             Debug.WriteLine("############## Save Passiv Readings ##################");
             StorageFolder accelerometerFolder = await FindMeasurementStorageFolder(MeasurementType.Accelerometer);
 
-            StringBuilder stringbuilder = new StringBuilder();
-            foreach (AccelerometerReading accelerometerReading in accelerometerData.GetPassivReadingsList())
-            {
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0:f4},{1:f4},{2:f4},{3}\n",
-                    accelerometerReading.AccelerationX, accelerometerReading.AccelerationY, accelerometerReading.AccelerationZ, accelerometerReading.Timestamp.UtcTicks));
-            }
+            string csvString = ConvertIntoCSVString(accelerometerData.GetPassivReadingsList());
 
-            await SaveStringToEndOfFileAsync(stringbuilder.ToString(), accelerometerFolder, accelerometerData.AccelerometerFilename);
+            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.AccelerometerFilename);
         }
 
         public static async void AppendActivAccelerometerReadingsToFileAsync(AccelerometerData accelerometerData)
@@ -45,14 +40,20 @@ namespace BackgroundTask.Service
             Debug.WriteLine("############## Save Activ Readings ##################");
             StorageFolder accelerometerFolder = await FindMeasurementStorageFolder(MeasurementType.Accelerometer);
 
+            string csvString = ConvertIntoCSVString(accelerometerData.GetActivReadingsList());
+
+            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.AccelerometerFilename);
+        }
+
+        private static String ConvertIntoCSVString(IList<AccelerometerReading> accelerometerReadings)
+        {
             StringBuilder stringbuilder = new StringBuilder();
-            foreach (AccelerometerReading accelerometerReading in accelerometerData.GetActivReadingsList())
+            foreach (AccelerometerReading accelerometerReading in accelerometerReadings)
             {
                 stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0:f4},{1:f4},{2:f4},{3}\n",
                     accelerometerReading.AccelerationX, accelerometerReading.AccelerationY, accelerometerReading.AccelerationZ, accelerometerReading.Timestamp.UtcTicks));
             }
-
-            await SaveStringToEndOfFileAsync(stringbuilder.ToString(), accelerometerFolder, accelerometerData.AccelerometerFilename);
+            return stringbuilder.ToString();
         }
 
 

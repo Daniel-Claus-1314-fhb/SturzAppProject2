@@ -39,8 +39,8 @@ namespace BackgroundTask.DataModel
 
         private uint _processingListCount { get; set; }
 
-        private IList<AccelerometerReading> _accelerometerReadingsListEven { get; set; }
-        private IList<AccelerometerReading> _accelerometerReadingsListOdd { get; set; }
+        private List<AccelerometerReading> _accelerometerReadingsListEven { get; set; }
+        private List<AccelerometerReading> _accelerometerReadingsListOdd { get; set; }
 
         /// <summary>
         /// 
