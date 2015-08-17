@@ -43,8 +43,12 @@
             <TextBlock Text="{Binding Path=MeasurementViewModel.Name}" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
             </StackPanel>
         
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <view:SettingsControl DataContext="{Binding Path=MeasurementViewModel}"/>
+        <Grid Grid.Row="1" Margin="19,9.5,19,0" Visibility="Visible">
+            <view:EditSettingsControl DataContext="{Binding Path=MeasurementViewModel}"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="19,9.5,19,0" Visibility="Collapsed">
+            <view:DisplaySettingsControl DataContext="{Binding Path=MeasurementViewModel}"/>
         </Grid>
     </Grid>
 </Page>

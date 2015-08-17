@@ -23,10 +23,14 @@ namespace BackgroundTask.Common.Converter
 
                         switch (parameterString)
                         {
-                            case "ReportInterval":
-                                return String.Format("Abtastrate: {0:G} ms", convertUnsignedInteger);
-                            case "ProcessedSampleCount":
+                            case "ReportIntervalFull":
+                                return String.Format("Abtastrate {0:G} ms", convertUnsignedInteger);
+                            case "ReportIntervalSimple":
+                                return String.Format("{0:G} ms", convertUnsignedInteger);
+                            case "ProcessedSampleCountFull":
                                 return String.Format("{0:G} Messwerte werden gemeinsam ausgewertet.", convertUnsignedInteger);
+                            case "ProcessedSampleCountSimple":
+                                return String.Format("{0:G} Messwerte", convertUnsignedInteger);
                             default:
                                 return String.Format("{0:G}", convertUnsignedInteger);
                         }

@@ -17,9 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace BackgroundTask.View
 {
-    public sealed partial class SettingsControl : UserControl
+    public sealed partial class DisplaySettingsControl : UserControl
     {
-        public SettingsControl()
+        public DisplaySettingsControl()
         {
             this.InitializeComponent();
         }

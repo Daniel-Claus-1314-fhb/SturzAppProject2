@@ -124,8 +124,11 @@
     <Compile Include="ViewModel\MeasurementViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\OverviewPageViewModel.cs" />
-    <Compile Include="View\SettingsControl.xaml.cs">
-      <DependentUpon>SettingsControl.xaml</DependentUpon>
+    <Compile Include="View\DisplaySettingsControl.xaml.cs">
+      <DependentUpon>DisplaySettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditSettingsControl.xaml.cs">
+      <DependentUpon>EditSettingsControl.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -171,7 +174,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SettingsControl.xaml">
+    <Page Include="View\DisplaySettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

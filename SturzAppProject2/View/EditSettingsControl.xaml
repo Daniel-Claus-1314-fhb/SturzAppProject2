@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="BackgroundTask.View.SettingsControl"
+    x:Class="BackgroundTask.View.EditSettingsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converter="using:BackgroundTask.Common.Converter"
@@ -14,7 +14,7 @@
         <converter:NumberToFormattedStringConverter x:Key="NumberConverter"/>
     </UserControl.Resources>
     
-    <Grid Background="Black">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -24,15 +24,15 @@
         </Grid.RowDefinitions>
         
         <StackPanel Grid.Row="0">
-            <TextBlock Text="Name der Messung:" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
+            <TextBlock Text="Name der Messung" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
             <TextBox Text="{Binding Path=Name, Mode=TwoWay}"/>
         </StackPanel>
         
         <Slider Grid.Row="1" Value="{Binding Path=MeasurementSetting.ReportInterval, Mode=TwoWay}" Minimum="10" TickFrequency="10" StepFrequency="10" SmallChange="10"
-                Header="{Binding MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportInterval}"/>
+                Header="{Binding MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalFull}"/>
 
         <Slider Grid.Row="2" Value="{Binding Path=MeasurementSetting.ProcessedSampleCount, Mode=TwoWay}" Minimum="250" TickFrequency="250" StepFrequency="250" SmallChange="250" Maximum="3000" LargeChange="1000"
-                Header="{Binding MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCount}"/>
+                Header="{Binding MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCountFull}"/>
 
         <ToggleSwitch Grid.Row="3" Header="Accelerometer" OffContent="nicht verwenden" OnContent="verwenden" IsOn="{Binding MeasurementSetting.UseAccelerometer}"/>
         <ToggleSwitch Grid.Row="4" Header="Gyrometer" OffContent="nicht verwenden" OnContent="verwenden" IsOn="{Binding MeasurementSetting.UseGyrometer}" IsEnabled="False"/>
