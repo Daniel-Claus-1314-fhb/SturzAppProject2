@@ -1,6 +1,7 @@
 ﻿using BackgroundTask.Common;
 using BackgroundTask.DataModel;
 using OxyPlot;
+using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,10 +31,13 @@ namespace BackgroundTask
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        private PlotModel _plotModel = new PlotModel();
+        private PlotModel _plotModel;
 
         public GraphPage()
         {
+            _plotModel = new PlotModel();
+            _plotModel.Title = "Accelerometer Graph";
+
             this.InitializeComponent();
 
             this.navigationHelper = new NavigationHelper(this);

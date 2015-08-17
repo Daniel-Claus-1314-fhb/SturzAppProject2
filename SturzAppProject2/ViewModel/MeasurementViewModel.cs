@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.System.Threading;
+using Windows.UI.Core;
 
 namespace BackgroundTask.ViewModel
 {
@@ -70,7 +72,6 @@ namespace BackgroundTask.ViewModel
             get { return _measuermentSetting; }
             set { this.SetProperty(ref this._measuermentSetting, value); }
         }
-        
 
         private DateTime _createDateTime;
         public DateTime CreateDateTime
@@ -93,21 +94,27 @@ namespace BackgroundTask.ViewModel
             set { this.SetProperty(ref this._endTime, value); }
         }
 
+        private TimeSpan _duration;
         public TimeSpan Duration
         {
-            get
+            get 
             {
+                TimeSpan currentTimeSpan = new TimeSpan(0L);
+
                 if (this.StartTime.CompareTo(DateTime.MinValue) != 0 &&
                     this.EndTime.CompareTo(DateTime.MinValue) != 0)
-                    return _endTime.Subtract(_startTime);
-
+                {
+                    currentTimeSpan = _endTime.Subtract(_startTime);
+                }
                 else if (this.StartTime.CompareTo(DateTime.MinValue) != 0 &&
                     this.EndTime.CompareTo(DateTime.MinValue) == 0)
-                    return DateTime.Now.Subtract(_startTime);
+                {
+                    currentTimeSpan = DateTime.Now.Subtract(_startTime);
+                }
+                return currentTimeSpan;
 
-                else
-                    return new TimeSpan(0L);
             }
+            set { this.SetProperty(ref this._duration, value); }
         }
 
         private OxyplotData _oxyplotData;
@@ -124,6 +131,7 @@ namespace BackgroundTask.ViewModel
         //###################################################################################
 
         #region Methods
+
 
         public void StartMeasurement()
         {

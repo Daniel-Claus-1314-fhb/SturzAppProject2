@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Converter\NumberToFormattedStringConverter.cs" />
+    <Compile Include="Common\Converter\SilderValueConverter.cs" />
     <Compile Include="Common\Converter\TimeToFormattedStringConverter.cs" />
     <Compile Include="DataModel\OxyplotData.cs" />
     <Compile Include="DataModel\MeasurementState.cs" />
@@ -129,6 +130,12 @@
     </Compile>
     <Compile Include="View\EditSettingsControl.xaml.cs">
       <DependentUpon>EditSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EvaluationControl.xaml.cs">
+      <DependentUpon>EvaluationControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MeasurementTimeControl.xaml.cs">
+      <DependentUpon>MeasurementTimeControl.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +186,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\EditSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EvaluationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MeasurementTimeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

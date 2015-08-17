@@ -5,6 +5,7 @@ using BackgroundTask.ViewModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -14,6 +15,8 @@ using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.System.Threading;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -39,17 +42,18 @@ namespace BackgroundTask
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
         private MeasurementPageViewModel _measurementPageViewModel;
-
+        private ThreadPoolTimer _periodicUpdateTimer;
 
         public MeasurementPage()
         {
             _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, DeleteMeasurement, ShowMeasurementGraph);
-            
+
             this.InitializeComponent();
 
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
         }
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace BackgroundTask
 
         public MeasurementPageViewModel MeasurementPageViewModel
         {
-            get { return this._measurementPageViewModel; } 
+            get { return this._measurementPageViewModel; }
         }
 
         /// <summary>
@@ -125,6 +129,8 @@ namespace BackgroundTask
                 if (measurement != null)
                 {
                     _measurementPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
+                    VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
+                    StartUpdateTimer();
                 }
             }
             this.navigationHelper.OnNavigatedTo(e);
@@ -140,11 +146,11 @@ namespace BackgroundTask
                 RaiseCanExecuteChanged();
                 _mainPage.ShowNotifyMessage("Messung wurde gespeichert.", NotifyLevel.Info);
             }
+
+            StopUpdateTimer();
         }
 
         #endregion
-
-
 
         private bool StartMeasurement(MeasurementViewModel measurementViewModel)
         {
@@ -162,6 +168,7 @@ namespace BackgroundTask
                 _mainPage.MainMeasurementListModel.Update(measurementViewModel);
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
+                StartUpdateTimer();
                 _mainPage.ShowNotifyMessage("Messung wurde gestarted.", NotifyLevel.Info);
             }
             else
@@ -174,7 +181,7 @@ namespace BackgroundTask
         private bool StopMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isStopped = false;
-            
+
             // stop functionality
             isStopped = _mainPage.StopBackgroundTask(measurementViewModel.Id);
 
@@ -184,6 +191,7 @@ namespace BackgroundTask
                 _mainPage.MainMeasurementListModel.Update(measurementViewModel);
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
+                StopUpdateTimer();
                 _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info);
             }
             else
@@ -259,6 +267,49 @@ namespace BackgroundTask
             ((ExportMeasurementCommand)_measurementPageViewModel.ExportMeasurementCommand).OnCanExecuteChanged();
             ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
             ((ShowMeasurementGraphCommand)_measurementPageViewModel.ShowMeasurementGraphCommand).OnCanExecuteChanged();
+            VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
+        }
+        
+        private void StartUpdateTimer()
+        {
+            if (_periodicUpdateTimer == null && this._measurementPageViewModel.MeasurementViewModel.MeasurementState == MeasurementState.Started)
+            {
+                TimeSpan period = TimeSpan.FromSeconds(1);
+
+                _periodicUpdateTimer = ThreadPoolTimer.CreatePeriodicTimer((source) =>
+                {
+                    TimeSpan currentTimeSpan = new TimeSpan(0L);
+
+                    DateTime startTime = _measurementPageViewModel.MeasurementViewModel.StartTime;
+                    DateTime endTime = _measurementPageViewModel.MeasurementViewModel.EndTime;
+
+                    if (startTime.CompareTo(DateTime.MinValue) != 0 &&
+                        endTime.CompareTo(DateTime.MinValue) != 0)
+                    {
+                        currentTimeSpan = endTime.Subtract(startTime);
+                    }
+                    else if (startTime.CompareTo(DateTime.MinValue) != 0 &&
+                        endTime.CompareTo(DateTime.MinValue) == 0)
+                    {
+                        currentTimeSpan = DateTime.Now.Subtract(startTime);
+                    }
+
+                    Dispatcher.RunAsync(CoreDispatcherPriority.High,
+                    () =>
+                    {
+                        this._measurementPageViewModel.MeasurementViewModel.Duration = currentTimeSpan;
+                    });
+
+                }, period);
+            }
+        }
+
+        private void StopUpdateTimer()
+        {
+            if (_periodicUpdateTimer != null)
+            {
+                _periodicUpdateTimer.Cancel();
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace BackgroundTask.Service
             await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.AccelerometerFilename);
         }
 
-        public static async void AppendActivAccelerometerReadingsToFileAsync(AccelerometerData accelerometerData)
+        public static async Task AppendActivAccelerometerReadingsToFileAsync(AccelerometerData accelerometerData)
         {
             Debug.WriteLine("############## Save Activ Readings ##################");
             StorageFolder accelerometerFolder = await FindMeasurementStorageFolder(MeasurementType.Accelerometer);

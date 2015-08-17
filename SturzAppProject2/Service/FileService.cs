@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -87,8 +88,8 @@ namespace BackgroundTask.Service
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
                 StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
 
-                Task<List<Tuple<long, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.AccelerometerFilename);
-                Task<List<Tuple<long, double, double, double>>> loadGyrometerTask = LoadGyrometerReadingsFromFile(gyrometerFolder, measurement.GyrometerFilename);
+                Task<List<Tuple<TimeSpan, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.AccelerometerFilename);
+                Task<List<Tuple<TimeSpan, double, double, double>>> loadGyrometerTask = LoadGyrometerReadingsFromFile(gyrometerFolder, measurement.GyrometerFilename);
 
                 oxyplotData.AccelerometerReadings = await loadAccelerometerTask;
                 oxyplotData.GyrometerReadings = await loadGyrometerTask;
@@ -129,9 +130,9 @@ namespace BackgroundTask.Service
         //################################################## load accerlerometerReadings ###################################################
         //##################################################################################################################################
 
-        private static async Task<List<Tuple<long, double, double, double>>> LoadAccelerometerReadingsFromFile(StorageFolder targetFolder, string filename)
+        private static async Task<List<Tuple<TimeSpan, double, double, double>>> LoadAccelerometerReadingsFromFile(StorageFolder targetFolder, string filename)
         {
-            List<Tuple<long, double, double, double>> accelerometerReadingTuples = new List<Tuple<long, double, double, double>>();
+            List<Tuple<TimeSpan, double, double, double>> accelerometerReadingTuples = new List<Tuple<TimeSpan, double, double, double>>();
             try
             {
                 StorageFile file = await targetFolder.GetFileAsync(filename);
@@ -145,14 +146,17 @@ namespace BackgroundTask.Service
                         long timeStampTicks;
                         double accerlerometerX;
                         double accerlerometerY; 
-                        double accerlerometerZ; 
+                        double accerlerometerZ;
 
-                        if (Double.TryParse(stringArray[0], out accerlerometerX) &&
-                            Double.TryParse(stringArray[1], out accerlerometerY) &&
-                            Double.TryParse(stringArray[2], out accerlerometerZ) &&
+                        NumberStyles styles = NumberStyles.Any;
+                        IFormatProvider provider = new CultureInfo("en-US");
+
+                        if (Double.TryParse(stringArray[0], styles, provider, out accerlerometerX) &&
+                            Double.TryParse(stringArray[1], styles, provider, out accerlerometerY) &&
+                            Double.TryParse(stringArray[2], styles, provider, out accerlerometerZ) &&
                             long.TryParse(stringArray[3], out timeStampTicks))
                         {
-                            accelerometerReadingTuples.Add(new Tuple<long, double, double, double>(timeStampTicks, accerlerometerX, accerlerometerY, accerlerometerZ));
+                            accelerometerReadingTuples.Add(new Tuple<TimeSpan, double, double, double>(TimeSpan.FromTicks(timeStampTicks), accerlerometerX, accerlerometerY, accerlerometerZ));
                         }
                     }
                 }
@@ -168,9 +172,9 @@ namespace BackgroundTask.Service
             return accelerometerReadingTuples;
         }
 
-        private static async Task<List<Tuple<long, double, double, double>>> LoadGyrometerReadingsFromFile(StorageFolder targetFolder, string filename)
+        private static async Task<List<Tuple<TimeSpan, double, double, double>>> LoadGyrometerReadingsFromFile(StorageFolder targetFolder, string filename)
         {
-            List<Tuple<long, double, double, double>> gyrometerReadingTuples = new List<Tuple<long, double, double, double>>();
+            List<Tuple<TimeSpan, double, double, double>> gyrometerReadingTuples = new List<Tuple<TimeSpan, double, double, double>>();
             try
             {
                 StorageFile file = await targetFolder.GetFileAsync(filename);
@@ -186,12 +190,15 @@ namespace BackgroundTask.Service
                         double gyrometerY;
                         double gyrometerZ;
 
-                        if (Double.TryParse(stringArray[0], out gyrometerX) &&
-                            Double.TryParse(stringArray[1], out gyrometerY) &&
-                            Double.TryParse(stringArray[2], out gyrometerZ) &&
+                        NumberStyles styles = NumberStyles.Any;
+                        IFormatProvider provider = new CultureInfo("en-US");
+
+                        if (Double.TryParse(stringArray[0], styles, provider, out gyrometerX) &&
+                            Double.TryParse(stringArray[1], styles, provider, out gyrometerY) &&
+                            Double.TryParse(stringArray[2], styles, provider, out gyrometerZ) &&
                             long.TryParse(stringArray[3], out timeStampTicks))
                         {
-                            gyrometerReadingTuples.Add(new Tuple<long, double, double, double>(timeStampTicks, gyrometerX, gyrometerY, gyrometerZ));
+                            gyrometerReadingTuples.Add(new Tuple<TimeSpan, double, double, double>(TimeSpan.FromTicks(timeStampTicks), gyrometerX, gyrometerY, gyrometerZ));
                         }
                     }
                 }

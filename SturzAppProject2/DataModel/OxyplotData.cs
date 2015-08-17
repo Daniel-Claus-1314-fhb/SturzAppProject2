@@ -1,4 +1,5 @@
 ﻿using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,8 @@ namespace BackgroundTask.DataModel
 
         public OxyplotData()
         {
-            AccelerometerReadings = new List<Tuple<long, double, double, double>>();
-            GyrometerReadings = new List<Tuple<long, double, double, double>>();
+            AccelerometerReadings = new List<Tuple<TimeSpan, double, double, double>>();
+            GyrometerReadings = new List<Tuple<TimeSpan, double, double, double>>();
         }
 
         #endregion
@@ -32,8 +33,8 @@ namespace BackgroundTask.DataModel
 
         #region Properties
 
-        public List<Tuple<long, double, double, double>> AccelerometerReadings { get; set; }
-        public List<Tuple<long, double, double, double>> GyrometerReadings { get; set; }
+        public List<Tuple<TimeSpan, double, double, double>> AccelerometerReadings { get; set; }
+        public List<Tuple<TimeSpan, double, double, double>> GyrometerReadings { get; set; }
 
         public bool HasAccelerometerReadings
         {
@@ -49,14 +50,15 @@ namespace BackgroundTask.DataModel
             get
             {
                 LineSeries acclerometerXLineSeries = new LineSeries();
+                acclerometerXLineSeries.Title = "AccX";
+
                 if (this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0)
                 {
-                    long startTimeStamp = this.AccelerometerReadings.ElementAt(0).Item1;
-                    foreach (Tuple<long, double, double, double> accelerometerReading in this.AccelerometerReadings)
+                    TimeSpan startTimeStamp = this.AccelerometerReadings.ElementAt(0).Item1;
+                    foreach (Tuple<TimeSpan, double, double, double> accelerometerReading in this.AccelerometerReadings)
                     {
-                        acclerometerXLineSeries.Points.Add(new DataPoint(accelerometerReading.Item1 - startTimeStamp, accelerometerReading.Item2));
+                        acclerometerXLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerReading.Item1 - startTimeStamp), accelerometerReading.Item2));
                     }
-
                 }
                 return acclerometerXLineSeries;
             }
@@ -67,13 +69,14 @@ namespace BackgroundTask.DataModel
             get
             {
                 LineSeries acclerometerYLineSeries = new LineSeries();
+                acclerometerYLineSeries.Title = "AccY";
 
                 if (this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0)
                 {
-                    long startTimeStamp = this.AccelerometerReadings.ElementAt(0).Item1;
-                    foreach (Tuple<long, double, double, double> accelerometerReading in this.AccelerometerReadings)
+                    TimeSpan startTimeStamp = this.AccelerometerReadings.ElementAt(0).Item1;
+                    foreach (Tuple<TimeSpan, double, double, double> accelerometerReading in this.AccelerometerReadings)
                     {
-                        acclerometerYLineSeries.Points.Add(new DataPoint(accelerometerReading.Item1 - startTimeStamp, accelerometerReading.Item3));
+                        acclerometerYLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerReading.Item1 - startTimeStamp), accelerometerReading.Item3));
                     }
                 }
                 return acclerometerYLineSeries;
@@ -85,13 +88,14 @@ namespace BackgroundTask.DataModel
             get
             {
                 LineSeries acclerometerZLineSeries = new LineSeries();
+                acclerometerZLineSeries.Title = "AccZ";
 
                 if (this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0)
                 {
-                    long startTimeStamp = this.AccelerometerReadings.ElementAt(0).Item1;
-                    foreach (Tuple<long, double, double, double> accelerometerReading in this.AccelerometerReadings)
+                    TimeSpan startTimeStamp = this.AccelerometerReadings.ElementAt(0).Item1;
+                    foreach (Tuple<TimeSpan, double, double, double> accelerometerReading in this.AccelerometerReadings)
                     {
-                        acclerometerZLineSeries.Points.Add(new DataPoint(accelerometerReading.Item1 - startTimeStamp, accelerometerReading.Item4));
+                        acclerometerZLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerReading.Item1 - startTimeStamp), accelerometerReading.Item4));
                     }
                 }
                 return acclerometerZLineSeries;

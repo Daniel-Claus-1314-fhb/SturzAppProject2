@@ -24,7 +24,7 @@
 
                         <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Source="Assets/Icons/plus-round.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=CreateDateTime, Converter={StaticResource TimeConverter}, ConverterParameter=create}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=CreateDateTime, Converter={StaticResource TimeConverter}, ConverterParameter=CreateFull}"/>
                     </Grid>
                 </Border>
             </DataTemplate>
@@ -47,8 +47,8 @@
 
                         <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Source="Assets/Icons/play.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=start}"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=duration}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=StartFull}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=DurationFull}"/>
                     </Grid>
                 </Border>               
             </DataTemplate>
@@ -71,8 +71,8 @@
 
                         <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Source="Assets/Icons/stop.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=start}"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=duration}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=StartFull}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=DurationFull}"/>
                     </Grid>
                 </Border>
             </DataTemplate>

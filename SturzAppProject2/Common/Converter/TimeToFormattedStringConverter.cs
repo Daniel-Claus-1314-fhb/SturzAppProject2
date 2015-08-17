@@ -26,12 +26,20 @@ namespace BackgroundTask.Common.Converter
 
                         switch (parameterString)
                         {
-                            case "create":
+                            case "CreateFull":
                                 return String.Format("Erstelltdatum: {0:G}", convertDateTime);
-                            case "start":
+                            case "CreateSimple":
+                                return String.Format("{0:G}", convertDateTime);
+
+                            case "StartFull":
                                 return String.Format("Startdatum: {0:G}", convertDateTime);
-                            case "stop":
+                            case "StartSimple":
+                                return String.Format("{0:G}", convertDateTime);
+
+                            case "StopFull":
                                 return String.Format("Stopdatum: {0:G}", convertDateTime);
+                            case "StopSimple":
+                                return String.Format("{0:G}", convertDateTime);
                             default:
                                 return String.Format("{0:G}", convertDateTime);
                         }
@@ -55,8 +63,10 @@ namespace BackgroundTask.Common.Converter
 
                         switch (parameterString)
                         {
-                            case "duration":
+                            case "DurationFull":
                                 return String.Format("Dauer: {0:hh\\:mm\\:ss}", convertTimeSpan);
+                            case "DurationSimple":
+                                return String.Format("{0:hh\\:mm\\:ss}", convertTimeSpan);
                             default:
                                 return String.Format("{0:hh\\:mm\\:ss}", convertTimeSpan);
                         }

@@ -89,7 +89,7 @@ namespace BackgroundTask
         //###########################################################################
 
 
-        private void OnCanceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        private async void OnCanceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
             Debug.WriteLine(
                 "####################################################\n" +
@@ -106,7 +106,7 @@ namespace BackgroundTask
 
             // save the current measurement.
             _accelerometerData.ReadingsListsHasSwitched -= _accelerometerData_ReadingsListsHasSwitched;
-            TaskFileService.AppendActivAccelerometerReadingsToFileAsync(_accelerometerData);
+            await TaskFileService.AppendActivAccelerometerReadingsToFileAsync(_accelerometerData);
 
             _deferral.Complete();
         }

@@ -9,7 +9,7 @@
     xmlns:oxy="using:OxyPlot.Windows"
     DataContext="{Binding Path=PlotModel, RelativeSource={RelativeSource Mode=Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    
     <Grid x:Name="LayoutRoot">
 
         <Grid.ChildrenTransitions>
@@ -18,8 +18,8 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <oxy:PlotView Model="{Binding}"/>
+        <Grid Grid.Row="1" x:Name="ContentRoot">
+            <oxy:PlotView x:Name="oxyplotView" Model="{Binding}"/>
         </Grid>
     </Grid>
 </Page>

@@ -14,35 +14,45 @@
         <converter:NumberToFormattedStringConverter x:Key="NumberConverter"/>
     </UserControl.Resources>
     
-    <Grid Background="Black">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
-            <TextBlock Text="Name der Messung" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,12,0,6"/>
-            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource BodyTextBlockStyle}" MaxLines="2" TextTrimming="CharacterEllipsis"/>
-        </StackPanel>
+        <TextBlock Grid.Row="0" Text="Einstellungen" Style="{StaticResource SubheaderTextBlockStyle}"/>
+        <Border Grid.Row="1" BorderThickness="2" BorderBrush="LightGray" Padding="8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1" Grid.Column="0">
-            <TextBlock Text="Abtastrate" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,12,0,6"/>
-            <TextBlock Text="{Binding Path=MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="1">
-            <TextBlock Text="Verarbeitungsmenge" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,12,0,6"/>
-            <TextBlock Text="{Binding Path=MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCountSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
-        </StackPanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding MeasurementSetting.UseAccelerometer}" IsEnabled="False" Content="Accelerometer"/>
-        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding MeasurementSetting.UseGyrometer}" IsEnabled="False" Content="Gyrometer"/>
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
+                    <TextBlock Text="Name der Messung" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding Path=Name}" Style="{StaticResource BodyTextBlockStyle}" MaxLines="2" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0">
+                    <TextBlock Text="Abtastrate" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="Verarbeitungsmenge" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCountSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+
+                <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding MeasurementSetting.UseAccelerometer}" IsEnabled="False" Content="Accelerometer"/>
+                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding MeasurementSetting.UseGyrometer}" IsEnabled="False" Content="Gyrometer"/>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
