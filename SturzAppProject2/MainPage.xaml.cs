@@ -37,7 +37,6 @@ namespace BackgroundTask
 
         public MappingService mapping = new MappingService();
         private BackgroundTaskService _backgroundTaskService = new BackgroundTaskService();
-        private FileService _fileService = new FileService();
 
         public MainPage()
         {
@@ -89,7 +88,7 @@ namespace BackgroundTask
             if (_mainMeasurementListModel == null)
             {
                 _mainMeasurementListModel = new MeasurementList();
-                _mainMeasurementListModel.Measurements = await _fileService.LoadMeasurementListAsync();
+                _mainMeasurementListModel.Measurements = await FileService.LoadMeasurementListAsync();
                 
                 _mainMeasurementListModel.MeasurementListUpdated += SaveMeasurementList;
             }
@@ -109,7 +108,7 @@ namespace BackgroundTask
         private void SaveMeasurementList(object sender, EventArgs e)
         {
             Debug.WriteLine("'{0}' Measurement has been saved.", _mainMeasurementListModel.Measurements.Count);
-            _fileService.SaveMeasurementsAsync(_mainMeasurementListModel.Measurements);
+            FileService.SaveMeasurementListAsync(_mainMeasurementListModel.Measurements);
         }
 
         void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
@@ -153,6 +152,21 @@ namespace BackgroundTask
                 }
             }
             return isStopped;
+        }
+
+        public async Task<OxyplotData> FindMeasurementGraphData(string measurementId)
+        {
+            OxyplotData oxyplotData = new OxyplotData();
+
+            if (measurementId != null && measurementId.Length > 0)
+            {
+                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                if (measurement != null)
+                {
+                    oxyplotData = await FileService.LoadOxyplotDataAsync(measurement);
+                }
+            }
+            return oxyplotData;
         }
 
     }

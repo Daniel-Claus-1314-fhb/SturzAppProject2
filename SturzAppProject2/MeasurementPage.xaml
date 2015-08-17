@@ -15,9 +15,12 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="StartMeasurementAppBarButton" Icon="Play" Label="Starten" Command="{Binding StartMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
                 <AppBarButton x:Name="StopMeasurementAppBarButton" Icon="Stop" Label="Stoppen" Command="{Binding StopMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
-                <AppBarButton x:Name="ExportMeasurementAppBarButton" Icon="Upload" Label="Exportieren" Command="{Binding ExportMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
-                <AppBarButton x:Name="DeleteMeasurementAppBarButton" Icon="Delete" Label="Löschen" Command="{Binding DeleteMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="ShowMeasurementGraphAppBarButton" Icon="CalendarWeek" Label="Graph" Command="{Binding ShowMeasurementGraphCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="DeleteMeasurementAppBarButton" Icon="Delete" Label="Löschen" Command="{Binding DeleteMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>           
             </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ExportMeasurementAppBarButton" Icon="Upload" Label="Exportieren" Command="{Binding ExportMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
     

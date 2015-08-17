@@ -136,7 +136,7 @@ namespace BackgroundTask
         {
             if (_accelerometerData != null)
             {
-                _accelerometerData.AddToActivReadingsList(args.Reading);
+                _accelerometerData.AddAccelerometerReading(args.Reading);
             }
         }
     }

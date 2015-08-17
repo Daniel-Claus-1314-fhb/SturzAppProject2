@@ -7,29 +7,48 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
 namespace BackgroundTask.Service
 {
-    public class FileService
+    internal static class FileService
     {
-        private readonly string _fileName = "Measurements.json";
+        private static readonly string _measurementsMetaDataFilename = "Measurements.json";
 
-        internal async void SaveMeasurementsAsync(List<Measurement> measurements)
+        private static readonly string _measurementsMetaDataPath = @"";
+        private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
+        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
+        private static readonly string _evaluationAccelerometerPath = @"Evaluation\Accelerometer";
+        private static readonly string _evaluationGyrometerPath = @"Evaluation\Gyrometer";
+
+        #region Save/Load MeasurementList
+
+        //##################################################################################################################################
+        //################################################## Save Measurements #############################################################
+        //##################################################################################################################################
+
+        internal static async void SaveMeasurementListAsync(List<Measurement> measurements)
         {
             if (measurements != null)
             {
                 string jsonString = JsonConvert.SerializeObject(measurements);
-                await SaveJsonStringToFile(_fileName, jsonString);
+                StorageFolder targetFolder = await FindStorageFolder(_measurementsMetaDataPath);
+                await SaveJsonStringToFile(jsonString, targetFolder, _measurementsMetaDataFilename);
             }
         }
 
-        internal async Task<List<Measurement>> LoadMeasurementListAsync()
+        //##################################################################################################################################
+        //################################################## Load Measurements #############################################################
+        //##################################################################################################################################
+
+        internal static async Task<List<Measurement>> LoadMeasurementListAsync()
         {
             bool isFileCorrupted = false;
             List<Measurement> measurements = new List<Measurement>();
-            string jsonString = await LoadJsonStringFromFile(_fileName);
+            StorageFolder measurementFolder = await FindStorageFolder(_measurementsMetaDataPath);
+            string jsonString = await LoadJsonStringFromFile(measurementFolder, _measurementsMetaDataFilename);
 
             if (jsonString != null && jsonString.Length > 0)
             {
@@ -46,24 +65,163 @@ namespace BackgroundTask.Service
 
                 if (isFileCorrupted)
                 {
-                    await deleteFile(_fileName);
+                    await DeleteFileAsync(measurementFolder, _measurementsMetaDataFilename);
                 }
             }
             return measurements;
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////// SaveToFile /////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #endregion
 
-        private async Task SaveJsonStringToFile(string filename, string jsonString)
+        #region Load OxyplotData
+        
+        //##################################################################################################################################
+        //################################################## Load Oxyplot data #############################################################
+        //##################################################################################################################################
+
+        internal static async Task<OxyplotData> LoadOxyplotDataAsync(Measurement measurement)
+        {
+            OxyplotData oxyplotData = new OxyplotData();
+            if (measurement != null)
+            {
+                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+
+                Task<List<Tuple<long, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.AccelerometerFilename);
+                Task<List<Tuple<long, double, double, double>>> loadGyrometerTask = LoadGyrometerReadingsFromFile(gyrometerFolder, measurement.GyrometerFilename);
+
+                oxyplotData.AccelerometerReadings = await loadAccelerometerTask;
+                oxyplotData.GyrometerReadings = await loadGyrometerTask;
+            }
+            return oxyplotData;
+        }
+
+        #endregion
+
+        //##################################################################################################################################
+        //################################################## find folder ###################################################################
+        //##################################################################################################################################
+
+        private static async Task<StorageFolder> FindStorageFolder(string folderPath)
+        {
+            StorageFolder resultFolder = ApplicationData.Current.LocalFolder;
+            if (folderPath != null && folderPath.Length > 0)
+            {
+                try
+                {
+                    resultFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(folderPath, CreationCollisionOption.OpenIfExists);
+                }
+                catch (FileNotFoundException)
+                {
+                    Debug.WriteLine("[BackgroundTask.Service.FileService.FindMeasurementStorageFolder] Ordner: '{0}' konnte nicht gefunden werden.", folderPath);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Debug.WriteLine("[BackgroundTask.Service.FileService.FindMeasurementStorageFolder] Ordner: '{0}' konnte nicht zugegriffen werden.", folderPath);
+                }
+            }
+            return resultFolder;
+        }
+
+        #region Load accelerometerReadings
+
+        //##################################################################################################################################
+        //################################################## load accerlerometerReadings ###################################################
+        //##################################################################################################################################
+
+        private static async Task<List<Tuple<long, double, double, double>>> LoadAccelerometerReadingsFromFile(StorageFolder targetFolder, string filename)
+        {
+            List<Tuple<long, double, double, double>> accelerometerReadingTuples = new List<Tuple<long, double, double, double>>();
+            try
+            {
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                {
+                    while (!stream.EndOfStream)
+                    {
+                        string currentReadLineOfFile = await stream.ReadLineAsync();
+                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
+
+                        long timeStampTicks;
+                        double accerlerometerX;
+                        double accerlerometerY; 
+                        double accerlerometerZ; 
+
+                        if (Double.TryParse(stringArray[0], out accerlerometerX) &&
+                            Double.TryParse(stringArray[1], out accerlerometerY) &&
+                            Double.TryParse(stringArray[2], out accerlerometerZ) &&
+                            long.TryParse(stringArray[3], out timeStampTicks))
+                        {
+                            accelerometerReadingTuples.Add(new Tuple<long, double, double, double>(timeStampTicks, accerlerometerX, accerlerometerY, accerlerometerZ));
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return accelerometerReadingTuples;
+        }
+
+        private static async Task<List<Tuple<long, double, double, double>>> LoadGyrometerReadingsFromFile(StorageFolder targetFolder, string filename)
+        {
+            List<Tuple<long, double, double, double>> gyrometerReadingTuples = new List<Tuple<long, double, double, double>>();
+            try
+            {
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                {
+                    while (!stream.EndOfStream)
+                    {
+                        string currentReadLineOfFile = await stream.ReadLineAsync();
+                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
+
+                        long timeStampTicks;
+                        double gyrometerX;
+                        double gyrometerY;
+                        double gyrometerZ;
+
+                        if (Double.TryParse(stringArray[0], out gyrometerX) &&
+                            Double.TryParse(stringArray[1], out gyrometerY) &&
+                            Double.TryParse(stringArray[2], out gyrometerZ) &&
+                            long.TryParse(stringArray[3], out timeStampTicks))
+                        {
+                            gyrometerReadingTuples.Add(new Tuple<long, double, double, double>(timeStampTicks, gyrometerX, gyrometerY, gyrometerZ));
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return gyrometerReadingTuples;
+        }
+        
+        #endregion
+
+        #region Save/Load JSONString
+
+        //##################################################################################################################################
+        //################################################## Save into File ################################################################
+        //##################################################################################################################################
+
+        private static async Task SaveJsonStringToFile(string jsonString, StorageFolder targetFolder, string filename)
         {
             try
             {
-                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                if (localFolder != null)
+                if (targetFolder != null)
                 {
-                    StorageFile file = await localFolder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
+                    StorageFile file = await targetFolder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
                     using (IRandomAccessStream textStream = await file.OpenAsync(FileAccessMode.ReadWrite))
                     {
                         using (DataWriter textWriter = new DataWriter(textStream))
@@ -76,63 +234,86 @@ namespace BackgroundTask.Service
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: {0} konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return;
         }
 
+        //##################################################################################################################################
+        //################################################## Load from File ################################################################
+        //##################################################################################################################################
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////// LoadFromFile ///////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        private async Task<string> LoadJsonStringFromFile(string filename)
+        private static async Task<string> LoadJsonStringFromFile(StorageFolder targetFolder, string filename)
         {
             string jsonString = null;
-
-            try
+            if (targetFolder != null)
             {
-                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                if (localFolder != null)
+                try
                 {
-                    IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
+                    IReadOnlyList<StorageFile> files = await targetFolder.GetFilesAsync();
                     if (files != null)
                     {
-                        IEnumerator<StorageFile> filesIterator = files.GetEnumerator();
-                        while (filesIterator.MoveNext())
+                        using (IEnumerator<StorageFile> filesIterator = files.GetEnumerator())
                         {
-                            StorageFile file = filesIterator.Current;
-                            if (file.Name.Equals(filename))
+                            while (filesIterator.MoveNext())
                             {
-                                jsonString = await FileIO.ReadTextAsync(file);
+                                StorageFile file = filesIterator.Current;
+                                if (file.Name.Equals(filename))
+                                {
+                                    jsonString = await FileIO.ReadTextAsync(file);
+                                }
                             }
                         }
                     }
                 }
-            }
-            catch (FileNotFoundException)
-            {
-                Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: {0} konnte nicht gefunden werden.", filename);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
+                catch (FileNotFoundException)
+                {
+                    Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                }
             }
             return jsonString;
         }
 
-        private async Task deleteFile(string filename)
+        #endregion
+
+        //##################################################################################################################################
+        //################################################## delete File ###################################################################
+        //##################################################################################################################################
+
+
+        public static async void DeleteAccelerometerMeasurementAsync(string filename)
         {
-            try 
+            if (filename != null && filename.Length > 0)
             {
-                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                if (localFolder != null)
+                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+                await DeleteFileAsync(accelerometerFolder, filename);
+            }
+        }
+
+        public static async void DeleteGyrometerMeasurementAsync(string filename)
+        {
+            if (filename != null && filename.Length > 0)
+            {
+                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+                await DeleteFileAsync(gyrometerFolder, filename);
+            }
+        }
+        
+        private static async Task DeleteFileAsync(StorageFolder targetFolder, string filename)
+        {
+            try
+            {
+                if (targetFolder != null)
                 {
-                    StorageFile file = await localFolder.GetFileAsync(filename);
+                    StorageFile file = await targetFolder.GetFileAsync(filename);
                     if (file != null)
                     {
                         await file.DeleteAsync();
@@ -141,11 +322,11 @@ namespace BackgroundTask.Service
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: {0} konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[MensaApp.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[MensaApp.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return;
         }

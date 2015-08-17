@@ -17,15 +17,16 @@ namespace BackgroundTask.ViewModel
         //###################################################################################
 
         #region Construtors
-        
+
         public MeasurementPageViewModel(Func<MeasurementViewModel, bool> startMeasurementMethod, Func<MeasurementViewModel, bool> stopMeasurementMethod,
-            Func<MeasurementViewModel, bool> exportMeasurementMethod, Func<MeasurementViewModel, bool> deleteMeasurementMethod)
+            Func<MeasurementViewModel, bool> exportMeasurementMethod, Func<MeasurementViewModel, bool> deleteMeasurementMethod, Func<MeasurementViewModel, Task<bool>> showMeasurementGraphMethod)
         {
             this.MeasurementViewModel = new MeasurementViewModel();
             this.StartMeasurementCommand = new StartMeasurementCommand(startMeasurementMethod);
             this.StopMeasurementCommand = new StopMeasurementCommand(stopMeasurementMethod);
             this.ExportMeasurementCommand = new ExportMeasurementCommand(exportMeasurementMethod);
             this.DeleteMeasurementCommand = new DeleteMeasurementCommand(deleteMeasurementMethod);
+            this.ShowMeasurementGraphCommand = new ShowMeasurementGraphCommand(showMeasurementGraphMethod);
         }
 
         #endregion
@@ -42,11 +43,13 @@ namespace BackgroundTask.ViewModel
             get { return _measurementViewModel; }
             set { this.SetProperty(ref this._measurementViewModel, value); }
         }
-
+        
         public ICommand StartMeasurementCommand { get; set; }
         public ICommand StopMeasurementCommand { get; set; }
         public ICommand ExportMeasurementCommand { get; set; }
         public ICommand DeleteMeasurementCommand { get; set; }
+
+        public ICommand ShowMeasurementGraphCommand { get; set; }
 
         #endregion
 
@@ -55,7 +58,7 @@ namespace BackgroundTask.ViewModel
         //###################################################################################
 
         #region Methods
-        
+
         // property changed logic by jump start
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
@@ -88,7 +91,7 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class StartMeasurementCommand : ICommand
     {
-        public StartMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer) 
+        public StartMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
         {
             this.FuncPointer = funcPointer;
         }
@@ -99,7 +102,7 @@ namespace BackgroundTask.ViewModel
         {
             bool canExecute = false;
 
-            if (this.FuncPointer != null && 
+            if (this.FuncPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
@@ -143,7 +146,7 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class StopMeasurementCommand : ICommand
     {
-        public StopMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer) 
+        public StopMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
         {
             this.FuncPointer = funcPointer;
         }
@@ -198,7 +201,7 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class ExportMeasurementCommand : ICommand
     {
-        public ExportMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer) 
+        public ExportMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
         {
             this.FuncPointer = funcPointer;
         }
@@ -216,8 +219,7 @@ namespace BackgroundTask.ViewModel
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
 
                 if (measurementViewModel != null &&
-                    measurementViewModel.MeasurementState == MeasurementState.Stopped && 
-                    measurementViewModel.MeasurementState != MeasurementState.Deleted)
+                    measurementViewModel.MeasurementState == MeasurementState.Stopped)
                 {
                     canExecute = true;
                 }
@@ -253,7 +255,7 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class DeleteMeasurementCommand : ICommand
     {
-        public DeleteMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer) 
+        public DeleteMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
         {
             this.FuncPointer = funcPointer;
         }
@@ -274,6 +276,59 @@ namespace BackgroundTask.ViewModel
                     (measurementViewModel.MeasurementState == MeasurementState.Initialized ||
                     measurementViewModel.MeasurementState == MeasurementState.Stopped) &&
                     measurementViewModel.MeasurementState != MeasurementState.Deleted)
+                {
+                    canExecute = true;
+                }
+            }
+            return canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+        public void OnCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
+        }
+
+        public void Execute(object parameter)
+        {
+            if (this.FuncPointer != null &&
+                parameter != null &&
+                parameter.GetType() == typeof(MeasurementViewModel))
+            {
+                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
+                if (measurementViewModel != null)
+                {
+                    FuncPointer(measurementViewModel);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Decides whether the measurement has data which can be shown in a oxyplot grath or not.
+    /// </summary>
+    public class ShowMeasurementGraphCommand : ICommand
+    {
+        public ShowMeasurementGraphCommand(Func<MeasurementViewModel, Task<bool>> funcPointer)
+        {
+            this.FuncPointer = funcPointer;
+        }
+
+        public Func<MeasurementViewModel, Task<bool>> FuncPointer { get; set; }
+
+        public bool CanExecute(object parameter)
+        {
+            bool canExecute = false;
+
+            if (this.FuncPointer != null &&
+                parameter != null &&
+                parameter.GetType() == typeof(MeasurementViewModel))
+            {
+                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
+
+                if (measurementViewModel != null &&
+                    measurementViewModel.MeasurementState == MeasurementState.Stopped)
                 {
                     canExecute = true;
                 }

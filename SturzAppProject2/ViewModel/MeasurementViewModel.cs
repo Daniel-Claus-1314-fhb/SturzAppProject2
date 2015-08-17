@@ -110,6 +110,13 @@ namespace BackgroundTask.ViewModel
             }
         }
 
+        private OxyplotData _oxyplotData;
+        public OxyplotData OxyplotData
+        {
+            get { return _oxyplotData; }
+            set { this.SetProperty(ref this._oxyplotData, value); }
+        }
+
         #endregion
 
         //###################################################################################

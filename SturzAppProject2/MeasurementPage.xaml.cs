@@ -1,5 +1,6 @@
 ﻿using BackgroundTask.Common;
 using BackgroundTask.DataModel;
+using BackgroundTask.Service;
 using BackgroundTask.ViewModel;
 using Newtonsoft.Json;
 using System;
@@ -42,7 +43,7 @@ namespace BackgroundTask
 
         public MeasurementPage()
         {
-            _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, DeleteMeasurement);
+            _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, DeleteMeasurement, ShowMeasurementGraph);
             
             this.InitializeComponent();
 
@@ -151,7 +152,7 @@ namespace BackgroundTask
             // first update for settings
             _mainPage.MainMeasurementListModel.Update(measurementViewModel);
 
-            //TODO Insert start functionality
+            //start functionality
             isStarted = _mainPage.StartBackgroundTask(measurementViewModel.Id);
 
             if (isStarted)
@@ -173,7 +174,8 @@ namespace BackgroundTask
         private bool StopMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isStopped = false;
-            //TODO Insert stop functionality
+            
+            // stop functionality
             isStopped = _mainPage.StopBackgroundTask(measurementViewModel.Id);
 
             if (isStopped)
@@ -230,12 +232,33 @@ namespace BackgroundTask
             return isDeleted;
         }
 
+        private async Task<bool> ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
+        {
+            bool isGraphDataAvailable = false;
+
+            measurementViewModel.OxyplotData = await _mainPage.FindMeasurementGraphData(measurementViewModel.Id);
+
+            if (measurementViewModel.OxyplotData.HasAccelerometerReadings || measurementViewModel.OxyplotData.HasGyrometerReadings)
+            {
+                isGraphDataAvailable = true;
+                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
+                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
+                contentFrame.Navigate(typeof(GraphPage), measurementViewModel.OxyplotData);
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurementViewModel.Name), NotifyLevel.Error);
+            }
+            return isGraphDataAvailable;
+        }
+
         private void RaiseCanExecuteChanged()
         {
             ((StartMeasurementCommand)_measurementPageViewModel.StartMeasurementCommand).OnCanExecuteChanged();
             ((StopMeasurementCommand)_measurementPageViewModel.StopMeasurementCommand).OnCanExecuteChanged();
             ((ExportMeasurementCommand)_measurementPageViewModel.ExportMeasurementCommand).OnCanExecuteChanged();
             ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
+            ((ShowMeasurementGraphCommand)_measurementPageViewModel.ShowMeasurementGraphCommand).OnCanExecuteChanged();
         }
     }
 }

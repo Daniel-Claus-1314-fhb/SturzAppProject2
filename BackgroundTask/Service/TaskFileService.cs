@@ -22,8 +22,9 @@ namespace BackgroundTask.Service
         private static readonly string accelerometerFoldername = "Accelerometer";
         private static readonly string gyrometerFoldername = "Gyrometer";
 
-
-
+        //##################################################################################################################################
+        //################################################## Save Accelerometer data #######################################################
+        //##################################################################################################################################
 
         public static async void AppendPassivAccelerometerReadingsToFileAsync(AccelerometerData accelerometerData)
         {
@@ -45,6 +46,10 @@ namespace BackgroundTask.Service
             await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.AccelerometerFilename);
         }
 
+        //##################################################################################################################################
+        //################################################## Convert Accelerometer data ####################################################
+        //##################################################################################################################################
+
         private static String ConvertIntoCSVString(IList<AccelerometerReading> accelerometerReadings)
         {
             StringBuilder stringbuilder = new StringBuilder();
@@ -55,8 +60,10 @@ namespace BackgroundTask.Service
             }
             return stringbuilder.ToString();
         }
-
-
+        
+        //##################################################################################################################################
+        //################################################## find folder ###################################################################
+        //##################################################################################################################################
 
         private static async Task<StorageFolder> FindMeasurementStorageFolder(MeasurementType measurementType)
         {
@@ -134,6 +141,9 @@ namespace BackgroundTask.Service
             return resultFolder;
         }
 
+        //##################################################################################################################################
+        //################################################## save sting into folder ########################################################
+        //##################################################################################################################################
 
         private static async Task SaveStringToEndOfFileAsync(String appendString, StorageFolder targetFolder, string filename)
         {

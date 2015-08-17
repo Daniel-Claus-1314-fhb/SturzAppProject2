@@ -1,4 +1,5 @@
-﻿using BackgroundTask.ViewModel;
+﻿using BackgroundTask.Service;
+using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,6 +110,8 @@ namespace BackgroundTask.DataModel
                 Measurement measurementFromList = GetById(deleteId);
                 if (measurementFromList != null)
                 {
+                    FileService.DeleteAccelerometerMeasurementAsync(measurementFromList.AccelerometerFilename);
+                    FileService.DeleteGyrometerMeasurementAsync(measurementFromList.GyrometerFilename);
                     isDeleted = this._measurements.Remove(measurementFromList);
                     OnMeasurementListUpdated(EventArgs.Empty);
                 }

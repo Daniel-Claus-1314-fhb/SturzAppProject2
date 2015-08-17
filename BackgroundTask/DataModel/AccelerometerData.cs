@@ -8,8 +8,12 @@ using Windows.Devices.Sensors;
 namespace BackgroundTask.DataModel
 {
 
-    class AccelerometerData
+    internal class AccelerometerData
     {
+        //###################################################################################################################
+        //################################################## Constructor ####################################################
+        //###################################################################################################################
+
         public AccelerometerData(string accerlerometerFilename)
         {
             this._accelerometerFilename = accerlerometerFilename;
@@ -24,6 +28,10 @@ namespace BackgroundTask.DataModel
         {
             this._processingListCount = processingListSize;
         }
+
+        //###################################################################################################################
+        //################################################## Properties #####################################################
+        //###################################################################################################################
 
         private string _accelerometerFilename;
         public string AccelerometerFilename
@@ -42,11 +50,12 @@ namespace BackgroundTask.DataModel
         private List<AccelerometerReading> _accelerometerReadingsListEven { get; set; }
         private List<AccelerometerReading> _accelerometerReadingsListOdd { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="accelerometerReading"></param>
-        public void AddToActivReadingsList(AccelerometerReading accelerometerReading)
+
+        //###################################################################################################################
+        //################################################## Methods ########################################################
+        //###################################################################################################################
+
+        public void AddAccelerometerReading(AccelerometerReading accelerometerReading)
         {
             bool isListSwitchRequired = false;
 
@@ -78,11 +87,7 @@ namespace BackgroundTask.DataModel
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public IList<AccelerometerReading> GetActivReadingsList()
+        public List<AccelerometerReading> GetActivReadingsList()
         {
             if (_listChangeCounter % 2 == 0)
                 return _accelerometerReadingsListEven;
@@ -90,13 +95,17 @@ namespace BackgroundTask.DataModel
                 return _accelerometerReadingsListOdd;
         }
 
-        public IList<AccelerometerReading> GetPassivReadingsList()
+        public List<AccelerometerReading> GetPassivReadingsList()
         {
             if (_listChangeCounter % 2 == 1)
                 return _accelerometerReadingsListEven;
             else
                 return _accelerometerReadingsListOdd;
         }
+
+        //###################################################################################################################
+        //################################################## Event handler ##################################################
+        //###################################################################################################################
 
         protected virtual void OnReadingsListsHasSwitched(EventArgs e)
         {
