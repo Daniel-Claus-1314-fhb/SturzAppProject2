@@ -1,6 +1,8 @@
 ﻿using BackgroundTask.DataModel;
+using SensorDataEvaluation.DataModel;
 using BackgroundTask.Service;
 using Newtonsoft.Json;
+using SensorDataEvaluation.Service;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,8 +23,8 @@ namespace BackgroundTask
         private BackgroundTaskDeferral _deferral;
         private TaskArguments _taskArguments;
 
-        private AccelerometerData _accelerometerData;
-            //string measurementId = String.Format("{0}_{1:yyyyMMdd}_{1:HHmmss}", _taskArguments.taskName, DateTime.Now);
+        private AccelerometerData _accelerometerDataModel;
+        private AccelerometerEvaluation _accelerometerEvaluationModel;
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -45,9 +47,12 @@ namespace BackgroundTask
                 InitAccelerometer(_taskArguments.ReportInterval);
                 taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
 
-                // CREATE NEW ACCELEROMETERDATA MODEL
-                _accelerometerData = new AccelerometerData(_taskArguments.AccelerometerFilename, _taskArguments.ProcessedSampleCount);
-                _accelerometerData.ReadingsListsHasSwitched += _accelerometerData_ReadingsListsHasSwitched;
+                // create new accelerometer data model
+                _accelerometerDataModel = new AccelerometerData(_taskArguments.AccelerometerFilename, _taskArguments.ProcessedSampleCount);
+                _accelerometerDataModel.TupleListsHasSwitched += AccelerometerData_ReadingsListsHasSwitched;
+
+                //create new accelerometer evaluation model
+                _accelerometerEvaluationModel = new AccelerometerEvaluation(_taskArguments.AccelerometerFilename, _taskArguments.ProcessedSampleCount);
 
                 Debug.WriteLine(
                     "####################################################\n" +
@@ -60,15 +65,6 @@ namespace BackgroundTask
                     "####################################################\n" +
                     "############# AccelerometerTask aborted ############\n" +
                     "####################################################");
-            }
-        }
-
-        void _accelerometerData_ReadingsListsHasSwitched(object sender, EventArgs e)
-        {
-            Debug.WriteLine("############# ReadingsList has switched ############");
-            if (sender.GetType().Equals(typeof(AccelerometerData)))
-            {
-                TaskFileService.AppendPassivAccelerometerReadingsToFileAsync((AccelerometerData) sender);
             }
         }
 
@@ -105,8 +101,9 @@ namespace BackgroundTask
             }
 
             // save the current measurement.
-            _accelerometerData.ReadingsListsHasSwitched -= _accelerometerData_ReadingsListsHasSwitched;
-            await TaskFileService.AppendActivAccelerometerReadingsToFileAsync(_accelerometerData);
+            _accelerometerDataModel.TupleListsHasSwitched -= AccelerometerData_ReadingsListsHasSwitched;
+            await TaskFileService.AppendActivAccelerometerDataToFileAsync(_accelerometerDataModel);
+            await ProcessAnalysis(_accelerometerDataModel.GetActivTupleList());
 
             _deferral.Complete();
         }
@@ -134,10 +131,35 @@ namespace BackgroundTask
 
         private void ReadingChanged(Accelerometer accelerometer, AccelerometerReadingChangedEventArgs args)
         {
-            if (_accelerometerData != null)
+            if (_accelerometerDataModel != null)
             {
-                _accelerometerData.AddAccelerometerReading(args.Reading);
+                _accelerometerDataModel.AddAccelerometerReading(args.Reading);
             }
+        }
+
+        //###########################################################################
+        //########################### Process AccelerometerData #####################
+        //###########################################################################
+
+        internal async void AccelerometerData_ReadingsListsHasSwitched(object sender, EventArgs e)
+        {
+            Debug.WriteLine("############# ReadingsList has switched ############");
+            if (sender.GetType().Equals(typeof(AccelerometerData)))
+            {
+                AccelerometerData accelerometerData = sender as AccelerometerData;
+
+                TaskFileService.AppendPassivAccelerometerDataToFileAsync(accelerometerData);
+                await ProcessAnalysis(accelerometerData.GetPassivTupleList());
+
+                _taskInstance.Progress = 0;
+            }
+        }
+
+        internal async Task ProcessAnalysis(List<Tuple<TimeSpan, double, double, double>> accelerometerTuples)
+        {
+            _accelerometerEvaluationModel.AddAccelerometerDataForAnalysis(accelerometerTuples);
+            AccelerometerEvaluationService.ProcessAnalysis(_accelerometerEvaluationModel);
+            await TaskFileService.AppendEvaluationDataToFileAsync(_accelerometerEvaluationModel);
         }
     }
 }

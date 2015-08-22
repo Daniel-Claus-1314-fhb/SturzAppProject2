@@ -114,9 +114,11 @@ namespace BackgroundTask
             OxyplotData oxyplotData = e.Parameter as OxyplotData;
             if (oxyplotData != null)
             {
-                _plotModel.Series.Add(oxyplotData.AccelerometerXLineSeries);
-                _plotModel.Series.Add(oxyplotData.AccelerometerYLineSeries);
-                _plotModel.Series.Add(oxyplotData.AccelerometerZLineSeries);
+                //_plotModel.Series.Add(oxyplotData.AccelerometerXLineSeries);
+                //_plotModel.Series.Add(oxyplotData.AccelerometerYLineSeries);
+                //_plotModel.Series.Add(oxyplotData.AccelerometerZLineSeries);
+                _plotModel.Series.Add(oxyplotData.AccelerometerVectorLengthLineSeries);
+                _plotModel.Series.Add(oxyplotData.AccelerometerStepLineSeries);
             }
 
             this.navigationHelper.OnNavigatedTo(e);

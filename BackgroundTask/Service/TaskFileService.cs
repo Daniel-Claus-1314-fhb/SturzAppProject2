@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel;
+using SensorDataEvaluation.DataModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,127 +17,121 @@ namespace BackgroundTask.Service
 {
     internal static class TaskFileService
     {
-        private static readonly string measurementFoldername = "Measurement";
-        private static readonly string evaluationFoldername = "Evaluation";
-
-        private static readonly string accelerometerFoldername = "Accelerometer";
-        private static readonly string gyrometerFoldername = "Gyrometer";
+        private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
+        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
+        private static readonly string _evaluationAccelerometerPath = @"Evaluation\Accelerometer";
+        private static readonly string _evaluationGyrometerPath = @"Evaluation\Gyrometer";
 
         //##################################################################################################################################
         //################################################## Save Accelerometer data #######################################################
         //##################################################################################################################################
 
-        public static async void AppendPassivAccelerometerReadingsToFileAsync(AccelerometerData accelerometerData)
+        /// <summary>
+        /// Saves accelerometer tuples form to passiv accelerometer tuples list to the end of file.
+        /// </summary>
+        /// <param name="accelerometerData"></param>
+        public static async void AppendPassivAccelerometerDataToFileAsync(AccelerometerData accelerometerData)
         {
-            Debug.WriteLine("############## Save Passiv Readings ##################");
-            StorageFolder accelerometerFolder = await FindMeasurementStorageFolder(MeasurementType.Accelerometer);
-
-            string csvString = ConvertIntoCSVString(accelerometerData.GetPassivReadingsList());
-
-            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.AccelerometerFilename);
+            // find folder
+            StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+            // convert data into csv
+            string csvString = ConvertAccelerometerDataIntoCSVString(accelerometerData.GetPassivTupleList());
+            // save csv string
+            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.Filename);
         }
 
-        public static async Task AppendActivAccelerometerReadingsToFileAsync(AccelerometerData accelerometerData)
+        /// <summary>
+        /// Saves accelerometer tuples form to active accelerometer tuples list to the end of file.
+        /// Note: Is used only to save accelerometer tuples when the background task has been canceled. 
+        /// Importent: Await Task to be sure all accelerometer tuples has been saved.
+        /// </summary>
+        /// <param name="accelerometerData"></param>
+        /// <returns></returns>
+        public static async Task AppendActivAccelerometerDataToFileAsync(AccelerometerData accelerometerData)
         {
-            Debug.WriteLine("############## Save Activ Readings ##################");
-            StorageFolder accelerometerFolder = await FindMeasurementStorageFolder(MeasurementType.Accelerometer);
+            // find folder
+            StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+            // convert data into csv
+            string csvString = ConvertAccelerometerDataIntoCSVString(accelerometerData.GetActivTupleList());
+            // save csv string
+            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.Filename);
+            return;
+        }
 
-            string csvString = ConvertIntoCSVString(accelerometerData.GetActivReadingsList());
+        //##################################################################################################################################
+        //################################################## Save Evaluation data ##########################################################
+        //##################################################################################################################################
 
-            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.AccelerometerFilename);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accelerometerEvaluation"></param>
+        /// <returns></returns>
+        public static async Task AppendEvaluationDataToFileAsync(AccelerometerEvaluation accelerometerEvaluation)
+        {
+            // find folder
+            StorageFolder accelerometerFolder = await FindStorageFolder(_evaluationAccelerometerPath);
+            // convert data into csv
+            string csvString = ConvertEvaluationDataIntoCSVString(accelerometerEvaluation.AccelerometerEvaluationList);
+            // save csv string
+            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerEvaluation.Filename);
         }
 
         //##################################################################################################################################
         //################################################## Convert Accelerometer data ####################################################
         //##################################################################################################################################
 
-        private static String ConvertIntoCSVString(IList<AccelerometerReading> accelerometerReadings)
+        private static String ConvertAccelerometerDataIntoCSVString(IList<Tuple<TimeSpan, double, double, double>> accelerometerTuples)
         {
             StringBuilder stringbuilder = new StringBuilder();
-            foreach (AccelerometerReading accelerometerReading in accelerometerReadings)
+            var enumerator = accelerometerTuples.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0:f4},{1:f4},{2:f4},{3}\n",
-                    accelerometerReading.AccelerationX, accelerometerReading.AccelerationY, accelerometerReading.AccelerationZ, accelerometerReading.Timestamp.UtcTicks));
+                var accelerometerTuple = enumerator.Current;
+                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3}\n",
+                    accelerometerTuple.Item1.TotalMilliseconds, accelerometerTuple.Item2, accelerometerTuple.Item3, accelerometerTuple.Item4));
             }
             return stringbuilder.ToString();
         }
-        
+
+        //##################################################################################################################################
+        //################################################## Convert Evaluation data #######################################################
+        //##################################################################################################################################
+
+        private static string ConvertEvaluationDataIntoCSVString(List<object[]> accelerometerEvaluationList)
+        {
+            StringBuilder stringbuilder = new StringBuilder();
+            var enumerator = accelerometerEvaluationList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var currentAccelerometerEvaluation = enumerator.Current;
+                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:g}\n",
+                    ((TimeSpan)currentAccelerometerEvaluation[0]).TotalMilliseconds, (double)currentAccelerometerEvaluation[1], (bool)currentAccelerometerEvaluation[2] ? 1:0));
+            }
+            return stringbuilder.ToString();
+        }
+
         //##################################################################################################################################
         //################################################## find folder ###################################################################
         //##################################################################################################################################
 
-        private static async Task<StorageFolder> FindMeasurementStorageFolder(MeasurementType measurementType)
+        private static async Task<StorageFolder> FindStorageFolder(string folderPath)
         {
-            String resultFolderName = "unknown";
             StorageFolder resultFolder = ApplicationData.Current.LocalFolder;
-            try
+            if (folderPath != null && folderPath != String.Empty)
             {
-                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                if (localFolder != null)
+                try
                 {
-                    // first level folder
-                    StorageFolder measurementFolder = await localFolder.CreateFolderAsync(measurementFoldername, CreationCollisionOption.OpenIfExists);
-
-                    if (measurementFolder != null)
-                    {
-                        if (measurementType == MeasurementType.Accelerometer)
-                        {
-                            resultFolderName = accelerometerFoldername;
-                        }
-                        else if (measurementType == MeasurementType.Gyrometer)
-                        {
-                            resultFolderName = gyrometerFoldername;
-                        }
-                        // second level folder
-                        resultFolder = await measurementFolder.CreateFolderAsync(resultFolderName, CreationCollisionOption.OpenIfExists);
-                    }
+                    resultFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(folderPath, CreationCollisionOption.OpenIfExists);
                 }
-            }
-            catch (FileNotFoundException)
-            {
-                Debug.WriteLine("[BackgroundTask.Service.FileService.FindMeasurementStorageFolder] Ordner: {0} konnte nicht gefunden werden.", resultFolderName);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Debug.WriteLine("[BackgroundTask.Service.FileService.FindMeasurementStorageFolder] Ordner: {0} konnte nicht zugegriffen werden.", resultFolderName);
-            }
-            return resultFolder;
-        }
-
-        private static async Task<StorageFolder> FindEvaluationStorageFolder(MeasurementType measurementType)
-        {
-            String resultFolderName = "unknown";
-            StorageFolder resultFolder = ApplicationData.Current.LocalFolder;
-            try
-            {
-                StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-                if (localFolder != null)
+                catch (FileNotFoundException)
                 {
-                    // first level folder
-                    StorageFolder measurementFolder = await localFolder.CreateFolderAsync(evaluationFoldername, CreationCollisionOption.OpenIfExists);
-
-                    if (measurementFolder != null)
-                    {
-                        if (measurementType == MeasurementType.Accelerometer)
-                        {
-                            resultFolderName = accelerometerFoldername;
-                        }
-                        else if (measurementType == MeasurementType.Gyrometer)
-                        {
-                            resultFolderName = gyrometerFoldername;
-                        }
-                        // second level folder
-                        resultFolder = await measurementFolder.CreateFolderAsync(resultFolderName, CreationCollisionOption.OpenIfExists);
-                    }
+                    Debug.WriteLine("[BackgroundTask.Service.TaskFileService.FindMeasurementStorageFolder] Ordner: '{0}' konnte nicht gefunden werden.", folderPath);
                 }
-            }
-            catch (FileNotFoundException)
-            {
-                Debug.WriteLine("[BackgroundTask.Service.FileService.FindMeasurementStorageFolder] Ordner: {0} konnte nicht gefunden werden.", resultFolderName);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Debug.WriteLine("[BackgroundTask.Service.FileService.FindMeasurementStorageFolder] Ordner: {0} konnte nicht zugegriffen werden.", resultFolderName);
+                catch (UnauthorizedAccessException)
+                {
+                    Debug.WriteLine("[BackgroundTask.Service.TaskFileService.FindMeasurementStorageFolder] Ordner: '{0}' konnte nicht zugegriffen werden.", folderPath);
+                }
             }
             return resultFolder;
         }
@@ -162,19 +157,13 @@ namespace BackgroundTask.Service
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[BackgroundTask.Service.FileService.SaveStringToFile] Datei: {0} konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[BackgroundTask.Service.TaskFileService.SaveStringToFile] Datei: {0} konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[BackgroundTask.Service.FileService.SaveStringToFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[BackgroundTask.Service.TaskFileService.SaveStringToFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
             }
             return;
         }
-    }
-
-    internal enum MeasurementType
-    {
-        Accelerometer,
-        Gyrometer
     }
 }

@@ -206,7 +206,8 @@ namespace BackgroundTask
         {
             bool isExported = false;
 
-            //TODO Insert Export functionality
+            // Export functionality
+            isExported = _mainPage.ExportMeasurementData(measurementViewModel.Id);
 
             if (isExported)
             {

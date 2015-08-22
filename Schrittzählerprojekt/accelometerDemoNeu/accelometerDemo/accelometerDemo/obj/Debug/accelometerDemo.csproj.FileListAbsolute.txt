@@ -158,3 +158,35 @@ C:\Users\Eric\Desktop\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Deb
 C:\Users\Eric\Desktop\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\qualifiers.txt.intermediate
 C:\Users\Eric\Desktop\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\MultipleQualifiersPerDimensionFound.txt
 C:\Users\Eric\Desktop\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\ProjectArchitectures.txt
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\App.xbf
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\MainPage.xbf
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\accelometerDemo.xr.xml
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\accelometerDemo.exe
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\accelometerDemo.pdb
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\resources.pri
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\AppxManifest.xml
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\bin\Debug\accelometerDemo.build.appxrecipe
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\App.g.i.cs
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\App.g.cs
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\MainPage.g.i.cs
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\MainPage.g.cs
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\XamlTypeInfo.g.cs
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\App.xaml
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\MainPage.xaml
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\App.xbf
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\MainPage.xbf
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\XamlSaveStateFile.xml
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\accelometerDemo.exe
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\accelometerDemo.pdb
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\priconfig.xml
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\priconfig.xml.intermediate
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\layout.resfiles
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\layout.resfiles.intermediate
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\resources.resfiles
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\resources.resfiles.intermediate
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\pri.resfiles
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\pri.resfiles.intermediate
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\qualifiers.txt
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\qualifiers.txt.intermediate
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\MultipleQualifiersPerDimensionFound.txt
+C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\obj\Debug\ProjectArchitectures.txt

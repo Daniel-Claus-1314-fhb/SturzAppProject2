@@ -111,6 +111,7 @@ namespace BackgroundTask.DataModel
                 if (measurementFromList != null)
                 {
                     FileService.DeleteAccelerometerMeasurementAsync(measurementFromList.AccelerometerFilename);
+                    FileService.DeleteAccelerometerEvaluationAsync(measurementFromList.AccelerometerFilename);
                     FileService.DeleteGyrometerMeasurementAsync(measurementFromList.GyrometerFilename);
                     isDeleted = this._measurements.Remove(measurementFromList);
                     OnMeasurementListUpdated(EventArgs.Empty);

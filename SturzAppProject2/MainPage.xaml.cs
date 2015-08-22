@@ -154,6 +154,21 @@ namespace BackgroundTask
             return isStopped;
         }
 
+        public bool ExportMeasurementData(string measurementId)
+        {
+            bool isExported = false;
+            if (measurementId != null && measurementId.Length > 0)
+            {
+                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                if (measurement != null)
+                {
+                    isExported = ExportService.ExportMeasurementData(measurement);
+                }
+            }
+            return isExported;
+        }
+
+
         public async Task<OxyplotData> FindMeasurementGraphData(string measurementId)
         {
             OxyplotData oxyplotData = new OxyplotData();

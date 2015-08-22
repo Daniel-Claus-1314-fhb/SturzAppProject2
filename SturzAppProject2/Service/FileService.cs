@@ -86,12 +86,15 @@ namespace BackgroundTask.Service
             if (measurement != null)
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationAccelerometerPath);
                 StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
 
                 Task<List<Tuple<TimeSpan, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.AccelerometerFilename);
+                Task<List<Tuple<TimeSpan, double, int>>> loadAccelerometerEvaluationTask = LoadAccelerometerEvaluationFromFile(accelerometerEvaluationFolder, measurement.AccelerometerFilename);
                 Task<List<Tuple<TimeSpan, double, double, double>>> loadGyrometerTask = LoadGyrometerReadingsFromFile(gyrometerFolder, measurement.GyrometerFilename);
 
                 oxyplotData.AccelerometerReadings = await loadAccelerometerTask;
+                oxyplotData.AccelerometerEvaluationList = await loadAccelerometerEvaluationTask;
                 oxyplotData.GyrometerReadings = await loadGyrometerTask;
             }
             return oxyplotData;
@@ -132,7 +135,11 @@ namespace BackgroundTask.Service
 
         private static async Task<List<Tuple<TimeSpan, double, double, double>>> LoadAccelerometerReadingsFromFile(StorageFolder targetFolder, string filename)
         {
+            NumberStyles styles = NumberStyles.Any;
+            IFormatProvider provider = new CultureInfo("en-US");
+
             List<Tuple<TimeSpan, double, double, double>> accelerometerReadingTuples = new List<Tuple<TimeSpan, double, double, double>>();
+
             try
             {
                 StorageFile file = await targetFolder.GetFileAsync(filename);
@@ -143,31 +150,28 @@ namespace BackgroundTask.Service
                         string currentReadLineOfFile = await stream.ReadLineAsync();
                         string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
 
-                        long timeStampTicks;
+                        double timeStampTicks;
                         double accerlerometerX;
                         double accerlerometerY; 
                         double accerlerometerZ;
 
-                        NumberStyles styles = NumberStyles.Any;
-                        IFormatProvider provider = new CultureInfo("en-US");
-
-                        if (Double.TryParse(stringArray[0], styles, provider, out accerlerometerX) &&
-                            Double.TryParse(stringArray[1], styles, provider, out accerlerometerY) &&
-                            Double.TryParse(stringArray[2], styles, provider, out accerlerometerZ) &&
-                            long.TryParse(stringArray[3], out timeStampTicks))
+                        if (Double.TryParse(stringArray[0], styles, provider, out timeStampTicks) && 
+                            Double.TryParse(stringArray[1], styles, provider, out accerlerometerX) &&
+                            Double.TryParse(stringArray[2], styles, provider, out accerlerometerY) &&
+                            Double.TryParse(stringArray[3], styles, provider, out accerlerometerZ))
                         {
-                            accelerometerReadingTuples.Add(new Tuple<TimeSpan, double, double, double>(TimeSpan.FromTicks(timeStampTicks), accerlerometerX, accerlerometerY, accerlerometerZ));
+                            accelerometerReadingTuples.Add(new Tuple<TimeSpan, double, double, double>(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerX, accerlerometerY, accerlerometerZ));
                         }
                     }
                 }
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return accelerometerReadingTuples;
         }
@@ -205,16 +209,61 @@ namespace BackgroundTask.Service
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[MensaApp.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return gyrometerReadingTuples;
         }
         
         #endregion
+
+        //##################################################################################################################################
+        //################################################## load Evaluations ##############################################################
+        //##################################################################################################################################
+
+        private static async Task<List<Tuple<TimeSpan, double, int>>> LoadAccelerometerEvaluationFromFile(StorageFolder targetFolder, string filename)
+        {
+            NumberStyles styles = NumberStyles.Any;
+            IFormatProvider provider = new CultureInfo("en-US");
+
+            List<Tuple<TimeSpan, double, int>> accelerometerVectorLengthTuples = new List<Tuple<TimeSpan, double, int>>();
+
+            try
+            {
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                {
+                    while (!stream.EndOfStream)
+                    {
+                        string currentReadLineOfFile = await stream.ReadLineAsync();
+                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
+
+                        double timeStampTicks;
+                        double accerlerometerVectorLength;
+                        int detectedStep;
+
+                        if (Double.TryParse(stringArray[0], styles, provider, out timeStampTicks) &&
+                            Double.TryParse(stringArray[1], styles, provider, out accerlerometerVectorLength) &&
+                            Int32.TryParse(stringArray[2],out detectedStep))
+                        {
+                            accelerometerVectorLengthTuples.Add(new Tuple<TimeSpan, double, int>(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerVectorLength, detectedStep));
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerEvaluationFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerEvaluationFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return accelerometerVectorLengthTuples;
+        }
 
         #region Save/Load JSONString
 
@@ -241,11 +290,11 @@ namespace BackgroundTask.Service
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[MensaApp.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return;
         }
@@ -279,11 +328,11 @@ namespace BackgroundTask.Service
                 }
                 catch (FileNotFoundException)
                 {
-                    Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                    Debug.WriteLine("[SturzAppProject2.FileService.LoadJsonStringFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    Debug.WriteLine("[MensaApp.FileService.LoadJsonStringFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                    Debug.WriteLine("[SturzAppProject2.FileService.LoadJsonStringFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
                 }
             }
             return jsonString;
@@ -302,6 +351,15 @@ namespace BackgroundTask.Service
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
                 await DeleteFileAsync(accelerometerFolder, filename);
+            }
+        }
+
+        public static async void DeleteAccelerometerEvaluationAsync(string filename)
+        {
+            if (filename != null && filename.Length > 0)
+            {
+                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationAccelerometerPath);
+                await DeleteFileAsync(accelerometerEvaluationFolder, filename);
             }
         }
 
@@ -329,11 +387,11 @@ namespace BackgroundTask.Service
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[MensaApp.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[MensaApp.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return;
         }

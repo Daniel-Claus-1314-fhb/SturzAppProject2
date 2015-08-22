@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SturzAppProject2", "SturzAppProject2\SturzAppProject2.csproj", "{DCD092E6-DD15-47EC-9318-74C6E8FE6392}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundTask", "BackgroundTask\BackgroundTask.csproj", "{60A0BA7C-7DC6-427F-9FEA-878E2B4A8BA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SensorDataEvaluation", "SensorDataEvaluation\SensorDataEvaluation.csproj", "{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,14 @@ Global
 		{60A0BA7C-7DC6-427F-9FEA-878E2B4A8BA2}.Release|ARM.Build.0 = Release|ARM
 		{60A0BA7C-7DC6-427F-9FEA-878E2B4A8BA2}.Release|x86.ActiveCfg = Release|x86
 		{60A0BA7C-7DC6-427F-9FEA-878E2B4A8BA2}.Release|x86.Build.0 = Release|x86
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Release|ARM.ActiveCfg = Release|Any CPU
+		{0EDA065F-3CE4-47DD-9661-2AA2B4387CD7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -93,6 +93,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SensorDataEvaluation\SensorDataEvaluation.csproj">
+      <Project>{0eda065f-3ce4-47dd-9661-2aa2b4387cd7}</Project>
+      <Name>SensorDataEvaluation</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
