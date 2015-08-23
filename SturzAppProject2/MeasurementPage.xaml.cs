@@ -35,14 +35,14 @@ namespace BackgroundTask
     /// </summary>
     public sealed partial class MeasurementPage : Page
     {
-
         MainPage _mainPage = MainPage.Current;
 
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        private MeasurementPageViewModel _measurementPageViewModel;
-        private ThreadPoolTimer _periodicUpdateTimer;
+        private MeasurementPageViewModel _measurementPageViewModel = null;
+        private ThreadPoolTimer _periodicUpdateTimer = null;
+        private BackgroundTaskProgressEventHandler _progressHandler = null;
 
         public MeasurementPage()
         {
@@ -53,7 +53,6 @@ namespace BackgroundTask
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
         }
 
         /// <summary>
@@ -130,7 +129,10 @@ namespace BackgroundTask
                 {
                     _measurementPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
                     VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
+
+                    // Add timer event and attach eventlistner
                     StartUpdateTimer();
+                    SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
                 }
             }
             this.navigationHelper.OnNavigatedTo(e);
@@ -140,6 +142,7 @@ namespace BackgroundTask
         {
             this.navigationHelper.OnNavigatedFrom(e);
 
+            // If the measurement has not started yet, then save settings of measurment
             if (_measurementPageViewModel.MeasurementViewModel.MeasurementState == MeasurementState.Initialized)
             {
                 _mainPage.MainMeasurementListModel.Update(_measurementPageViewModel.MeasurementViewModel);
@@ -147,19 +150,26 @@ namespace BackgroundTask
                 _mainPage.ShowNotifyMessage("Messung wurde gespeichert.", NotifyLevel.Info);
             }
 
+            // remove timer event and detach eventlistner
             StopUpdateTimer();
+            DetachOnProgressEventListner(_measurementPageViewModel.MeasurementViewModel.Id);
         }
 
         #endregion
 
-        private bool StartMeasurement(MeasurementViewModel measurementViewModel)
+        //############################################################################################################################################
+        //################################################### AppbarButton Methods ###################################################################
+        //############################################################################################################################################
+        #region DelegateMethods
+
+        private async void StartMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isStarted = false;
             // first update for settings
             _mainPage.MainMeasurementListModel.Update(measurementViewModel);
 
             //start functionality
-            isStarted = _mainPage.StartBackgroundTask(measurementViewModel.Id);
+            isStarted = await _mainPage.StartBackgroundTask(measurementViewModel.Id);
 
             if (isStarted)
             {
@@ -169,16 +179,16 @@ namespace BackgroundTask
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 StartUpdateTimer();
+                SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
                 _mainPage.ShowNotifyMessage("Messung wurde gestarted.", NotifyLevel.Info);
             }
             else
             {
                 _mainPage.ShowNotifyMessage("Messung konnte nicht gestarted werden.", NotifyLevel.Error);
             }
-            return true;
         }
 
-        private bool StopMeasurement(MeasurementViewModel measurementViewModel)
+        private void StopMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isStopped = false;
 
@@ -192,17 +202,16 @@ namespace BackgroundTask
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 StopUpdateTimer();
+                SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
                 _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info);
             }
             else
             {
                 _mainPage.ShowNotifyMessage("Messung konnte nicht gestoppt werden.", NotifyLevel.Error);
             }
-
-            return isStopped;
         }
 
-        private bool ExportMeasurement(MeasurementViewModel measurementViewModel)
+        private void ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isExported = false;
 
@@ -217,10 +226,9 @@ namespace BackgroundTask
             {
                 _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
             }
-            return isExported;
         }
 
-        private bool DeleteMeasurement(MeasurementViewModel measurementViewModel)
+        private void DeleteMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isDeleted = false;
 
@@ -238,18 +246,14 @@ namespace BackgroundTask
             {
                 _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Warn);
             }
-            return isDeleted;
         }
 
-        private async Task<bool> ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
+        private async void ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
         {
-            bool isGraphDataAvailable = false;
-
             measurementViewModel.OxyplotData = await _mainPage.FindMeasurementGraphData(measurementViewModel.Id);
 
             if (measurementViewModel.OxyplotData.HasAccelerometerReadings || measurementViewModel.OxyplotData.HasGyrometerReadings)
             {
-                isGraphDataAvailable = true;
                 Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
                 _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
                 contentFrame.Navigate(typeof(GraphPage), measurementViewModel.OxyplotData);
@@ -258,7 +262,6 @@ namespace BackgroundTask
             {
                 _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurementViewModel.Name), NotifyLevel.Error);
             }
-            return isGraphDataAvailable;
         }
 
         private void RaiseCanExecuteChanged()
@@ -270,7 +273,53 @@ namespace BackgroundTask
             ((ShowMeasurementGraphCommand)_measurementPageViewModel.ShowMeasurementGraphCommand).OnCanExecuteChanged();
             VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
         }
-        
+
+        #endregion
+
+        //############################################################################################################################################
+        //################################################### OnProgress Event Handler ###############################################################
+        //############################################################################################################################################
+        #region OnProgress event
+
+        internal void SetOnProgressEventListnerByMeasurementState(string measurementId, MeasurementState measurementState)
+        {
+            switch (measurementState)
+            {
+                case MeasurementState.Started:
+                    AttachOnProgressEventListner(measurementId);
+                    break;
+                default:
+                    DetachOnProgressEventListner(measurementId);
+                    break;
+            }
+        }
+
+        internal void AttachOnProgressEventListner(string measurementId)
+        {
+            if (_progressHandler == null)
+            {
+                _progressHandler = new BackgroundTaskProgressEventHandler(OnProgress);
+            }
+            BackgroundTaskService.AttachToOnProgressEvent(measurementId, _progressHandler);
+        }
+
+        internal void DetachOnProgressEventListner(string measurementId)
+        {
+            BackgroundTaskService.DetachToOnProgressEvent(measurementId, _progressHandler);
+        }
+
+        public void OnProgress(IBackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args)
+        {
+            Dispatcher.RunAsync(CoreDispatcherPriority.High,() => { _measurementPageViewModel.MeasurementViewModel.TotalSteps = args.Progress; });
+        }
+
+        #endregion
+
+        //############################################################################################################################################
+        //################################################### Update Timer ###########################################################################
+        //############################################################################################################################################
+        #region Update Timer
+
         private void StartUpdateTimer()
         {
             if (_periodicUpdateTimer == null && this._measurementPageViewModel.MeasurementViewModel.MeasurementState == MeasurementState.Started)
@@ -295,11 +344,7 @@ namespace BackgroundTask
                         currentTimeSpan = DateTime.Now.Subtract(startTime);
                     }
 
-                    Dispatcher.RunAsync(CoreDispatcherPriority.High,
-                    () =>
-                    {
-                        this._measurementPageViewModel.MeasurementViewModel.Duration = currentTimeSpan;
-                    });
+                    Dispatcher.RunAsync(CoreDispatcherPriority.High, () => { this._measurementPageViewModel.MeasurementViewModel.Duration = currentTimeSpan; });
 
                 }, period);
             }
@@ -312,5 +357,7 @@ namespace BackgroundTask
                 _periodicUpdateTimer.Cancel();
             }
         }
+
+        #endregion
     }
 }

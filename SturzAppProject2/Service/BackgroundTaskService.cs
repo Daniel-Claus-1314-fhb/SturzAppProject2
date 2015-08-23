@@ -13,10 +13,9 @@ using Windows.Devices.Sensors;
 
 namespace BackgroundTask.Service
 {
-    public class BackgroundTaskService
+    public static class BackgroundTaskService
     {
-
-        internal void SynchronizeMeasurementsWithActiveBackgroundTasks(List<Measurement> measurements)
+        internal static void SynchronizeMeasurementsWithActiveBackgroundTasks(List<Measurement> measurements)
         {
             List<String> pairedMeasurementIds = new List<string>();
 
@@ -34,7 +33,7 @@ namespace BackgroundTask.Service
                     {
                         Debug.WriteLine("Measurement with Id '{0}' will be aborted.", measurement.Id);
                         measurement.EndTime = DateTime.Now;
-                        measurement.MeasurementState = MeasurementState.Aborted;
+                        measurement.MeasurementState = MeasurementState.Stopped;
                     }
                 }
             }
@@ -50,7 +49,7 @@ namespace BackgroundTask.Service
             }
         }
 
-        public bool StartBackgroundTaskForMeasurement(Measurement measurement)
+        public static async Task<bool> StartBackgroundTaskForMeasurement(Measurement measurement)
         {
             bool isStarted = false;
             if (measurement != null &&
@@ -65,7 +64,7 @@ namespace BackgroundTask.Service
                 string arguments = JsonConvert.SerializeObject(taskArguments);
                 if (measurement.Setting.UseAccelerometer)
                 {
-                    StartAccelerometerTask(measurement.Id, arguments);
+                    await StartAccelerometerTask(measurement.Id, arguments);
                     isStarted = true;
                 } 
                 if (measurement.Setting.UseGyrometer)
@@ -78,7 +77,7 @@ namespace BackgroundTask.Service
             return isStarted;
         }
 
-        public bool StopBackgroundTaskForMeasurement(Measurement measurement)
+        public static bool StopBackgroundTaskForMeasurement(Measurement measurement)
         {
             bool isStopped = false;
 
@@ -91,16 +90,12 @@ namespace BackgroundTask.Service
             return isStopped;
         }
 
-
-
-
-
-        private bool canRegisterBackgroundTask()
+        private static bool canRegisterBackgroundTask()
         {
             return BackgroundTaskRegistration.AllTasks.Count == 0 ? true : false;
         }
 
-        private bool isBackgroundTaskRegistered(string taskName)
+        private static bool isBackgroundTaskRegistered(string taskName)
         {
             Debug.WriteLine("Anzahl BackgroundTasks '{0}'", BackgroundTaskRegistration.AllTasks.Count);
             foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
@@ -113,13 +108,43 @@ namespace BackgroundTask.Service
             return false;
         }
 
+        internal static void AttachToOnProgressEvent(string taskName, BackgroundTaskProgressEventHandler progressHandler)
+        {
+            if (taskName != null && taskName != String.Empty && progressHandler != null) 
+            {
+                foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
+                {
+                    if (currentTask.Value.Name.Equals(taskName))
+                    {
+                        Debug.WriteLine("+++ Attach Eventlistner to the OnProgressEvent of the background task.");
+                        currentTask.Value.Progress += progressHandler;
+                    }
+                }
+            }
+        }
+
+        internal static void DetachToOnProgressEvent(string taskName, BackgroundTaskProgressEventHandler progressHandler)
+        {
+            if (taskName != null && taskName != String.Empty && progressHandler != null)
+            {
+                foreach (var currentTask in BackgroundTaskRegistration.AllTasks)
+                {
+                    if (currentTask.Value.Name.Equals(taskName))
+                    {
+                        Debug.WriteLine("--- Detach Eventlistner to the OnProgressEvent of the background task.");
+                        currentTask.Value.Progress -= progressHandler;
+                    }
+                }
+            }
+        }
+        
         //#############################################################################
         //########################## Start Background Task ############################
         //#############################################################################
 
         #region Start BackgroundTask
 
-        public async void StartAccelerometerTask(string taskName, string arguments)
+        public static async Task StartAccelerometerTask(string taskName, string arguments)
         {
             Accelerometer accelerometer = Accelerometer.GetDefault();
             if (accelerometer != null && taskName != null && taskName.Length > 0)
@@ -138,7 +163,7 @@ namespace BackgroundTask.Service
             }
         }
 
-        private async Task<bool> RegisterAccelerometerTaskAsync(string deviceId, string taskName, string arguments)
+        private static async Task<bool> RegisterAccelerometerTaskAsync(string deviceId, string taskName, string arguments)
         {
             String taskEntryPoint = "BackgroundTask.TaskAction";
             DeviceUseTrigger trigger = new DeviceUseTrigger();
@@ -161,7 +186,7 @@ namespace BackgroundTask.Service
             return true;
         }
 
-        private async Task<bool> RequestDeviceUseTriggerAsync(string deviceId, DeviceUseTrigger deviceUseTrigger, string taskName, string arguments)
+        private static async Task<bool> RequestDeviceUseTriggerAsync(string deviceId, DeviceUseTrigger deviceUseTrigger, string taskName, string arguments)
         {
             try
             {
@@ -197,7 +222,7 @@ namespace BackgroundTask.Service
 
         #region Stop BackgroundTask
 
-        public bool DeregisterBackgroundTask(string taskName)
+        public static bool DeregisterBackgroundTask(string taskName)
         {
             bool isDeregistered = false;
             if (taskName != null && taskName.Length > 0)

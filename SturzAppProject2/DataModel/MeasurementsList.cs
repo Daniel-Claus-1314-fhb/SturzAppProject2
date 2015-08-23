@@ -44,10 +44,7 @@ namespace BackgroundTask.DataModel
         }
 
         public event EventHandler MeasurementListUpdated;
-
-
-
-
+        
         //###################################################################################
         //##################################### Methods #####################################
         //###################################################################################
@@ -91,6 +88,7 @@ namespace BackgroundTask.DataModel
                     measurementFromList.StartTime = updateMeasurementViewModel.StartTime;
                     measurementFromList.EndTime = updateMeasurementViewModel.EndTime;
                     measurementFromList.MeasurementState = updateMeasurementViewModel.MeasurementState;
+                    measurementFromList.TotalSteps = updateMeasurementViewModel.TotalSteps;
                     measurementFromList.Setting = new MeasurementSetting(updateMeasurementViewModel.MeasurementSetting);
                     OnMeasurementListUpdated(EventArgs.Empty);
                 }

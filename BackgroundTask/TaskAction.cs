@@ -151,7 +151,7 @@ namespace BackgroundTask
                 TaskFileService.AppendPassivAccelerometerDataToFileAsync(accelerometerData);
                 await ProcessAnalysis(accelerometerData.GetPassivTupleList());
 
-                _taskInstance.Progress = 0;
+                _taskInstance.Progress = this._accelerometerEvaluationModel.TotalSteps;
             }
         }
 

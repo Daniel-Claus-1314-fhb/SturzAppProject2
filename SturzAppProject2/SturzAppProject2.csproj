@@ -111,7 +111,6 @@
     <Compile Include="Common\Selector\MeasurementTypeSelector.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="DataModel\Measurement.cs" />
-    <Compile Include="DataModel\MeasurementEvaluation.cs" />
     <Compile Include="DataModel\MeasurementSetting.cs" />
     <Compile Include="DataModel\MeasurementsList.cs" />
     <Compile Include="MainPage.xaml.cs">

@@ -18,8 +18,8 @@ namespace BackgroundTask.ViewModel
 
         #region Construtors
 
-        public MeasurementPageViewModel(Func<MeasurementViewModel, bool> startMeasurementMethod, Func<MeasurementViewModel, bool> stopMeasurementMethod,
-            Func<MeasurementViewModel, bool> exportMeasurementMethod, Func<MeasurementViewModel, bool> deleteMeasurementMethod, Func<MeasurementViewModel, Task<bool>> showMeasurementGraphMethod)
+        public MeasurementPageViewModel(Action<MeasurementViewModel> startMeasurementMethod, Action<MeasurementViewModel> stopMeasurementMethod,
+            Action<MeasurementViewModel> exportMeasurementMethod, Action<MeasurementViewModel> deleteMeasurementMethod, Action<MeasurementViewModel> showMeasurementGraphMethod)
         {
             this.MeasurementViewModel = new MeasurementViewModel();
             this.StartMeasurementCommand = new StartMeasurementCommand(startMeasurementMethod);
@@ -48,7 +48,6 @@ namespace BackgroundTask.ViewModel
         public ICommand StopMeasurementCommand { get; set; }
         public ICommand ExportMeasurementCommand { get; set; }
         public ICommand DeleteMeasurementCommand { get; set; }
-
         public ICommand ShowMeasurementGraphCommand { get; set; }
 
         #endregion
@@ -79,9 +78,9 @@ namespace BackgroundTask.ViewModel
         #endregion
     }
 
-    //###################################################################################
-    //##################################### Commands ####################################
-    //###################################################################################
+    //########################################################################################
+    //##################################### Command classes ##################################
+    //########################################################################################
 
     #region Commands
 
@@ -91,18 +90,18 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class StartMeasurementCommand : ICommand
     {
-        public StartMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
+        public StartMeasurementCommand(Action<MeasurementViewModel> actionPointer)
         {
-            this.FuncPointer = funcPointer;
+            this.ActionPointer = actionPointer;
         }
 
-        public Func<MeasurementViewModel, bool> FuncPointer { get; set; }
+        public Action<MeasurementViewModel> ActionPointer { get; set; }
 
         public bool CanExecute(object parameter)
         {
             bool canExecute = false;
 
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
@@ -127,14 +126,14 @@ namespace BackgroundTask.ViewModel
 
         public void Execute(object parameter)
         {
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
                 if (measurementViewModel != null)
                 {
-                    FuncPointer(measurementViewModel);
+                    ActionPointer(measurementViewModel);
                 }
             }
         }
@@ -146,18 +145,18 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class StopMeasurementCommand : ICommand
     {
-        public StopMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
+        public StopMeasurementCommand(Action<MeasurementViewModel> actionPointer)
         {
-            this.FuncPointer = funcPointer;
+            this.ActionPointer = actionPointer;
         }
 
-        public Func<MeasurementViewModel, bool> FuncPointer { get; set; }
+        public Action<MeasurementViewModel> ActionPointer { get; set; }
 
         public bool CanExecute(object parameter)
         {
             bool canExecute = false;
 
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
@@ -182,14 +181,14 @@ namespace BackgroundTask.ViewModel
 
         public void Execute(object parameter)
         {
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
                 if (measurementViewModel != null)
                 {
-                    FuncPointer(measurementViewModel);
+                    ActionPointer(measurementViewModel);
                 }
             }
         }
@@ -201,18 +200,18 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class ExportMeasurementCommand : ICommand
     {
-        public ExportMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
+        public ExportMeasurementCommand(Action<MeasurementViewModel> actionPointer)
         {
-            this.FuncPointer = funcPointer;
+            this.ActionPointer = actionPointer;
         }
 
-        public Func<MeasurementViewModel, bool> FuncPointer { get; set; }
+        public Action<MeasurementViewModel> ActionPointer { get; set; }
 
         public bool CanExecute(object parameter)
         {
             bool canExecute = false;
 
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
@@ -236,14 +235,14 @@ namespace BackgroundTask.ViewModel
 
         public void Execute(object parameter)
         {
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
                 if (measurementViewModel != null)
                 {
-                    FuncPointer(measurementViewModel);
+                    ActionPointer(measurementViewModel);
                 }
             }
         }
@@ -255,18 +254,18 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class DeleteMeasurementCommand : ICommand
     {
-        public DeleteMeasurementCommand(Func<MeasurementViewModel, bool> funcPointer)
+        public DeleteMeasurementCommand(Action<MeasurementViewModel> actionPointer)
         {
-            this.FuncPointer = funcPointer;
+            this.ActionPointer = actionPointer;
         }
 
-        public Func<MeasurementViewModel, bool> FuncPointer { get; set; }
+        public Action<MeasurementViewModel> ActionPointer { get; set; }
 
         public bool CanExecute(object parameter)
         {
             bool canExecute = false;
 
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
@@ -292,14 +291,14 @@ namespace BackgroundTask.ViewModel
 
         public void Execute(object parameter)
         {
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
                 if (measurementViewModel != null)
                 {
-                    FuncPointer(measurementViewModel);
+                    ActionPointer(measurementViewModel);
                 }
             }
         }
@@ -310,18 +309,18 @@ namespace BackgroundTask.ViewModel
     /// </summary>
     public class ShowMeasurementGraphCommand : ICommand
     {
-        public ShowMeasurementGraphCommand(Func<MeasurementViewModel, Task<bool>> funcPointer)
+        public ShowMeasurementGraphCommand(Action<MeasurementViewModel> actionPointer)
         {
-            this.FuncPointer = funcPointer;
+            this.ActionPointer = actionPointer;
         }
 
-        public Func<MeasurementViewModel, Task<bool>> FuncPointer { get; set; }
+        public Action<MeasurementViewModel> ActionPointer { get; set; }
 
         public bool CanExecute(object parameter)
         {
             bool canExecute = false;
 
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
@@ -345,14 +344,14 @@ namespace BackgroundTask.ViewModel
 
         public void Execute(object parameter)
         {
-            if (this.FuncPointer != null &&
+            if (this.ActionPointer != null &&
                 parameter != null &&
                 parameter.GetType() == typeof(MeasurementViewModel))
             {
                 MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
                 if (measurementViewModel != null)
                 {
-                    FuncPointer(measurementViewModel);
+                    ActionPointer(measurementViewModel);
                 }
             }
         }

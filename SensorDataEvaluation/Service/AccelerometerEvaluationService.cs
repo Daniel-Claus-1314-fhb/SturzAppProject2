@@ -16,6 +16,7 @@ namespace SensorDataEvaluation.Service
             PreprocessAccelerometerTuples(accelerometerEvaluationModel);
             AnalysisVectorLength(accelerometerEvaluationModel);
             DetectSteps(accelerometerEvaluationModel);
+            CountDetectedSteps(accelerometerEvaluationModel);
         }
 
         private static void PreprocessAccelerometerTuples(AccelerometerEvaluation accelerometerEvaluationModel)
@@ -78,17 +79,37 @@ namespace SensorDataEvaluation.Service
                     // is evaluation value not the first one && is evaluation value not the last one
                     if (i > 0 && i < accelEvaluationList.Count - 1)
                     { 
-                        //if(((data[i] - data[i-1]) * (data[i] - data[i+1])) > 0 ) 
-                        if (((double)accelEvaluationList.ElementAt(i)[1] - (double)accelEvaluationList.ElementAt(i - 1)[1]) * ((double)accelEvaluationList.ElementAt(i)[1] - (double)accelEvaluationList.ElementAt(i + 1)[1]) > 0d &&
+                        if (// find peak
+                            ((double)accelEvaluationList.ElementAt(i)[1] - (double)accelEvaluationList.ElementAtOrDefault(i - 1)[1]) * ((double)accelEvaluationList.ElementAt(i)[1] - (double)accelEvaluationList.ElementAt(i + 1)[1]) > 0d &&
+                            // check threshold
                             (((double)accelEvaluationList.ElementAt(i)[1]).CompareTo(0d + threshold) > 0 || ((double)accelEvaluationList.ElementAt(i)[1]).CompareTo(0d - threshold) < 0) &&
+                            // check timespan between to detected steps
                             ((TimeSpan)accelEvaluationList.ElementAt(i)[0]).Subtract(_lastKnownStep) > stepTimeDistence)
                         {
+                            // Set detected step
                             accelEvaluationList.ElementAt(i)[2] = true;
+                            // set time of last known step
                             _lastKnownStep = (TimeSpan)accelEvaluationList.ElementAt(i)[0];
                         }
                     }
                 }
             }
+        }
+
+        private static void CountDetectedSteps(AccelerometerEvaluation accelerometerEvaluationModel)
+        {
+            var accelEvaluationList = accelerometerEvaluationModel.AccelerometerEvaluationList;
+            uint detectedSteps = 0;
+
+            if (accelEvaluationList != null && accelEvaluationList.Count > 2)
+            {
+                foreach (object[] accelEvaluation in accelEvaluationList)
+                {
+                    // increment detected step counter for each true value;
+                    detectedSteps += (bool)accelEvaluation[2] ? 1u : 0u;
+                }
+            }
+            accelerometerEvaluationModel.AddTotalSteps = detectedSteps;
         }
     }
 }

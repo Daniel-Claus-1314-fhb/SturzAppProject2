@@ -22,7 +22,6 @@ namespace BackgroundTask.Service
                     resultMeasurementViewModels.Add(new MeasurementViewModel(measurement));
                 }
             }
-
             return resultMeasurementViewModels;
         }
     }

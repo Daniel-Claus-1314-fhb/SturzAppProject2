@@ -35,6 +35,7 @@ namespace BackgroundTask.ViewModel
             this.EndTime = measurement.EndTime;
             this.MeasurementState = measurement.MeasurementState;
             this.MeasurementSetting = new MeasurementSettingViewModel(measurement.Setting);
+            this.TotalSteps = measurement.TotalSteps;
         }
 
         #endregion
@@ -117,6 +118,13 @@ namespace BackgroundTask.ViewModel
             set { this.SetProperty(ref this._duration, value); }
         }
 
+        private uint _totalSteps;
+        public uint TotalSteps
+        {
+            get { return _totalSteps; }
+            set { this.SetProperty(ref this._totalSteps, value); }
+        }
+
         private OxyplotData _oxyplotData;
         public OxyplotData OxyplotData
         {
@@ -132,7 +140,6 @@ namespace BackgroundTask.ViewModel
 
         #region Methods
 
-
         public void StartMeasurement()
         {
             this.StartTime = DateTime.Now;
@@ -143,12 +150,6 @@ namespace BackgroundTask.ViewModel
         {
             this.EndTime = DateTime.Now;
             this.MeasurementState = MeasurementState.Stopped;
-        }
-
-        public void AbortMeasurement()
-        {
-            this.EndTime = DateTime.Now;
-            this.MeasurementState = MeasurementState.Aborted;
         }
 
         public void DeleteMeasurement()

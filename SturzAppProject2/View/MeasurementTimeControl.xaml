@@ -25,6 +25,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -39,6 +40,11 @@
                 <StackPanel Grid.Row="0" Grid.Column="1">
                         <TextBlock Text="Dauer" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
                     <TextBlock Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=DurationSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                    <TextBlock Text="Schritte" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding Path=TotalSteps}" Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </Grid>
         </Border>

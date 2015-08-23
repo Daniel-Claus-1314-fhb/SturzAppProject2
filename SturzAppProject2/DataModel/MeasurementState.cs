@@ -11,7 +11,6 @@ namespace BackgroundTask.DataModel
         Initialized,
         Started,
         Stopped,
-        Aborted,
         Deleted
     }
 }

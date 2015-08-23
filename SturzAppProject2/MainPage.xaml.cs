@@ -36,7 +36,6 @@ namespace BackgroundTask
         private MeasurementList _mainMeasurementListModel;
 
         public MappingService mapping = new MappingService();
-        private BackgroundTaskService _backgroundTaskService = new BackgroundTaskService();
 
         public MainPage()
         {
@@ -93,7 +92,7 @@ namespace BackgroundTask
                 _mainMeasurementListModel.MeasurementListUpdated += SaveMeasurementList;
             }
 
-            _backgroundTaskService.SynchronizeMeasurementsWithActiveBackgroundTasks(_mainMeasurementListModel.Measurements);
+            BackgroundTaskService.SynchronizeMeasurementsWithActiveBackgroundTasks(_mainMeasurementListModel.Measurements);
 
             SuspensionManager.RegisterFrame(ContentFrame, "ContentFrame");
             if (ContentFrame.Content == null)
@@ -122,18 +121,19 @@ namespace BackgroundTask
             }
         }
 
+        //############################################################################################################################################
+        //################################################### Measurement Methods ####################################################################
+        //############################################################################################################################################
 
-
-        public bool StartBackgroundTask(string measurementId)
+        public async Task<bool> StartBackgroundTask(string measurementId)
         {
             bool isStarted = false;
-            if (measurementId != null && measurementId.Length > 0 &&
-                _backgroundTaskService != null)
+            if (measurementId != null && measurementId.Length > 0 )
             {
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
-                    isStarted = _backgroundTaskService.StartBackgroundTaskForMeasurement(measurement);
+                    isStarted = await BackgroundTaskService.StartBackgroundTaskForMeasurement(measurement);
                 }
             }
             return isStarted;
@@ -142,13 +142,12 @@ namespace BackgroundTask
         public bool StopBackgroundTask(string measurementId)
         {
             bool isStopped = false;
-            if (measurementId != null && measurementId.Length > 0 &&
-                _backgroundTaskService != null)
+            if (measurementId != null && measurementId.Length > 0)
             {
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
-                    isStopped = _backgroundTaskService.StopBackgroundTaskForMeasurement(measurement);
+                    isStopped = BackgroundTaskService.StopBackgroundTaskForMeasurement(measurement);
                 }
             }
             return isStopped;
@@ -167,7 +166,6 @@ namespace BackgroundTask
             }
             return isExported;
         }
-
 
         public async Task<OxyplotData> FindMeasurementGraphData(string measurementId)
         {

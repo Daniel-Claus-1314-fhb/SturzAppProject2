@@ -62,13 +62,6 @@ namespace BackgroundTask.DataModel
             set { _setting = value; }
         }
 
-        private MeasurementEvaluation _evaluation;
-        public MeasurementEvaluation Evaluation
-        {
-            get { return _evaluation; }
-            set { _evaluation = value; }
-        }
-
         private MeasurementState _measurementState;
         public MeasurementState MeasurementState
         {
@@ -97,14 +90,12 @@ namespace BackgroundTask.DataModel
             set { _endTime = value; }
         }
 
-        #endregion
-
-        //###################################################################################
-        //##################################### Methods #####################################
-        //###################################################################################
-
-        #region Methods
-        
+        private uint _totalSteps;
+        public uint TotalSteps
+        {
+            get { return _totalSteps; }
+            set { _totalSteps = value; }
+        }
 
         #endregion
     }

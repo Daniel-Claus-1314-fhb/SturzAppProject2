@@ -37,6 +37,17 @@ namespace SensorDataEvaluation.DataModel
         public double StepThreshold { get; private set; }
         public TimeSpan StepDistance { get; private set; }
 
+        private uint _totalSteps;
+        public uint  TotalSteps
+        {
+            get { return _totalSteps; }
+            set { _totalSteps = value; }
+        }
+        public uint AddTotalSteps
+        {
+            set { _totalSteps += value; }
+        }
+
         /// <summary>
         /// List of accelerometer tuples which will analysed.
         /// 
@@ -67,7 +78,6 @@ namespace SensorDataEvaluation.DataModel
             get { return _accelerometerEvaluationList; }
             set { _accelerometerEvaluationList = value; }
         }
-
 
         //###################################################################################################################
         //################################################## Methods ########################################################

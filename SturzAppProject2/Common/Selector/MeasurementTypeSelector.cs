@@ -33,9 +33,6 @@ namespace BackgroundTask.Common.Selector
 
                     case MeasurementState.Stopped:
                         return StoppedMeasurementTemplate;
-
-                    case MeasurementState.Aborted:
-                        return StoppedMeasurementTemplate;
                 }
             }
             return base.SelectTemplateCore(item);
