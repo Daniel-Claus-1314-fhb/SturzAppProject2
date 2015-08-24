@@ -28,9 +28,13 @@ namespace BackgroundTask.Common.Converter
                             case "ReportIntervalSimple":
                                 return String.Format("{0:G} ms", convertUnsignedInteger);
                             case "ProcessedSampleCountFull":
-                                return String.Format("{0:G} Messwerte werden gemeinsam ausgewertet.", convertUnsignedInteger);
+                                return String.Format("Auswertung für {0:G} Messwerte", convertUnsignedInteger);
                             case "ProcessedSampleCountSimple":
                                 return String.Format("{0:G} Messwerte", convertUnsignedInteger);
+                            case "StepDistanceFull":
+                                return String.Format("Schrittabstand {0:G} ms", convertUnsignedInteger);
+                            case "StepDistanceSimple":
+                                return String.Format("{0:G} ms", convertUnsignedInteger);
                             default:
                                 return String.Format("{0:G}", convertUnsignedInteger);
                         }
@@ -38,6 +42,29 @@ namespace BackgroundTask.Common.Converter
                     else
                     {
                         return String.Format("{0:G}", convertUnsignedInteger);
+                    }
+                }
+                if (value.GetType().Equals(typeof(double)))
+                {
+                    double convertDouble = (double)value;
+
+                    if (parameter != null)
+                    {
+                        string parameterString = parameter as string;
+
+                        switch (parameterString)
+                        {
+                            case "PeakThresholdFull":
+                                return String.Format("Amplitudenschwellwert {0:f2}", convertDouble);
+                            case "PeakThresholdSimple":
+                                return String.Format("{0:f2}", convertDouble);
+                            default:
+                                return String.Format("{0:G}", convertDouble);
+                        }
+                    }
+                    else
+                    {
+                        return String.Format("{0:G}", convertDouble);
                     }
                 }
             }

@@ -26,6 +26,10 @@ namespace BackgroundTask.ViewModel
             this.MeasurementState = MeasurementState.Initialized;
         }
 
+        /// <summary>
+        /// Constructor to create a new measurementViewModel by a given measurementModel.
+        /// </summary>
+        /// <param name="measurement"></param>
         public MeasurementViewModel(Measurement measurement) : this()
         {
             this.Name = measurement.Name;
@@ -46,55 +50,72 @@ namespace BackgroundTask.ViewModel
 
         #region Properties
 
+        /// <summary>
+        /// Name of the measurment.
+        /// </summary>
         private string _name;
         public string Name
         {
             get { return _name; }
             set { this.SetProperty(ref this._name, value); }
         }
-
+        /// <summary>
+        /// Id of the measurment.
+        /// </summary>
         private string _id;
         public string Id
         {
             get { return _id; }
             set { this.SetProperty(ref this._id, value); }
         }
-
-        private MeasurementState _measurementState;
-        public MeasurementState MeasurementState
-        {
-            get { return _measurementState; }
-            set { this.SetProperty(ref this._measurementState, value); }
-        }
-
+        /// <summary>
+        /// Settings of the measurement
+        /// </summary>
         private MeasurementSettingViewModel _measuermentSetting;
         public MeasurementSettingViewModel MeasurementSetting
         {
             get { return _measuermentSetting; }
             set { this.SetProperty(ref this._measuermentSetting, value); }
         }
-
+        /// <summary>
+        /// Enumation which discribes the current state of the measurment
+        /// </summary>
+        private MeasurementState _measurementState;
+        public MeasurementState MeasurementState
+        {
+            get { return _measurementState; }
+            set { this.SetProperty(ref this._measurementState, value); }
+        }
+        /// <summary>
+        /// DateTime of creation
+        /// </summary>
         private DateTime _createDateTime;
         public DateTime CreateDateTime
         {
             get { return _createDateTime; }
             set { this.SetProperty(ref this._createDateTime, value); }
         }
-        
+        /// <summary>
+        /// DateTime of measurement start.
+        /// </summary>
         private DateTime _startTime;
         public DateTime StartTime
         {
             get { return _startTime; }
             set { this.SetProperty(ref this._startTime, value); }
         }
-
+        /// <summary>
+        /// DateTime of the end of the measurement.
+        /// </summary>
         private DateTime _endTime;
         public DateTime EndTime
         {
             get { return _endTime; }
             set { this.SetProperty(ref this._endTime, value); }
         }
-
+        /// <summary>
+        /// Duration of the measurment. Will calucated by startTime and endTime.
+        /// </summary>
         private TimeSpan _duration;
         public TimeSpan Duration
         {
@@ -117,14 +138,18 @@ namespace BackgroundTask.ViewModel
             }
             set { this.SetProperty(ref this._duration, value); }
         }
-
+        /// <summary>
+        /// Total detected steps during the measurement.
+        /// </summary>
         private uint _totalSteps;
         public uint TotalSteps
         {
             get { return _totalSteps; }
             set { this.SetProperty(ref this._totalSteps, value); }
         }
-
+        /// <summary>
+        /// Data of the graph.
+        /// </summary>
         private OxyplotData _oxyplotData;
         public OxyplotData OxyplotData
         {
@@ -140,18 +165,25 @@ namespace BackgroundTask.ViewModel
 
         #region Methods
 
+        /// <summary>
+        /// Set all values to start a measurement.
+        /// </summary>
         public void StartMeasurement()
         {
             this.StartTime = DateTime.Now;
             this.MeasurementState = MeasurementState.Started;
         }
-
+        /// <summary>
+        /// Set all values to stop a measurement.
+        /// </summary>
         public void StopMeasurement()
         {
             this.EndTime = DateTime.Now;
             this.MeasurementState = MeasurementState.Stopped;
         }
-
+        /// <summary>
+        /// Set all values to delete a measurement.
+        /// </summary>
         public void DeleteMeasurement()
         {
             this.MeasurementState = MeasurementState.Deleted;

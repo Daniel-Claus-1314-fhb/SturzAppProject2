@@ -54,25 +54,19 @@ namespace BackgroundTask.Service
             bool isStarted = false;
             if (measurement != null &&
                 measurement.Id != null &&
-                measurement.Id.Length > 0 &&
+                measurement.Id != String.Empty &&
                 canRegisterBackgroundTask() &&
                 measurement.Setting != null)
             {
-                TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.AccelerometerFilename, measurement.GyrometerFilename,
-                    measurement.Setting.ReportInterval, measurement.Setting.ProcessedSamplesCount);
+                TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.AccelerometerFilename,
+                    measurement.Setting.ReportInterval, measurement.Setting.ProcessedSamplesCount, measurement.Setting.PeakThreshold, measurement.Setting.StepDistance);
 
                 string arguments = JsonConvert.SerializeObject(taskArguments);
                 if (measurement.Setting.UseAccelerometer)
                 {
                     await StartAccelerometerTask(measurement.Id, arguments);
                     isStarted = true;
-                } 
-                if (measurement.Setting.UseGyrometer)
-                {
-                    //StartGyrometerTask(measurement.Id, arguments);
-                    //isStarted = true;
-                }
-                
+                }                
             }
             return isStarted;
         }

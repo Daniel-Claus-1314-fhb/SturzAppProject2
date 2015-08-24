@@ -24,15 +24,15 @@ namespace BackgroundTask.Common.Converter
                 {
                     case NotifyLevel.Info:
                         // Green
-                        colorCode = "#FF538D50";
+                        colorCode = "#FF096E37";
                         break;
                     case NotifyLevel.Warn:
                         // Yellow
-                        colorCode = "#FF8F8334";
+                        colorCode = "#FFDE9E13";
                         break;
                     case NotifyLevel.Error:
                         // Red
-                        colorCode = "#FF9B4444";
+                        colorCode = "#FF9C2525";
                         break;
                 }
             }

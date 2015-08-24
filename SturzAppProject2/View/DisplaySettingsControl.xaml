@@ -26,9 +26,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -36,22 +33,23 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
-                    <TextBlock Text="Name der Messung" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
-                    <TextBlock Text="{Binding Path=Name}" Style="{StaticResource BodyTextBlockStyle}" MaxLines="2" TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1" Grid.Column="0">
-                    <TextBlock Text="Abtastrate" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,6">
+                    <TextBlock Text="Abtastrate" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
                     <TextBlock Text="{Binding Path=MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
-                <StackPanel Grid.Row="1" Grid.Column="1">
-                    <TextBlock Text="Verarbeitungsmenge" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,6"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,6">
+                    <TextBlock Text="Verarbeitungsmenge" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
                     <TextBlock Text="{Binding Path=MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCountSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
 
-                <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding MeasurementSetting.UseAccelerometer}" IsEnabled="False" Content="Accelerometer"/>
-                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding MeasurementSetting.UseGyrometer}" IsEnabled="False" Content="Gyrometer"/>
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,6">
+                    <TextBlock Text="Schrittabstand" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,6">
+                    <TextBlock Text="Amplitudenschwellwert" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.PeakThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=PeakThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>

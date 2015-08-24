@@ -109,7 +109,7 @@ namespace SensorDataEvaluation.Service
                     detectedSteps += (bool)accelEvaluation[2] ? 1u : 0u;
                 }
             }
-            accelerometerEvaluationModel.AddTotalSteps = detectedSteps;
+            accelerometerEvaluationModel.AddSteps = detectedSteps;
         }
     }
 }

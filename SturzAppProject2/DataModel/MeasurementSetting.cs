@@ -15,20 +15,29 @@ namespace BackgroundTask.DataModel
 
         #region construtors
 
+        /// <summary>
+        /// Initilize a default MeasurementSettings model.
+        /// </summary>
         public MeasurementSetting()
         {
             this.ReportInterval = 50;
             this.ProcessedSamplesCount = 200;
+            this.PeakThreshold = 0.5d;
+            this.StepDistance = 300;
             this.UseAccelerometer = true;
-            this.UseGyrometer = false;
         }
 
-        public MeasurementSetting(MeasurementSettingViewModel measurementSettingViewModel)
+        /// <summary>
+        /// Constructor to create a new MeasurementSettings model from an exsisting MeasurementSettingsViewModel.
+        /// </summary>
+        /// <param name="measurementSettingViewModel"></param>
+        public MeasurementSetting(MeasurementSettingViewModel measurementSettingViewModel) : this()
         {
             this.ReportInterval = measurementSettingViewModel.ReportInterval;
             this.ProcessedSamplesCount = measurementSettingViewModel.ProcessedSampleCount;
+            this.PeakThreshold = measurementSettingViewModel.PeakThreshold;
+            this.StepDistance = measurementSettingViewModel.StepDistance;
             this.UseAccelerometer = measurementSettingViewModel.UseAccelerometer;
-            this.UseGyrometer = measurementSettingViewModel.UseGyrometer;
         }
 
         #endregion
@@ -39,10 +48,26 @@ namespace BackgroundTask.DataModel
 
         #region Properties
 
+        /// <summary>
+        /// TimeSpan in milliseconds between to accelerometer readings.
+        /// </summary>
         public uint ReportInterval { get; set; }
+        /// <summary>
+        /// Amount of accelerometer readings which will analysed for step detection.
+        /// </summary>
         public uint ProcessedSamplesCount { get; set; }
+        /// <summary>
+        /// Threshold which must be exceeded to identify a step.
+        /// </summary>
+        public double PeakThreshold { get; set; }
+        /// <summary>
+        /// TimeSpan in milliseconds which have to be past between to detected Steps.
+        /// </summary>
+        public uint StepDistance { get; set; }
+        /// <summary>
+        /// Is true when the accelerometer is used to detect steps.
+        /// </summary>
         public bool UseAccelerometer { get; set; }
-        public bool UseGyrometer { get; set; }
 
         #endregion
     }

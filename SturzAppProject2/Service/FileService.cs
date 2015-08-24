@@ -20,9 +20,7 @@ namespace BackgroundTask.Service
 
         private static readonly string _measurementsMetaDataPath = @"";
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
-        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
         private static readonly string _evaluationAccelerometerPath = @"Evaluation\Accelerometer";
-        private static readonly string _evaluationGyrometerPath = @"Evaluation\Gyrometer";
 
         #region Save/Load MeasurementList
 
@@ -87,15 +85,12 @@ namespace BackgroundTask.Service
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
                 StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationAccelerometerPath);
-                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
 
                 Task<List<Tuple<TimeSpan, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.AccelerometerFilename);
                 Task<List<Tuple<TimeSpan, double, int>>> loadAccelerometerEvaluationTask = LoadAccelerometerEvaluationFromFile(accelerometerEvaluationFolder, measurement.AccelerometerFilename);
-                Task<List<Tuple<TimeSpan, double, double, double>>> loadGyrometerTask = LoadGyrometerReadingsFromFile(gyrometerFolder, measurement.GyrometerFilename);
 
                 oxyplotData.AccelerometerReadings = await loadAccelerometerTask;
                 oxyplotData.AccelerometerEvaluationList = await loadAccelerometerEvaluationTask;
-                oxyplotData.GyrometerReadings = await loadGyrometerTask;
             }
             return oxyplotData;
         }
@@ -174,48 +169,6 @@ namespace BackgroundTask.Service
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return accelerometerReadingTuples;
-        }
-
-        private static async Task<List<Tuple<TimeSpan, double, double, double>>> LoadGyrometerReadingsFromFile(StorageFolder targetFolder, string filename)
-        {
-            List<Tuple<TimeSpan, double, double, double>> gyrometerReadingTuples = new List<Tuple<TimeSpan, double, double, double>>();
-            try
-            {
-                StorageFile file = await targetFolder.GetFileAsync(filename);
-                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
-                {
-                    while (!stream.EndOfStream)
-                    {
-                        string currentReadLineOfFile = await stream.ReadLineAsync();
-                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
-
-                        long timeStampTicks;
-                        double gyrometerX;
-                        double gyrometerY;
-                        double gyrometerZ;
-
-                        NumberStyles styles = NumberStyles.Any;
-                        IFormatProvider provider = new CultureInfo("en-US");
-
-                        if (Double.TryParse(stringArray[0], styles, provider, out gyrometerX) &&
-                            Double.TryParse(stringArray[1], styles, provider, out gyrometerY) &&
-                            Double.TryParse(stringArray[2], styles, provider, out gyrometerZ) &&
-                            long.TryParse(stringArray[3], out timeStampTicks))
-                        {
-                            gyrometerReadingTuples.Add(new Tuple<TimeSpan, double, double, double>(TimeSpan.FromTicks(timeStampTicks), gyrometerX, gyrometerY, gyrometerZ));
-                        }
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerReadingsFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
-            }
-            return gyrometerReadingTuples;
         }
         
         #endregion
@@ -360,15 +313,6 @@ namespace BackgroundTask.Service
             {
                 StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationAccelerometerPath);
                 await DeleteFileAsync(accelerometerEvaluationFolder, filename);
-            }
-        }
-
-        public static async void DeleteGyrometerMeasurementAsync(string filename)
-        {
-            if (filename != null && filename.Length > 0)
-            {
-                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                await DeleteFileAsync(gyrometerFolder, filename);
             }
         }
         

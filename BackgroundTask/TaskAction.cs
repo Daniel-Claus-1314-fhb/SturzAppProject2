@@ -52,7 +52,8 @@ namespace BackgroundTask
                 _accelerometerDataModel.TupleListsHasSwitched += AccelerometerData_ReadingsListsHasSwitched;
 
                 //create new accelerometer evaluation model
-                _accelerometerEvaluationModel = new AccelerometerEvaluation(_taskArguments.AccelerometerFilename, _taskArguments.ProcessedSampleCount);
+                _accelerometerEvaluationModel = new AccelerometerEvaluation(_taskArguments.AccelerometerFilename, _taskArguments.ProcessedSampleCount, 
+                    _taskArguments.PeakThreshold, _taskArguments.StepDistance);
 
                 Debug.WriteLine(
                     "####################################################\n" +
@@ -91,7 +92,6 @@ namespace BackgroundTask
                 "####################################################\n" +
                 "############### Stop AccelerometerTask #############\n" +
                 "####################################################");
-
             // clean up accelerometer
             if (_accelerometer != null)
             {
@@ -104,6 +104,7 @@ namespace BackgroundTask
             _accelerometerDataModel.TupleListsHasSwitched -= AccelerometerData_ReadingsListsHasSwitched;
             await TaskFileService.AppendActivAccelerometerDataToFileAsync(_accelerometerDataModel);
             await ProcessAnalysis(_accelerometerDataModel.GetActivTupleList());
+            _taskInstance.Progress = this._accelerometerEvaluationModel.TotalSteps;
 
             _deferral.Complete();
         }

@@ -12,12 +12,12 @@ namespace SensorDataEvaluation.DataModel
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public AccelerometerEvaluation(string filename, uint processingListCount)
+        public AccelerometerEvaluation(string filename, uint processingListCount, double peakThreshold, uint stepDistance)
         {
             this._filename = filename;
             this._processingListCount = processingListCount;
-            this.StepThreshold = 0.3d;
-            this.StepDistance = new TimeSpan(TimeSpan.TicksPerMillisecond * 300);
+            this.StepThreshold = peakThreshold;
+            this.StepDistance = new TimeSpan(TimeSpan.TicksPerMillisecond * stepDistance);
 
             this._accelerometerAnalysisList = new List<object[]>();
             this._accelerometerEvaluationList = new List<object[]>();
@@ -43,7 +43,7 @@ namespace SensorDataEvaluation.DataModel
             get { return _totalSteps; }
             set { _totalSteps = value; }
         }
-        public uint AddTotalSteps
+        public uint AddSteps
         {
             set { _totalSteps += value; }
         }

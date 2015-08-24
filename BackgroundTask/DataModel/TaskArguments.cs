@@ -10,28 +10,32 @@ namespace BackgroundTask.DataModel
     {
         public TaskArguments()
         {
-            ReportInterval = 16;
+            ReportInterval = 50;
         }
 
-        public TaskArguments(string measurementId, string accelerometerFilename, string gyrometerFilename, uint reportInterval)
+        public TaskArguments(string measurementId, string accelerometerFilename, uint reportInterval)
         {
             this.MeasurementId = measurementId;
             this.AccelerometerFilename = accelerometerFilename;
-            this.GyrometerFilename = gyrometerFilename;
             this.ReportInterval = reportInterval;
-            this.ProcessedSampleCount = 1000;
+            this.ProcessedSampleCount = 200;
+            this.PeakThreshold = 0.3d;
+            this.StepDistance = 300;
         }
 
-        public TaskArguments(string measurementId, string accelerometerFilename, string gyrometerFilename, uint reportInterval, uint processedSampleCount)
-            : this(measurementId, accelerometerFilename, gyrometerFilename, reportInterval)
+        public TaskArguments(string measurementId, string accelerometerFilename, uint reportInterval, uint processedSampleCount, double peakThreshold, uint stepDistance)
+            : this(measurementId, accelerometerFilename, reportInterval)
         {
             this.ProcessedSampleCount = processedSampleCount;
+            this.PeakThreshold = peakThreshold;
+            this.StepDistance = stepDistance;
         }
 
         public string MeasurementId { get; set; }
         public string AccelerometerFilename { get; set; }
-        public string GyrometerFilename { get; set; }
         public uint ReportInterval{ get; set; }
         public uint ProcessedSampleCount { get; set; }
+        public double PeakThreshold { get; set; }
+        public uint StepDistance { get; set; }
     }
 }

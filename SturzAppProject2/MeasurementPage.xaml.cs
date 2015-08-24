@@ -174,7 +174,7 @@ namespace BackgroundTask
             if (isStarted)
             {
                 _measurementPageViewModel.MeasurementViewModel.StartMeasurement();
-                //secound update for successfully started measurement.
+                //second update for successfully started measurement.
                 _mainPage.MainMeasurementListModel.Update(measurementViewModel);
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
@@ -199,10 +199,12 @@ namespace BackgroundTask
             {
                 _measurementPageViewModel.MeasurementViewModel.StopMeasurement();
                 _mainPage.MainMeasurementListModel.Update(measurementViewModel);
+
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 StopUpdateTimer();
                 SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
+
                 _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info);
             }
             else
@@ -240,11 +242,15 @@ namespace BackgroundTask
                 // TODO Delete all Files of the measurement
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
-                _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
+                _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Warn);
+
+                Frame contentFrame = MainPage.Current.FindName("ContentFrame") as Frame;
+                if (contentFrame != null && contentFrame.CanGoBack)
+                    contentFrame.GoBack();
             }
             else
             {
-                _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Warn);
+                _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Error);
             }
         }
 
@@ -254,8 +260,8 @@ namespace BackgroundTask
 
             if (measurementViewModel.OxyplotData.HasAccelerometerReadings || measurementViewModel.OxyplotData.HasGyrometerReadings)
             {
-                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
                 _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
+                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
                 contentFrame.Navigate(typeof(GraphPage), measurementViewModel.OxyplotData);
             }
             else
@@ -310,7 +316,11 @@ namespace BackgroundTask
 
         public void OnProgress(IBackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args)
         {
-            Dispatcher.RunAsync(CoreDispatcherPriority.High,() => { _measurementPageViewModel.MeasurementViewModel.TotalSteps = args.Progress; });
+            Dispatcher.RunAsync(CoreDispatcherPriority.High,() => 
+            {
+                _measurementPageViewModel.MeasurementViewModel.TotalSteps = args.Progress;
+                _mainPage.MainMeasurementListModel.Update(_measurementPageViewModel.MeasurementViewModel);
+            });
         }
 
         #endregion

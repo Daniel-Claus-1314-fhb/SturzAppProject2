@@ -33,18 +33,21 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0">
-                    <TextBlock Text="Name der Messung" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
+                    <TextBlock Text="Messungsname" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
                     <TextBox Text="{Binding Path=Name, Mode=TwoWay}"/>
                 </StackPanel>
 
                 <Slider Grid.Row="1" Value="{Binding Path=MeasurementSetting.ReportInterval, Converter={StaticResource SliderConverter}, ConverterParameter=ReportInterval, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="5"
-                Header="{Binding MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalFull}"/>
+                Header="{Binding Path=MeasurementSetting.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalFull}"/>
 
                 <Slider Grid.Row="2" Value="{Binding Path=MeasurementSetting.ProcessedSampleCount, Converter={StaticResource SliderConverter}, ConverterParameter=ProcessedSampleCount, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="6" LargeChange="1"
-                Header="{Binding MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCountFull}"/>
+                Header="{Binding Path=MeasurementSetting.ProcessedSampleCount, Converter={StaticResource NumberConverter}, ConverterParameter=ProcessedSampleCountFull}"/>
 
-                <ToggleSwitch Grid.Row="3" Header="Accelerometer" OffContent="nicht verwenden" OnContent="verwenden" IsOn="{Binding MeasurementSetting.UseAccelerometer}"/>
-                <ToggleSwitch Grid.Row="4" Header="Gyrometer" OffContent="nicht verwenden" OnContent="verwenden" IsOn="{Binding MeasurementSetting.UseGyrometer}" IsEnabled="False"/>
+                <Slider Grid.Row="3" Value="{Binding Path=MeasurementSetting.PeakThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=PeakThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                Header="{Binding Path=MeasurementSetting.PeakThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=PeakThresholdFull}"/>
+
+                <Slider Grid.Row="4" Value="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource SliderConverter}, ConverterParameter=StepDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="12" LargeChange="1"
+                Header="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceFull}"/>
             </Grid>
         </Border>
     </Grid>
