@@ -22,7 +22,6 @@ namespace BackgroundTask.DataModel
         public OxyplotData()
         {
             AccelerometerReadings = new List<Tuple<TimeSpan, double, double, double>>();
-            GyrometerReadings = new List<Tuple<TimeSpan, double, double, double>>();
             AccelerometerEvaluationList = new List<Tuple<TimeSpan, double, int>>();
         }
 
@@ -35,17 +34,11 @@ namespace BackgroundTask.DataModel
         #region Properties
 
         public List<Tuple<TimeSpan, double, double, double>> AccelerometerReadings { get; set; }
-        public List<Tuple<TimeSpan, double, double, double>> GyrometerReadings { get; set; }
-
         public List<Tuple<TimeSpan, double, int>> AccelerometerEvaluationList { get; set; }
 
         public bool HasAccelerometerReadings
         {
             get { return this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0 ? true : false; }
-        }
-        public bool HasGyrometerReadings
-        {
-            get { return this.GyrometerReadings != null && this.GyrometerReadings.Count > 0 ? true : false; }
         }
         public bool HasAccelerometerEvaluationList
         {
@@ -112,7 +105,7 @@ namespace BackgroundTask.DataModel
             get
             {
                 LineSeries accelerometerVectorLengthLineSeries = new LineSeries();
-                accelerometerVectorLengthLineSeries.Title = "VectorLength";
+                accelerometerVectorLengthLineSeries.Title = "Vektorlänge";
 
                 if (this.AccelerometerEvaluationList != null && this.AccelerometerEvaluationList.Count > 0)
                 {
@@ -130,7 +123,7 @@ namespace BackgroundTask.DataModel
             get
             {
                 LineSeries accelerometerStepLineSeries = new LineSeries();
-                accelerometerStepLineSeries.Title = "Steps";
+                accelerometerStepLineSeries.Title = "Schritte";
 
                 if (this.AccelerometerEvaluationList != null && this.AccelerometerEvaluationList.Count > 0)
                 {

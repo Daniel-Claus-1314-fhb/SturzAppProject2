@@ -18,9 +18,7 @@ namespace BackgroundTask.Service
     internal static class TaskFileService
     {
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
-        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
         private static readonly string _evaluationAccelerometerPath = @"Evaluation\Accelerometer";
-        private static readonly string _evaluationGyrometerPath = @"Evaluation\Gyrometer";
 
         //##################################################################################################################################
         //################################################## Save Accelerometer data #######################################################

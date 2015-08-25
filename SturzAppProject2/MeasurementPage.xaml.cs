@@ -216,7 +216,7 @@ namespace BackgroundTask
         private void ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isExported = false;
-
+            // TODO ERIC
             // Export functionality
             isExported = _mainPage.ExportMeasurementData(measurementViewModel.Id);
 
@@ -258,7 +258,7 @@ namespace BackgroundTask
         {
             measurementViewModel.OxyplotData = await _mainPage.FindMeasurementGraphData(measurementViewModel.Id);
 
-            if (measurementViewModel.OxyplotData.HasAccelerometerReadings || measurementViewModel.OxyplotData.HasGyrometerReadings)
+            if (measurementViewModel.OxyplotData.HasAccelerometerReadings)
             {
                 _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
                 Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
