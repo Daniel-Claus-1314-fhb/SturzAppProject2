@@ -1,9 +1,11 @@
 ﻿using BackgroundTask.Common;
 using BackgroundTask.DataModel;
+using BackgroundTask.ViewModel;
 using OxyPlot;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -31,12 +33,15 @@ namespace BackgroundTask
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        private PlotModel _plotModel;
+        private GraphPageViewModel _graphPageViewModel;
 
         public GraphPage()
         {
-            _plotModel = new PlotModel();
-            _plotModel.Title = "Accelerometer Graph";
+            _graphPageViewModel = new GraphPageViewModel(PlotShownAccerlerometerGraphs);
+
+            PlotModel newPlotModel = new PlotModel();
+            newPlotModel.Title = "Accelerometer Graph";
+            _graphPageViewModel.PlotModel = newPlotModel;
 
             this.InitializeComponent();
 
@@ -53,18 +58,9 @@ namespace BackgroundTask
             get { return this.navigationHelper; }
         }
 
-        /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
+        public GraphPageViewModel GraphPageViewModel
         {
-            get { return this.defaultViewModel; }
-        }
-
-        public PlotModel PlotModel
-        {
-            get { return _plotModel; }
+            get { return _graphPageViewModel; }
         }
 
         /// <summary>
@@ -115,17 +111,17 @@ namespace BackgroundTask
             if (oxyplotData != null)
             {
                 // Gruppe 1
-                //_plotModel.Series.Add(oxyplotData.AccelerometerXLineSeries);
-                //_plotModel.Series.Add(oxyplotData.AccelerometerYLineSeries);
-                //_plotModel.Series.Add(oxyplotData.AccelerometerZLineSeries);
+                _graphPageViewModel.AccelerometerXLineSeries = oxyplotData.AccelerometerXLineSeries;
+                _graphPageViewModel.AccelerometerYLineSeries = oxyplotData.AccelerometerYLineSeries;
+                _graphPageViewModel.AccelerometerZLineSeries = oxyplotData.AccelerometerZLineSeries;
 
                 // Gruppe2
-                _plotModel.Series.Add(oxyplotData.AccelerometerVectorLengthLineSeries);
+                _graphPageViewModel.VectorLengthLineSeries = oxyplotData.AccelerometerVectorLengthLineSeries;
 
                 // Gruppe3
-                _plotModel.Series.Add(oxyplotData.AccelerometerStepLineSeries);
+                _graphPageViewModel.StepLineSeries = oxyplotData.AccelerometerStepLineSeries;
 
-                // TODO ERIC Einblenden/ausblenden
+                PlotShownAccerlerometerGraphs(_graphPageViewModel);
             }
 
             this.navigationHelper.OnNavigatedTo(e);
@@ -137,5 +133,56 @@ namespace BackgroundTask
         }
 
         #endregion
+
+        private void PlotShownAccerlerometerGraphs(GraphPageViewModel currentGrapPageViewModel) 
+        {
+            currentGrapPageViewModel.PlotModel.Series.Clear();
+            if (currentGrapPageViewModel.ShowGroup1)
+            {
+                // Show group 1
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerXLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerYLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerZLineSeries);
+            }
+            if (currentGrapPageViewModel.ShowGroup2)
+            {
+                // Show group 2
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.VectorLengthLineSeries);
+            }
+            if (currentGrapPageViewModel.ShowGroup3)
+            {
+                // Show group 3
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.StepLineSeries);
+            }
+            // call InvalidatePlot(true) to update the graph data.
+            currentGrapPageViewModel.PlotModel.InvalidatePlot(true);
+        }
+
+        private void ZoomInAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO ERIC add zoom in functionality
+            // beim clicken des Buttons "+" soll sich die Auflösung der X-Achse (Zeit-Achse) vergrößern. Der Zoom der Y-Achse soll unverändert beleiben.
+
+
+            // call InvalidatePlot(true) to update the graph data.
+            _graphPageViewModel.PlotModel.InvalidatePlot(true);
+        }
+
+        private void ZoomOutAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO ERIC add zoom out functionality
+            // beim clicken des Buttons "-" soll sich die Auflösung der X-Achse (Zeit-Achse) verkleinern. Der Zoom der Y-Achse soll unverändert beleiben.
+
+
+            // call InvalidatePlot(true) to update the graph data.
+            _graphPageViewModel.PlotModel.InvalidatePlot(true);
+        }
+
+        private void ResetViewAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            _graphPageViewModel.PlotModel.ResetAllAxes();
+            // call InvalidatePlot(true) to update the graph data.
+            _graphPageViewModel.PlotModel.InvalidatePlot(true);
+        }
     }
 }

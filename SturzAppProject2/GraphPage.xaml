@@ -7,9 +7,24 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:oxy="using:OxyPlot.Windows"
-    DataContext="{Binding Path=PlotModel, RelativeSource={RelativeSource Mode=Self}}"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Path=GraphPageViewModel, RelativeSource={RelativeSource Mode=Self}}">
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="ZoomInAppBarButton" Icon="Add" Label="vergrößern" Click="ZoomInAppBarButton_Click" />
+                <AppBarButton x:Name="ZoomOutAppBarButton" Icon="Remove" Label="verkleinern" Click="ZoomOutAppBarButton_Click" />
+                <AppBarButton x:Name="ResetViewAppBarButton" Icon="Refresh" Label="zurücksetzen" Click="ResetViewAppBarButton_Click" />
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ShowGroup1AppBarButton" Label="Rohdaten anzeigen/verbergen" Command="{Binding ShowGroup1Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup2AppBarButton" Label="Vektorlänge anzeigen/verbergen" Command="{Binding ShowGroup2Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup3AppBarButton" Label="Schritte anzeigen/verbergen" Command="{Binding ShowGroup3Command}" CommandParameter="{Binding}"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
+
     <Grid x:Name="LayoutRoot">
 
         <Grid.ChildrenTransitions>
@@ -17,9 +32,9 @@
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        
+
         <Grid Grid.Row="1" x:Name="ContentRoot">
-            <oxy:PlotView x:Name="oxyplotView" Model="{Binding}"/>
+            <oxy:PlotView x:Name="oxyplotView" Model="{Binding PlotModel}"/>
         </Grid>
     </Grid>
 </Page>

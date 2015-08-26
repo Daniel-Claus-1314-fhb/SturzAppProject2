@@ -124,6 +124,7 @@
     <Compile Include="Service\ExportService.cs" />
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\MappingService.cs" />
+    <Compile Include="ViewModel\GraphPageViewModel.cs" />
     <Compile Include="ViewModel\MeasurementPageViewModel.cs" />
     <Compile Include="ViewModel\MeasurementSettingViewModel.cs" />
     <Compile Include="ViewModel\MeasurementViewModel.cs" />
