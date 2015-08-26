@@ -163,7 +163,7 @@ namespace BackgroundTask
             // TODO ERIC add zoom in functionality (DONE)
             // beim clicken des Buttons "+" soll sich die Auflösung der X-Achse (Zeit-Achse) vergrößern. Der Zoom der Y-Achse soll unverändert beleiben.
 
-            _graphPageViewModel.PlotModel.DefaultXAxis.ZoomAtCenter(1.2);
+            _graphPageViewModel.PlotModel.DefaultXAxis.ZoomAtCenter(1.25);
 
             // call InvalidatePlot(true) to update the graph data.
             _graphPageViewModel.PlotModel.InvalidatePlot(true);
