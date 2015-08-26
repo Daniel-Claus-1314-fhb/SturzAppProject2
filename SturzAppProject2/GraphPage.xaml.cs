@@ -160,9 +160,10 @@ namespace BackgroundTask
 
         private void ZoomInAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO ERIC add zoom in functionality
+            // TODO ERIC add zoom in functionality (DONE)
             // beim clicken des Buttons "+" soll sich die Auflösung der X-Achse (Zeit-Achse) vergrößern. Der Zoom der Y-Achse soll unverändert beleiben.
 
+            _graphPageViewModel.PlotModel.DefaultXAxis.ZoomAtCenter(1.2);
 
             // call InvalidatePlot(true) to update the graph data.
             _graphPageViewModel.PlotModel.InvalidatePlot(true);
@@ -170,9 +171,9 @@ namespace BackgroundTask
 
         private void ZoomOutAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO ERIC add zoom out functionality
+            // TODO ERIC add zoom out functionality (DONE)
             // beim clicken des Buttons "-" soll sich die Auflösung der X-Achse (Zeit-Achse) verkleinern. Der Zoom der Y-Achse soll unverändert beleiben.
-
+            _graphPageViewModel.PlotModel.DefaultYAxis.ZoomAtCenter(1.2);
 
             // call InvalidatePlot(true) to update the graph data.
             _graphPageViewModel.PlotModel.InvalidatePlot(true);
