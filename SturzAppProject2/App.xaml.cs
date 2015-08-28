@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using System.Threading.Tasks;
+using BackgroundTask.Common;
 
 // Die Vorlage "Leere Anwendung" ist unter http://go.microsoft.com/fwlink/?LinkId=391641 dokumentiert.
 
@@ -23,10 +25,16 @@ namespace BackgroundTask
     /// <summary>
     /// Stellt das anwendungsspezifische Verhalten bereit, um die Standardanwendungsklasse zu ergänzen.
     /// </summary>
+    /// 
+
+  
+
     public sealed partial class App : Application
     {
+#if WINDOWS_PHONE_APP
+        ContinuationManager continuationManager;
+#endif
         private TransitionCollection transitions;
-
         /// <summary>
         /// Initialisiert das Singletonanwendungsobjekt.  Dies ist die erste Zeile von erstelltem Code
         /// und daher das logische Äquivalent von main() bzw. WinMain().
@@ -35,6 +43,80 @@ namespace BackgroundTask
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+        }
+
+        private Frame CreateRootFrame()
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (rootFrame == null)
+            {
+                // Create a Frame to act as the navigation context and navigate to the first page
+                rootFrame = new Frame();
+
+                // Set the default language
+                rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                // Place the frame in the current Window
+                Window.Current.Content = rootFrame;
+            }
+
+            return rootFrame;
+        }
+
+        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        {
+            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+        }
+
+        private async Task RestoreStatusAsync(ApplicationExecutionState previousExecutionState)
+        {
+            // Do not repeat app initialization when the Window already has content,
+            // just ensure that the window is active
+            if (previousExecutionState == ApplicationExecutionState.Terminated)
+            {
+                // Restore the saved session state only when appropriate
+                try
+                {
+                    await SuspensionManager.RestoreAsync();
+                }
+                catch (SuspensionManagerException)
+                {
+                    //Something went wrong restoring state.
+                    //Assume there is no state and continue
+                }
+            }
+        }
+
+        protected async override void OnActivated(IActivatedEventArgs e)
+        {
+            base.OnActivated(e);
+
+            continuationManager = new ContinuationManager();
+
+            Frame rootFrame = CreateRootFrame();
+            await RestoreStatusAsync(e.PreviousExecutionState);
+
+            if (rootFrame.Content == null)
+            {
+                rootFrame.Navigate(typeof(MainPage));
+            }
+
+            var continuationEventArgs = e as IContinuationActivatedEventArgs;
+            if (continuationEventArgs != null)
+            {
+                Frame scenarioFrame = MainPage.Current.FindName("ContentFrame") as Frame;
+                if (scenarioFrame != null)
+                {
+                    // Call ContinuationManager to handle continuation activation
+                    continuationManager.Continue(continuationEventArgs, scenarioFrame);
+                }
+            }
+
+            Window.Current.Activate();
         }
 
         /// <summary>

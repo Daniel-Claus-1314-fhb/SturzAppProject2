@@ -25,6 +25,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.Activation;
+using Windows.Storage;
+using Windows.Storage.Provider;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -33,7 +36,7 @@ namespace BackgroundTask
     /// <summary>
     /// Eine leere Seite, die eigenständig verwendet werden kann oder auf die innerhalb eines Frames navigiert werden kann.
     /// </summary>
-    public sealed partial class MeasurementPage : Page
+    public sealed partial class MeasurementPage : Page, IFileSavePickerContinuable
     {
         MainPage _mainPage = MainPage.Current;
 
@@ -215,19 +218,7 @@ namespace BackgroundTask
 
         private void ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
-            bool isExported = false;
-            // TODO ERIC
-            // Export functionality
-            isExported = _mainPage.ExportMeasurementData(measurementViewModel.Id);
-
-            if (isExported)
-            {
-                _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
-            }
-            else
-            {
-                _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
-            }
+            _mainPage.ExportMeasurementData(measurementViewModel.Id);
         }
 
         private void DeleteMeasurement(MeasurementViewModel measurementViewModel)
@@ -369,5 +360,47 @@ namespace BackgroundTask
         }
 
         #endregion
+
+        public async void ContinueFileSavePicker(FileSavePickerContinuationEventArgs args)
+        {
+            StorageFile file = args.File;
+            if (file != null)
+            {
+                // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
+                CachedFileManager.DeferUpdates(file);
+                // write to file
+
+                //List<Tuple<TimeSpan, double, double, double>> data = this._measurementPageViewModel.MeasurementViewModel.OxyplotData.AccelerometerReadings; ;
+                //foreach (Tuple<TimeSpan, double,double,double> date in data)
+                //{
+                //    await FileIO.AppendTextAsync(file, string.Join(",", dogs.ToArray()););
+                //}
+
+                StorageFolder resultFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync("Measurement");
+                StorageFolder resultFolder2 = await resultFolder.GetFolderAsync("Accelerometer");
+                StorageFile resultFile = await resultFolder2.GetFileAsync(file.Name.Remove(0,1));
+
+                string writetext = await FileIO.ReadTextAsync(resultFile);
+
+                await FileIO.WriteTextAsync(file, writetext);
+                // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
+                // Completing updates may require Windows to ask for user input.
+                FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
+                if (status == FileUpdateStatus.Complete)
+                {
+                    //OutputTextBlock.Text = "File " + file.Name + " was saved.";
+                    _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
+                }
+                else
+                {
+                    _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
+                }
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage("Exportiervorgang abgebrochen.", NotifyLevel.Warn);
+            }
+        }
+
     }
 }

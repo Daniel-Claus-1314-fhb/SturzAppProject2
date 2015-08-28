@@ -20,6 +20,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.Activation;
+using Windows.Storage;
+using Windows.Storage.Provider;
 
 // Die Elementvorlage "Leere Seite" ist unter http://go.microsoft.com/fwlink/?LinkId=391641 dokumentiert.
 
@@ -153,18 +156,26 @@ namespace BackgroundTask
             return isStopped;
         }
 
-        public bool ExportMeasurementData(string measurementId)
+        public void ExportMeasurementData(string measurementId)
         {
-            bool isExported = false;
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            //bool isExported = false;
             if (measurementId != null && measurementId.Length > 0)
             {
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
-                    isExported = ExportService.ExportMeasurementData(measurement);
+                    //isExported = ExportService.ExportMeasurementData(measurement);
+                    //isExported = await ExportService.ExportMeasurementData(measurement);
+                    savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                    // Dropdown of file types the user can save the file as
+                    savePicker.FileTypeChoices.Add("CSV-Datei", new List<string>() { ".csv" });
+                    // Default file name if the user does not type one in or select a file to replace
+                    savePicker.SuggestedFileName = "e" + measurement.AccelerometerFilename;
+
+                    savePicker.PickSaveFileAndContinue();
                 }
             }
-            return isExported;
         }
 
         public async Task<OxyplotData> FindMeasurementGraphData(string measurementId)

@@ -93,6 +93,7 @@
     <Compile Include="Common\Converter\NumberToFormattedStringConverter.cs" />
     <Compile Include="Common\Converter\SilderValueConverter.cs" />
     <Compile Include="Common\Converter\TimeToFormattedStringConverter.cs" />
+    <Compile Include="ContinuationManager.cs" />
     <Compile Include="DataModel\OxyplotData.cs" />
     <Compile Include="DataModel\MeasurementState.cs" />
     <Compile Include="GraphPage.xaml.cs">

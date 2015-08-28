@@ -173,6 +173,7 @@ namespace BackgroundTask.ViewModel
             this.StartTime = DateTime.Now;
             this.MeasurementState = MeasurementState.Started;
         }
+
         /// <summary>
         /// Set all values to stop a measurement.
         /// </summary>
