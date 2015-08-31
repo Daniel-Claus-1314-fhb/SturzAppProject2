@@ -5,6 +5,6 @@
     xmlns:local="using:BackgroundTask">
 
     <Application.Resources>
-        <x:String x:Key="AppName">Movement Meter</x:String>
+        <x:String x:Key="AppName">StepMeter</x:String>
     </Application.Resources>
 </Application>
