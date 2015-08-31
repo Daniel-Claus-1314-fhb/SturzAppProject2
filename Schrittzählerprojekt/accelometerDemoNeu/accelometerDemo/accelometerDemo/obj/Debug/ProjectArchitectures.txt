@@ -1,1 +1,0 @@
-C:\Users\Daniel\Documents\Visual Studio 2013\Projects\SturzAppProject2\Schrittzählerprojekt\accelometerDemoNeu\accelometerDemo\accelometerDemo\accelometerDemo.csproj;neutral

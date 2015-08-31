@@ -1,7 +1,0 @@
-<XamlCompilerSaveState>
-  <ReferenceAssemblyList>
-    <LocalAssembly PathName="c:\users\eric\documents\visual studio 2013\projects\app1\app1\obj\debug\intermediatexaml\app1.exe" HashGuid="39ff64c9-c79f-d6b2-dff6-75ce46cebcf2" />
-    <ReferenceAssembly PathName="c:\users\daniel\documents\visual studio 2013\projects\sturzappproject2\oxyplotprojekt\app1\packages\oxyplot.core.2015.1.989-alpha\lib\portable-net45+netcore45+wpa81+wp8+monoandroid1+monotouch1+xamarin.ios10\oxyplot.dll" HashGuid="88a984b9-a669-ee58-9764-88610aaf2c90" />
-    <ReferenceAssembly PathName="c:\users\daniel\documents\visual studio 2013\projects\sturzappproject2\oxyplotprojekt\app1\packages\oxyplot.windows.2015.1.989-alpha\lib\portable-windows8+wpa81\oxyplot.windows.dll" HashGuid="314e0127-beef-39f5-6cf0-4c3c81c0f33a" />
-  </ReferenceAssemblyList>
-</XamlCompilerSaveState>
