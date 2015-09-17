@@ -18,7 +18,7 @@ namespace BackgroundTask.Service
 
             StorageFolder resultFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync("Evaluation");
             StorageFolder resultFolder2 = await resultFolder.GetFolderAsync("Accelerometer");
-            StorageFile resultFile = await resultFolder2.GetFileAsync(measurement.AccelerometerFilename);
+            StorageFile resultFile = await resultFolder2.GetFileAsync(measurement.Filename);
 
             //await resultFile.CopyAsync(Windows.Storage.KnownFolders.DocumentsLibrary, "e" + measurement.AccelerometerFilename);
 
@@ -26,7 +26,7 @@ namespace BackgroundTask.Service
             // Dropdown of file types the user can save the file as
             savePicker.FileTypeChoices.Add("CSV-Datei", new List<string>() { ".csv" });
             // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = "e" + measurement.AccelerometerFilename;
+            savePicker.SuggestedFileName = "e" + measurement.Filename;
 
             savePicker.PickSaveFileAndContinue();
         }

@@ -58,7 +58,7 @@ namespace BackgroundTask.Service
                 canRegisterBackgroundTask() &&
                 measurement.Setting != null)
             {
-                TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.AccelerometerFilename,
+                TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.Filename,
                     measurement.Setting.ReportInterval, measurement.Setting.ProcessedSamplesCount, measurement.Setting.PeakThreshold, measurement.Setting.StepDistance);
 
                 string arguments = JsonConvert.SerializeObject(taskArguments);

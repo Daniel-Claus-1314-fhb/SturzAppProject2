@@ -99,7 +99,7 @@ namespace BackgroundTask.DataModel
         /// <summary>
         /// removes a certain measurement from the list of measurements.
         /// </summary>
-        public bool Delete(string deleteId)
+        public async Task<bool> Delete(string deleteId)
         {
             bool isDeleted = false;
 
@@ -108,8 +108,7 @@ namespace BackgroundTask.DataModel
                 Measurement measurementFromList = GetById(deleteId);
                 if (measurementFromList != null)
                 {
-                    FileService.DeleteAccelerometerMeasurementAsync(measurementFromList.AccelerometerFilename);
-                    FileService.DeleteAccelerometerEvaluationAsync(measurementFromList.AccelerometerFilename);
+                    await FileService.DeleteAllMeasurementFilesAsync(measurementFromList.Filename);
                     isDeleted = this._measurements.Remove(measurementFromList);
                     OnMeasurementListUpdated(EventArgs.Empty);
                 }

@@ -21,7 +21,7 @@ namespace BackgroundTask.DataModel
         {
             this.Name = "Neue_Messung";
             this.Id = String.Format("{0}", DateTime.Now.Ticks);
-            this.AccelerometerFilename = String.Format("Accelerometer_{0}.csv", this._id);
+            this.Filename = String.Format("Measurement_{0}.csv", this._id);
             this.CreateDateTime = DateTime.Now;
             this.Setting = new MeasurementSetting();
         }
@@ -48,13 +48,13 @@ namespace BackgroundTask.DataModel
             set { _id = value; }
         }
         /// <summary>
-        /// Filename of the accelerometer data.
+        /// Filename of the different files data.
         /// </summary>
-        private string _accelerometerFilename;
-        public string AccelerometerFilename
+        private string _filename;
+        public string Filename
         {
-            get { return _accelerometerFilename; }
-            set { _accelerometerFilename = value; }
+            get { return _filename; }
+            set { _filename = value; }
         }
         /// <summary>
         /// Settings of the measurement

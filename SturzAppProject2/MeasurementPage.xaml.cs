@@ -221,17 +221,14 @@ namespace BackgroundTask
             _mainPage.ExportMeasurementData(measurementViewModel.Id);
         }
 
-        private void DeleteMeasurement(MeasurementViewModel measurementViewModel)
+        private async void DeleteMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isDeleted = false;
-
-            isDeleted = _mainPage.MainMeasurementListModel.Delete(measurementViewModel.Id);
+            isDeleted = await _mainPage.MainMeasurementListModel.Delete(measurementViewModel.Id);
 
             if (isDeleted)
             {
                 _measurementPageViewModel.MeasurementViewModel.DeleteMeasurement();
-                // TODO Delete all Files of the measurement
-                // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Warn);
 

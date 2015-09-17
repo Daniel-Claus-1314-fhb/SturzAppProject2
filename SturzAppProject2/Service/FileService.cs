@@ -20,7 +20,9 @@ namespace BackgroundTask.Service
 
         private static readonly string _measurementsMetaDataPath = @"";
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
-        private static readonly string _evaluationAccelerometerPath = @"Evaluation\Accelerometer";
+        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
+        private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
+        private static readonly string _evaluationPath = @"Evaluation";
 
         #region Save/Load MeasurementList
 
@@ -84,10 +86,10 @@ namespace BackgroundTask.Service
             if (measurement != null)
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationAccelerometerPath);
+                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationPath);
 
-                Task<List<Tuple<TimeSpan, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.AccelerometerFilename);
-                Task<List<Tuple<TimeSpan, double, int>>> loadAccelerometerEvaluationTask = LoadAccelerometerEvaluationFromFile(accelerometerEvaluationFolder, measurement.AccelerometerFilename);
+                Task<List<Tuple<TimeSpan, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.Filename);
+                Task<List<Tuple<TimeSpan, double, int>>> loadAccelerometerEvaluationTask = LoadAccelerometerEvaluationFromFile(accelerometerEvaluationFolder, measurement.Filename);
 
                 oxyplotData.AccelerometerReadings = await loadAccelerometerTask;
                 oxyplotData.AccelerometerEvaluationList = await loadAccelerometerEvaluationTask;
@@ -297,23 +299,58 @@ namespace BackgroundTask.Service
         //################################################## delete File ###################################################################
         //##################################################################################################################################
 
-
-        public static async void DeleteAccelerometerMeasurementAsync(string filename)
+        public static async Task DeleteAllMeasurementFilesAsync(string filename)
         {
-            if (filename != null && filename.Length > 0)
+            Task accelerometerDeleteTask = DeleteAccelerometerFileAsync(filename);
+            Task gyrometerDeleteTask = DeleteGyrometerFileAsync(filename);
+            Task quaternionDeleteTask = DeleteQuaternionFileAsync(filename);
+            Task evaluationDeleteTask = DeleteEvaluationFileAsync(filename);
+
+            await accelerometerDeleteTask;
+            await gyrometerDeleteTask;
+            await quaternionDeleteTask;
+            await evaluationDeleteTask;
+            return;
+        }
+
+        private static async Task DeleteAccelerometerFileAsync(string filename)
+        {
+            if (filename != null && filename != string.Empty)
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
                 await DeleteFileAsync(accelerometerFolder, filename);
             }
+            return;
         }
 
-        public static async void DeleteAccelerometerEvaluationAsync(string filename)
+        private static async Task DeleteGyrometerFileAsync(string filename)
         {
-            if (filename != null && filename.Length > 0)
+            if (filename != null && filename != string.Empty)
             {
-                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationAccelerometerPath);
+                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+                await DeleteFileAsync(accelerometerFolder, filename);
+            }
+            return;
+        }
+
+        private static async Task DeleteQuaternionFileAsync(string filename)
+        {
+            if (filename != null && filename != string.Empty)
+            {
+                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementQuaternionPath);
+                await DeleteFileAsync(accelerometerFolder, filename);
+            }
+            return;
+        }
+
+        private static async Task DeleteEvaluationFileAsync(string filename)
+        {
+            if (filename != null && filename != string.Empty)
+            {
+                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationPath);
                 await DeleteFileAsync(accelerometerEvaluationFolder, filename);
             }
+            return;
         }
         
         private static async Task DeleteFileAsync(StorageFolder targetFolder, string filename)

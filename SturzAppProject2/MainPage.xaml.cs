@@ -171,7 +171,7 @@ namespace BackgroundTask
                     // Dropdown of file types the user can save the file as
                     savePicker.FileTypeChoices.Add("CSV-Datei", new List<string>() { ".csv" });
                     // Default file name if the user does not type one in or select a file to replace
-                    savePicker.SuggestedFileName = "e" + measurement.AccelerometerFilename;
+                    savePicker.SuggestedFileName = "e" + measurement.Filename;
 
                     savePicker.PickSaveFileAndContinue();
                 }

@@ -41,10 +41,16 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel\AccelerometerData.cs" />
-    <Compile Include="DataModel\AccelerometerEvaluation.cs" />
+    <Compile Include="DataModel\AccelerometerSample.cs" />
+    <Compile Include="DataModel\EvaluationDataModel.cs" />
+    <Compile Include="DataModel\EvaluationSettingModel.cs" />
+    <Compile Include="DataModel\EvaluationResultModel.cs" />
+    <Compile Include="DataModel\EvaluationProcessingModel.cs" />
+    <Compile Include="DataModel\GyrometerSample.cs" />
+    <Compile Include="DataModel\MeasurementData.cs" />
+    <Compile Include="DataModel\QuaternionSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\AccelerometerEvaluationService.cs" />
+    <Compile Include="Service\MeasurementEvaluationService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

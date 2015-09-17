@@ -18,41 +18,104 @@ namespace BackgroundTask.Service
     internal static class TaskFileService
     {
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
-        private static readonly string _evaluationAccelerometerPath = @"Evaluation\Accelerometer";
+        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
+        private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
+        private static readonly string _evaluationPath = @"Evaluation";
+
+        public static async Task AppendMeasurementDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
+        {
+            Task accelerometerDataTask = AppendAccelerometerDataToFileAsync(filename, measurementData, isActiveListChoosen);
+            Task gyrometerDataTask = AppendGyrometerDataToFileAsync(filename, measurementData, isActiveListChoosen);
+            Task quaterionDataTask = AppendQuaternionDataToFileAsync(filename, measurementData, isActiveListChoosen);
+
+            await accelerometerDataTask;
+            await gyrometerDataTask;
+            await quaterionDataTask;
+        }
 
         //##################################################################################################################################
         //################################################## Save Accelerometer data #######################################################
         //##################################################################################################################################
-
+        
         /// <summary>
-        /// Saves accelerometer tuples form to passiv accelerometer tuples list to the end of file.
-        /// </summary>
-        /// <param name="accelerometerData"></param>
-        public static async void AppendPassivAccelerometerDataToFileAsync(AccelerometerData accelerometerData)
-        {
-            // find folder
-            StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-            // convert data into csv
-            string csvString = ConvertAccelerometerDataIntoCSVString(accelerometerData.GetPassivTupleList());
-            // save csv string
-            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.Filename);
-        }
-
-        /// <summary>
-        /// Saves accelerometer tuples form to active accelerometer tuples list to the end of file.
-        /// Note: Is used only to save accelerometer tuples when the background task has been canceled. 
+        /// Saves accelerometer tuples form the given accelerometer tuples list to the end of file.
         /// Importent: Await Task to be sure all accelerometer tuples has been saved.
         /// </summary>
-        /// <param name="accelerometerData"></param>
+        /// <param name="filename"></param>
+        /// <param name="measurementData"></param>
+        /// <param name="isActiveListChoosen"></param>
         /// <returns></returns>
-        public static async Task AppendActivAccelerometerDataToFileAsync(AccelerometerData accelerometerData)
+        public static async Task AppendAccelerometerDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
         {
-            // find folder
-            StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-            // convert data into csv
-            string csvString = ConvertAccelerometerDataIntoCSVString(accelerometerData.GetActivTupleList());
-            // save csv string
-            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerData.Filename);
+            if (filename != null && filename != String.Empty)
+            {
+                // convert data into csv
+                string csvString = measurementData.ToAccelerometerCSVString(isActiveListChoosen);
+                if (csvString != null && csvString != String.Empty)
+                {
+                    // find folder
+                    StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+                    // save csv string
+                    await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, filename);
+                }
+            }
+            return;
+        }
+
+        //##################################################################################################################################
+        //################################################## Save Gyrometer data ###########################################################
+        //##################################################################################################################################
+
+        /// <summary>
+        /// Saves gyrometer tuples form the given gyrometer tuples list to the end of file.
+        /// Importent: Await Task to be sure all gyrometer tuples has been saved.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="measurementData"></param>
+        /// <param name="isActiveListChoosen"></param>
+        /// <returns></returns>
+        public static async Task AppendGyrometerDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
+        {
+            if (filename != null && filename != String.Empty)
+            {
+                // convert data into csv
+                string csvString = measurementData.ToGyrometerCSVString(isActiveListChoosen);
+                if (csvString != null && csvString != String.Empty)
+                {
+                    // find folder
+                    StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+                    // save csv string
+                    await SaveStringToEndOfFileAsync(csvString, gyrometerFolder, filename);
+                }
+            }
+            return;
+        }
+
+        //##################################################################################################################################
+        //################################################## Save Quaternion data ##########################################################
+        //##################################################################################################################################
+
+        /// <summary>
+        /// Saves quaternion tuples form the given quaternion tuples list to the end of file.
+        /// Importent: Await Task to be sure all quaternion tuples has been saved.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="accelerometerTupleList"></param>
+        /// <returns></returns>
+        public static async Task AppendQuaternionDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
+        {
+            if (filename != null && filename != String.Empty)
+            {
+                // convert data into csv
+                string csvString = measurementData.ToQuaternionCSVString(isActiveListChoosen);
+                if (csvString != null && csvString != String.Empty)
+                {
+                    // find folder
+                    StorageFolder gyrometerFolder = await FindStorageFolder(_measurementQuaternionPath);
+                    // save csv string
+                    await SaveStringToEndOfFileAsync(csvString, gyrometerFolder, filename);
+                }
+            }
             return;
         }
 
@@ -63,50 +126,20 @@ namespace BackgroundTask.Service
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="accelerometerEvaluation"></param>
+        /// <param name="evaluationResultModel"></param>
         /// <returns></returns>
-        public static async Task AppendEvaluationDataToFileAsync(AccelerometerEvaluation accelerometerEvaluation)
+        public static async Task AppendEvaluationDataToFileAsync(String filename, EvaluationResultModel evaluationResultModel)
         {
-            // find folder
-            StorageFolder accelerometerFolder = await FindStorageFolder(_evaluationAccelerometerPath);
-            // convert data into csv
-            string csvString = ConvertEvaluationDataIntoCSVString(accelerometerEvaluation.AccelerometerEvaluationList);
-            // save csv string
-            await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, accelerometerEvaluation.Filename);
-        }
-
-        //##################################################################################################################################
-        //################################################## Convert Accelerometer data ####################################################
-        //##################################################################################################################################
-
-        private static String ConvertAccelerometerDataIntoCSVString(IList<Tuple<TimeSpan, double, double, double>> accelerometerTuples)
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            var enumerator = accelerometerTuples.GetEnumerator();
-            while (enumerator.MoveNext())
+            if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
             {
-                var accelerometerTuple = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3}\n",
-                    accelerometerTuple.Item1.TotalMilliseconds, accelerometerTuple.Item2, accelerometerTuple.Item3, accelerometerTuple.Item4));
+                // find folder
+                StorageFolder accelerometerFolder = await FindStorageFolder(_evaluationPath);
+                // convert data into csv
+                string csvString = evaluationResultModel.ToEvaluationResultCSVString();
+                // save csv string
+                await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, filename);
             }
-            return stringbuilder.ToString();
-        }
-
-        //##################################################################################################################################
-        //################################################## Convert Evaluation data #######################################################
-        //##################################################################################################################################
-
-        private static string ConvertEvaluationDataIntoCSVString(List<object[]> accelerometerEvaluationList)
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            var enumerator = accelerometerEvaluationList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var currentAccelerometerEvaluation = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:g}\n",
-                    ((TimeSpan)currentAccelerometerEvaluation[0]).TotalMilliseconds, (double)currentAccelerometerEvaluation[1], (bool)currentAccelerometerEvaluation[2] ? 1:0));
-            }
-            return stringbuilder.ToString();
+            return;
         }
 
         //##################################################################################################################################
@@ -150,7 +183,7 @@ namespace BackgroundTask.Service
                         textWriter.WriteString(appendString);
                         await textWriter.StoreAsync();
                     }
-                    Debug.WriteLine("############## Current file size: '{0}' ################", textStream.Size);
+                    Debug.WriteLine("############## Current file size: '{0}' in '{1}' ################", textStream.Size, filename);
                 }
             }
             catch (FileNotFoundException)

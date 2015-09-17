@@ -13,10 +13,10 @@ namespace BackgroundTask.DataModel
             ReportInterval = 50;
         }
 
-        public TaskArguments(string measurementId, string accelerometerFilename, uint reportInterval)
+        public TaskArguments(string measurementId, string filename, uint reportInterval)
         {
             this.MeasurementId = measurementId;
-            this.AccelerometerFilename = accelerometerFilename;
+            this.Filename = filename;
             this.ReportInterval = reportInterval;
             this.ProcessedSampleCount = 200;
             this.PeakThreshold = 0.3d;
@@ -32,7 +32,7 @@ namespace BackgroundTask.DataModel
         }
 
         public string MeasurementId { get; set; }
-        public string AccelerometerFilename { get; set; }
+        public string Filename { get; set; }
         public uint ReportInterval{ get; set; }
         public uint ProcessedSampleCount { get; set; }
         public double PeakThreshold { get; set; }
