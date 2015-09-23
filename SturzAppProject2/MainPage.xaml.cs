@@ -87,6 +87,9 @@ namespace BackgroundTask
         /// Dieser Parameter wird normalerweise zum Konfigurieren der Seite verwendet.</param>
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            // Show loader
+            this.ShowLoader();
+
             if (_mainMeasurementListModel == null)
             {
                 _mainMeasurementListModel = new MeasurementList();
@@ -105,6 +108,9 @@ namespace BackgroundTask
                     throw new Exception("Failed to create page");
                 }
             }
+
+            // hide loader
+            this.HideLoader();
         }
 
         private void SaveMeasurementList(object sender, EventArgs e)
@@ -122,6 +128,16 @@ namespace BackgroundTask
                 //Indicate the back button press is handled so the app does not exit
                 e.Handled = true;
             }
+        }
+
+        public void ShowLoader()
+        {
+            VisualStateManager.GoToState(this, "DataLoad", false);
+        }
+
+        public void HideLoader()
+        {
+            VisualStateManager.GoToState(this, "DataLoaded", false);
         }
 
         //############################################################################################################################################

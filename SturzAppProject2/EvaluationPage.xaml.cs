@@ -97,6 +97,7 @@ namespace BackgroundTask
             //Stop evaluation
             _evaluationPageViewModel.EvaluationState = EvaluationState.Stopped;
             ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
+            _mainPage.ShowNotifyMessage("Messung wurde erneut ausgewertet.", NotifyLevel.Info);
         }
     }
 }

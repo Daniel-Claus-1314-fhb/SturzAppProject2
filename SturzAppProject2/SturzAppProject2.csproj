@@ -142,8 +142,11 @@
     <Compile Include="View\DisplaySettingsControl.xaml.cs">
       <DependentUpon>DisplaySettingsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditSettingsControl.xaml.cs">
-      <DependentUpon>EditSettingsControl.xaml</DependentUpon>
+    <Compile Include="View\EditSensorSettingsControl.xaml.cs">
+      <DependentUpon>EditSensorSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditEvaluationSettingsControl.xaml.cs">
+      <DependentUpon>EditEvaluationSettingsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\EvaluationControl.xaml.cs">
       <DependentUpon>EvaluationControl.xaml</DependentUpon>
@@ -203,7 +206,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EditSettingsControl.xaml">
+    <Page Include="View\EditSensorSettingsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditEvaluationSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

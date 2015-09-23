@@ -20,6 +20,11 @@ namespace BackgroundTask.Common.Converter
                 {
                     DateTime convertDateTime = (DateTime)value;
 
+                    if (convertDateTime == DateTime.MinValue)
+                    {
+                        return String.Format("-");
+                    }
+
                     if (parameter != null)
                     {
                         string parameterString = parameter as string;
@@ -56,6 +61,11 @@ namespace BackgroundTask.Common.Converter
                 else if (value.GetType().Equals(typeof(TimeSpan)))
                 {
                     TimeSpan convertTimeSpan = (TimeSpan)value;
+
+                    if (convertTimeSpan == TimeSpan.Zero)
+                    {
+                        return String.Format("-");
+                    }
 
                     if (parameter != null)
                     {

@@ -45,7 +45,7 @@
 
                 <view:EvaluationControl x:Name="evaluationControl" Grid.Row="0" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
 
-                <view:EditSettingsControl x:Name="editSettingsControl" Grid.Row="1" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
+                <view:EditEvaluationSettingsControl x:Name="editEvaluationSettingsControl" Grid.Row="1" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
 
             </Grid>
         </ScrollViewer>

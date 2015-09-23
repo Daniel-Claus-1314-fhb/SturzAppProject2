@@ -279,7 +279,7 @@ namespace BackgroundTask
             {
                 _measurementPageViewModel.MeasurementViewModel.DeleteMeasurement();
                 RaiseCanExecuteChanged();
-                _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Warn);
+                _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
 
                 Frame contentFrame = MainPage.Current.FindName("ContentFrame") as Frame;
                 if (contentFrame != null && contentFrame.CanGoBack)

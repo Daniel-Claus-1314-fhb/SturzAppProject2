@@ -12,15 +12,20 @@
         <valueConverter:NotifiedLevelToColorBrushConverter x:Key="NotifiedColorConverter"/>
     </Page.Resources>
 
-    <Grid>
+    <Grid>        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        
+
         <Frame Grid.Row="0" x:Name="ContentFrame" Background="{x:Null}"/>
-        <Grid x:Name="NotifyMessageGrid" Grid.Row="1" Background="{Binding Path=Level, Converter={StaticResource NotifiedColorConverter}}">
-            <TextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="10,0" MaxLines="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"></TextBlock>
+        
+        <Grid Grid.Row="0" Visibility="Collapsed">
+            <ProgressRing x:Name="progressRing" IsActive="True" Background="#CC000000"/>
+        </Grid>
+            
+        <Grid x:Name="NotifyMessageGrid" Grid.Row="1" Background="{Binding Level, Converter={StaticResource NotifiedColorConverter}}">
+            <TextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="10,0" MaxLines="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
         </Grid>
     </Grid>
 </Page>

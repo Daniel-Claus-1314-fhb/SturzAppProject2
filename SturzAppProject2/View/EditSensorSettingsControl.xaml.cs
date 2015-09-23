@@ -17,9 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace BackgroundTask.View
 {
-    public sealed partial class EditSettingsControl : UserControl
+    public sealed partial class EditSensorSettingsControl : UserControl
     {
-        public EditSettingsControl()
+        public EditSensorSettingsControl()
         {
             this.InitializeComponent();
         }

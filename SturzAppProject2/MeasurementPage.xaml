@@ -15,8 +15,8 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="StartMeasurementAppBarButton" Icon="Play" Label="Starten" Command="{Binding StartMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
                 <AppBarButton x:Name="StopMeasurementAppBarButton" Icon="Stop" Label="Stoppen" Command="{Binding StopMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
-                <AppBarButton x:Name="ShowRedoEvaluationAppBarButton" Icon="Edit" Label="Auswertung wiederholen" Command="{Binding RedoEvaluationCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
-                <AppBarButton x:Name="ShowMeasurementGraphAppBarButton" Icon="CalendarWeek" Label="Graph" Command="{Binding ShowMeasurementGraphCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="ShowRedoEvaluationAppBarButton" Icon="Edit" Label="erneut Auswerten" Command="{Binding RedoEvaluationCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
+                <AppBarButton x:Name="ShowMeasurementGraphAppBarButton" Icon="CalendarWeek" Label="Graphen anzeigen" Command="{Binding ShowMeasurementGraphCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="ExportMeasurementAppBarButton" Icon="Upload" Label="Exportieren" Command="{Binding ExportMeasurementCommand}" CommandParameter="{Binding MeasurementViewModel}"/>
@@ -37,17 +37,10 @@
     							</DiscreteObjectKeyFrame.Value>
     						</DiscreteObjectKeyFrame>
     					</ObjectAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSettingsControl">
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSensorSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Visible</Visibility>
-    							</DiscreteObjectKeyFrame.Value>
-    						</DiscreteObjectKeyFrame>
-    					</ObjectAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="measurementTimeControl">
-    						<DiscreteObjectKeyFrame KeyTime="0">
-    							<DiscreteObjectKeyFrame.Value>
-    								<Visibility>Collapsed</Visibility>
     							</DiscreteObjectKeyFrame.Value>
     						</DiscreteObjectKeyFrame>
     					</ObjectAnimationUsingKeyFrames>
@@ -58,11 +51,18 @@
     							</DiscreteObjectKeyFrame.Value>
     						</DiscreteObjectKeyFrame>
     					</ObjectAnimationUsingKeyFrames>
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editEvaluationSettingsControl">
+    						<DiscreteObjectKeyFrame KeyTime="0">
+    							<DiscreteObjectKeyFrame.Value>
+    								<Visibility>Visible</Visibility>
+    							</DiscreteObjectKeyFrame.Value>
+    						</DiscreteObjectKeyFrame>
+    					</ObjectAnimationUsingKeyFrames>
     				</Storyboard>
     			</VisualState>
     			<VisualState x:Name="Started">
     				<Storyboard>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSettingsControl">
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSensorSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Collapsed</Visibility>
@@ -77,6 +77,13 @@
     						</DiscreteObjectKeyFrame>
     					</ObjectAnimationUsingKeyFrames>
     					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="evaluationControl">
+    						<DiscreteObjectKeyFrame KeyTime="0">
+    							<DiscreteObjectKeyFrame.Value>
+    								<Visibility>Visible</Visibility>
+    							</DiscreteObjectKeyFrame.Value>
+    						</DiscreteObjectKeyFrame>
+    					</ObjectAnimationUsingKeyFrames>
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editEvaluationSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Collapsed</Visibility>
@@ -87,7 +94,7 @@
     			</VisualState>
     			<VisualState x:Name="Stopped">
     				<Storyboard>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSettingsControl">
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSensorSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Collapsed</Visibility>
@@ -101,7 +108,7 @@
     							</DiscreteObjectKeyFrame.Value>
     						</DiscreteObjectKeyFrame>
     					</ObjectAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="measurementTimeControl">
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editEvaluationSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Collapsed</Visibility>
@@ -112,14 +119,7 @@
     			</VisualState>
     			<VisualState x:Name="Deleted">
     				<Storyboard>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSettingsControl">
-    						<DiscreteObjectKeyFrame KeyTime="0">
-    							<DiscreteObjectKeyFrame.Value>
-    								<Visibility>Collapsed</Visibility>
-    							</DiscreteObjectKeyFrame.Value>
-    						</DiscreteObjectKeyFrame>
-    					</ObjectAnimationUsingKeyFrames>
-    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="measurementTimeControl">
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editSensorSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Collapsed</Visibility>
@@ -134,6 +134,13 @@
     						</DiscreteObjectKeyFrame>
     					</ObjectAnimationUsingKeyFrames>
     					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="evaluationControl">
+    						<DiscreteObjectKeyFrame KeyTime="0">
+    							<DiscreteObjectKeyFrame.Value>
+    								<Visibility>Collapsed</Visibility>
+    							</DiscreteObjectKeyFrame.Value>
+    						</DiscreteObjectKeyFrame>
+    					</ObjectAnimationUsingKeyFrames>
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="editEvaluationSettingsControl">
     						<DiscreteObjectKeyFrame KeyTime="0">
     							<DiscreteObjectKeyFrame.Value>
     								<Visibility>Collapsed</Visibility>
@@ -170,10 +177,10 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                
+                <view:EditSensorSettingsControl x:Name="editSensorSettingsControl" Grid.Row="0" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
+                <view:EditEvaluationSettingsControl x:Name="editEvaluationSettingsControl" Grid.Row="1" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
 
-                <view:EditSettingsControl x:Name="editSettingsControl" Grid.Row="0" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
-
-                <view:MeasurementTimeControl x:Name="measurementTimeControl" Grid.Row="1" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
                 <view:EvaluationControl x:Name="evaluationControl" Grid.Row="2" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
                 
                 <view:DisplaySettingsControl x:Name="displaySettingsControl" Grid.Row="3" DataContext="{Binding Path=MeasurementViewModel}" Margin="0" Visibility="Visible"/>
