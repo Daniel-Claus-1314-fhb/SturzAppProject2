@@ -111,15 +111,15 @@ namespace BackgroundTask
             if (oxyplotData != null)
             {
                 // Gruppe 1
-                _graphPageViewModel.AccelerometerXLineSeries = oxyplotData.AccelerometerXLineSeries;
-                _graphPageViewModel.AccelerometerYLineSeries = oxyplotData.AccelerometerYLineSeries;
-                _graphPageViewModel.AccelerometerZLineSeries = oxyplotData.AccelerometerZLineSeries;
+                _graphPageViewModel.AccelerometerXLineSeries = oxyplotData.GetAccelerometerXLineSeries();
+                _graphPageViewModel.AccelerometerYLineSeries = oxyplotData.GetAccelerometerYLineSeries();
+                _graphPageViewModel.AccelerometerZLineSeries = oxyplotData.GetAccelerometerZLineSeries();
 
                 // Gruppe2
-                _graphPageViewModel.VectorLengthLineSeries = oxyplotData.AccelerometerVectorLengthLineSeries;
+                _graphPageViewModel.VectorLengthLineSeries = oxyplotData.GetAccelerometerVectorLengthLineSeries();
 
                 // Gruppe3
-                _graphPageViewModel.StepLineSeries = oxyplotData.AccelerometerStepLineSeries;
+                _graphPageViewModel.StepLineSeries = oxyplotData.GetAccelerometerStepLineSeries();
 
                 PlotShownAccerlerometerGraphs(_graphPageViewModel);
             }

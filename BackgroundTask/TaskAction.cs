@@ -31,6 +31,8 @@ namespace BackgroundTask
         private BackgroundTaskDeferral _deferral;
         private TaskArguments _taskArguments;
 
+        MeasurementEvaluationService _measurementEvaluationService = new MeasurementEvaluationService();
+
         private MeasurementData _measurementData;
         private EvaluationSettingModel _evaluationSettingModel;
 
@@ -225,17 +227,17 @@ namespace BackgroundTask
             EvaluationDataModel evaluationDataModel = new EvaluationDataModel();
             if (isActiveListChoosen)
             {
-                evaluationDataModel.AddAllAccelerometerDataFromTupleList(measurementData.GetActivAccelerometerList());
-                evaluationDataModel.AddAllGyrometerDataFromTupleList(measurementData.GetActivGyrometerList());
-                evaluationDataModel.AddAllQuaternionDataFromTupleList(measurementData.GetActivQuaternionList());
+                evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetActivAccelerometerList());
+                evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetActivGyrometerList());
+                evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetActivQuaternionList());
             }
             else
             {
-                evaluationDataModel.AddAllAccelerometerDataFromTupleList(measurementData.GetPassivAccelerometerList());
-                evaluationDataModel.AddAllGyrometerDataFromTupleList(measurementData.GetPassivGyrometerList());
-                evaluationDataModel.AddAllQuaternionDataFromTupleList(measurementData.GetPassivQuaternionList());
+                evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetPassivAccelerometerList());
+                evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetPassivGyrometerList());
+                evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetPassivQuaternionList());
             }
-            EvaluationResultModel evaluationResultModel = MeasurementEvaluationService.Run(evaluationDataModel, _evaluationSettingModel);
+            EvaluationResultModel evaluationResultModel = await _measurementEvaluationService.RunEvaluationDuringMeasurementAsync(evaluationDataModel, _evaluationSettingModel);
             _totalSteps += evaluationResultModel.DetectedSteps;
             await TaskFileService.AppendEvaluationDataToFileAsync(_taskArguments.Filename, evaluationResultModel);
             _taskInstance.Progress = _totalSteps;

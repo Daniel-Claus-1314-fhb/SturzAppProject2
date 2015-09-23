@@ -8,9 +8,19 @@ namespace SensorDataEvaluation.DataModel
 {
     public class AccelerometerSample
     {
+        public AccelerometerSample() { }
+
+        public AccelerometerSample(TimeSpan measurementTime, double coordinateX, double coordinateY, double coordinateZ)
+        {
+            this.MeasurementTime = measurementTime;
+            this.CoordinateX = coordinateX;
+            this.CoordinateY = coordinateY;
+            this.CoordinateZ = coordinateZ;
+        }
+
         public TimeSpan MeasurementTime { get; set; }
-        public double CoordianteX { get; set; }
-        public double CoordianteY { get; set; }
-        public double CoordianteZ { get; set; }
+        public double CoordinateX { get; set; }
+        public double CoordinateY { get; set; }
+        public double CoordinateZ { get; set; }
     }
 }

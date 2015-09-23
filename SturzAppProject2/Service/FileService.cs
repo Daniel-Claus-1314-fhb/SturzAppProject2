@@ -1,5 +1,6 @@
 ﻿using BackgroundTask.DataModel;
 using Newtonsoft.Json;
+using SensorDataEvaluation.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +25,9 @@ namespace BackgroundTask.Service
         private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
         private static readonly string _evaluationPath = @"Evaluation";
 
+        private static NumberStyles _styles = NumberStyles.Any;
+        private static IFormatProvider _provider = new CultureInfo("en-US");
+
         #region Save/Load MeasurementList
 
         //##################################################################################################################################
@@ -38,6 +42,30 @@ namespace BackgroundTask.Service
                 StorageFolder targetFolder = await FindStorageFolder(_measurementsMetaDataPath);
                 await SaveJsonStringToFile(jsonString, targetFolder, _measurementsMetaDataFilename);
             }
+        }
+        //##################################################################################################################################
+        //################################################## Save Evaluation data ##########################################################
+        //##################################################################################################################################
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="evaluationResultModel"></param>
+        /// <returns></returns>
+        public static async Task SaveEvaluationDataToFileAsync(String filename, EvaluationResultModel evaluationResultModel)
+        {
+            if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
+            {
+                // find folder
+                StorageFolder folder = await FindStorageFolder(_evaluationPath);
+                // convert data into csv
+                string csvString = evaluationResultModel.ToEvaluationResultCSVString();
+                // delete old evaluationData
+                await DeleteFileAsync(folder, filename);
+                // save csv string
+                await SaveJsonStringToFile(csvString, folder, filename);
+            }
+            return;
         }
 
         //##################################################################################################################################
@@ -74,27 +102,63 @@ namespace BackgroundTask.Service
 
         #endregion
 
-        #region Load OxyplotData
-        
+
         //##################################################################################################################################
         //################################################## Load Oxyplot data #############################################################
         //##################################################################################################################################
 
-        internal static async Task<OxyplotData> LoadOxyplotDataAsync(Measurement measurement)
+        #region Load OxyplotData
+
+        internal static async Task<OxyplotData> LoadOxyplotDataAsync(string filename)
         {
             OxyplotData oxyplotData = new OxyplotData();
-            if (measurement != null)
+            if (filename != null & filename != String.Empty)
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationPath);
+                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+                StorageFolder quaternionFolder = await FindStorageFolder(_measurementQuaternionPath);
+                StorageFolder evaluationFolder = await FindStorageFolder(_evaluationPath);
 
-                Task<List<Tuple<TimeSpan, double, double, double>>> loadAccelerometerTask = LoadAccelerometerReadingsFromFile(accelerometerFolder, measurement.Filename);
-                Task<List<Tuple<TimeSpan, double, int>>> loadAccelerometerEvaluationTask = LoadAccelerometerEvaluationFromFile(accelerometerEvaluationFolder, measurement.Filename);
+                Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
+                Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
+                Task<List<QuaternionSample>> loadQuaternionTask = LoadQuaternionSamplesFromFile(quaternionFolder, filename);
+                Task<List<EvaluationSample>> loadEvaluationSamplesTask = LoadEvaluationSamplesFromFile(evaluationFolder, filename);
 
-                oxyplotData.AccelerometerReadings = await loadAccelerometerTask;
-                oxyplotData.AccelerometerEvaluationList = await loadAccelerometerEvaluationTask;
+                oxyplotData.AccelerometerSamples = await loadAccelerometerTask;
+                oxyplotData.GyrometerSamples = await loadGyrometerTask;
+                oxyplotData.QuaternionSamples = await loadQuaternionTask;
+                oxyplotData.EvaluationSamples = await loadEvaluationSamplesTask;
             }
             return oxyplotData;
+        }
+
+        #endregion
+
+        //##################################################################################################################################
+        //################################################## Load Evaluation Data ##########################################################
+        //##################################################################################################################################
+
+        #region Load Evaluation Data
+
+        internal static async Task<EvaluationDataModel> LoadSamplesForEvaluationAsync(string filename)
+        {
+            EvaluationDataModel evaluationData = new EvaluationDataModel();
+
+            if (filename != null && filename != string.Empty)
+            {
+                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+                StorageFolder quaternionFolder = await FindStorageFolder(_measurementQuaternionPath);
+
+                Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
+                Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
+                Task<List<QuaternionSample>> loadQuaternionTask = LoadQuaternionSamplesFromFile(quaternionFolder, filename);
+
+                evaluationData.AddAllAccelerometerAnalysisFromSampleList(await loadAccelerometerTask);
+                evaluationData.AddAllGyrometerAnalysisFromSampleList(await loadGyrometerTask);
+                evaluationData.AddAllQuaternionAnalysisFromSampleList(await loadQuaternionTask);
+            }
+            return evaluationData;
         }
 
         #endregion
@@ -127,15 +191,12 @@ namespace BackgroundTask.Service
         #region Load accelerometerReadings
 
         //##################################################################################################################################
-        //################################################## load accerlerometerReadings ###################################################
+        //################################################## load AccerlerometerSamples ####################################################
         //##################################################################################################################################
-
-        private static async Task<List<Tuple<TimeSpan, double, double, double>>> LoadAccelerometerReadingsFromFile(StorageFolder targetFolder, string filename)
+        
+        private static async Task<List<AccelerometerSample>> LoadAccelerometerSamplesFromFile(StorageFolder targetFolder, string filename)
         {
-            NumberStyles styles = NumberStyles.Any;
-            IFormatProvider provider = new CultureInfo("en-US");
-
-            List<Tuple<TimeSpan, double, double, double>> accelerometerReadingTuples = new List<Tuple<TimeSpan, double, double, double>>();
+            List<AccelerometerSample> accelerometerSampleList = new List<AccelerometerSample>();
 
             try
             {
@@ -149,15 +210,15 @@ namespace BackgroundTask.Service
 
                         double timeStampTicks;
                         double accerlerometerX;
-                        double accerlerometerY; 
+                        double accerlerometerY;
                         double accerlerometerZ;
 
-                        if (Double.TryParse(stringArray[0], styles, provider, out timeStampTicks) && 
-                            Double.TryParse(stringArray[1], styles, provider, out accerlerometerX) &&
-                            Double.TryParse(stringArray[2], styles, provider, out accerlerometerY) &&
-                            Double.TryParse(stringArray[3], styles, provider, out accerlerometerZ))
+                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
+                            Double.TryParse(stringArray[1], _styles, _provider, out accerlerometerX) &&
+                            Double.TryParse(stringArray[2], _styles, _provider, out accerlerometerY) &&
+                            Double.TryParse(stringArray[3], _styles, _provider, out accerlerometerZ))
                         {
-                            accelerometerReadingTuples.Add(new Tuple<TimeSpan, double, double, double>(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerX, accerlerometerY, accerlerometerZ));
+                            accelerometerSampleList.Add(new AccelerometerSample(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerX, accerlerometerY, accerlerometerZ));
                         }
                     }
                 }
@@ -170,21 +231,108 @@ namespace BackgroundTask.Service
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
-            return accelerometerReadingTuples;
+            return accelerometerSampleList;
         }
-        
+
         #endregion
+
+        //##################################################################################################################################
+        //################################################## load GyrometerSamples #########################################################
+        //##################################################################################################################################
+
+        private static async Task<List<GyrometerSample>> LoadGyrometerSamplesFromFile(StorageFolder targetFolder, string filename)
+        {
+            List<GyrometerSample> gyrometerSampleList = new List<GyrometerSample>();
+
+            try
+            {
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                {
+                    while (!stream.EndOfStream)
+                    {
+                        string currentReadLineOfFile = await stream.ReadLineAsync();
+                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
+
+                        double timeStampTicks;
+                        double velocityX;
+                        double velocityY;
+                        double velocityZ;
+
+                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
+                            Double.TryParse(stringArray[1], _styles, _provider, out velocityX) &&
+                            Double.TryParse(stringArray[2], _styles, _provider, out velocityY) &&
+                            Double.TryParse(stringArray[3], _styles, _provider, out velocityZ))
+                        {
+                            gyrometerSampleList.Add(new GyrometerSample(TimeSpan.FromMilliseconds(timeStampTicks), velocityX, velocityY, velocityZ));
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerSamplesFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerSamplesFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return gyrometerSampleList;
+        }
+
+        //##################################################################################################################################
+        //################################################## load QuaternionSamples ########################################################
+        //##################################################################################################################################
+
+        private static async Task<List<QuaternionSample>> LoadQuaternionSamplesFromFile(StorageFolder targetFolder, string filename)
+        {
+            List<QuaternionSample> quaternionSampleList = new List<QuaternionSample>();
+
+            try
+            {
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                {
+                    while (!stream.EndOfStream)
+                    {
+                        string currentReadLineOfFile = await stream.ReadLineAsync();
+                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
+
+                        double timeStampTicks;
+                        double angleW;
+                        double coordinateX;
+                        double coordinateY;
+                        double coordinateZ;
+
+                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
+                            Double.TryParse(stringArray[1], _styles, _provider, out angleW) &&
+                            Double.TryParse(stringArray[2], _styles, _provider, out coordinateX) &&
+                            Double.TryParse(stringArray[3], _styles, _provider, out coordinateY) &&
+                            Double.TryParse(stringArray[4], _styles, _provider, out coordinateZ))
+                        {
+                            quaternionSampleList.Add(new QuaternionSample(TimeSpan.FromMilliseconds(timeStampTicks), angleW, coordinateX, coordinateY, coordinateZ));
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadQuaternionSamplesFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadQuaternionSamplesFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return quaternionSampleList;
+        }
 
         //##################################################################################################################################
         //################################################## load Evaluations ##############################################################
         //##################################################################################################################################
 
-        private static async Task<List<Tuple<TimeSpan, double, int>>> LoadAccelerometerEvaluationFromFile(StorageFolder targetFolder, string filename)
+        private static async Task<List<EvaluationSample>> LoadEvaluationSamplesFromFile(StorageFolder targetFolder, string filename)
         {
-            NumberStyles styles = NumberStyles.Any;
-            IFormatProvider provider = new CultureInfo("en-US");
-
-            List<Tuple<TimeSpan, double, int>> accelerometerVectorLengthTuples = new List<Tuple<TimeSpan, double, int>>();
+            List<EvaluationSample> evaluationData = new List<EvaluationSample>();
 
             try
             {
@@ -200,11 +348,11 @@ namespace BackgroundTask.Service
                         double accerlerometerVectorLength;
                         int detectedStep;
 
-                        if (Double.TryParse(stringArray[0], styles, provider, out timeStampTicks) &&
-                            Double.TryParse(stringArray[1], styles, provider, out accerlerometerVectorLength) &&
-                            Int32.TryParse(stringArray[2],out detectedStep))
+                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
+                            Double.TryParse(stringArray[1], _styles, _provider, out accerlerometerVectorLength) &&
+                            Int32.TryParse(stringArray[2], out detectedStep))
                         {
-                            accelerometerVectorLengthTuples.Add(new Tuple<TimeSpan, double, int>(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerVectorLength, detectedStep));
+                            evaluationData.Add(new EvaluationSample(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerVectorLength, detectedStep == 0 ? false : true));
                         }
                     }
                 }
@@ -217,14 +365,14 @@ namespace BackgroundTask.Service
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerEvaluationFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
-            return accelerometerVectorLengthTuples;
+            return evaluationData;
         }
-
-        #region Save/Load JSONString
 
         //##################################################################################################################################
         //################################################## Save into File ################################################################
         //##################################################################################################################################
+
+        #region Save/Load JSONString
 
         private static async Task SaveJsonStringToFile(string jsonString, StorageFolder targetFolder, string filename)
         {
@@ -301,10 +449,10 @@ namespace BackgroundTask.Service
 
         public static async Task DeleteAllMeasurementFilesAsync(string filename)
         {
-            Task accelerometerDeleteTask = DeleteAccelerometerFileAsync(filename);
-            Task gyrometerDeleteTask = DeleteGyrometerFileAsync(filename);
-            Task quaternionDeleteTask = DeleteQuaternionFileAsync(filename);
-            Task evaluationDeleteTask = DeleteEvaluationFileAsync(filename);
+            Task accelerometerDeleteTask = DeleteFileFromFolderAsync(_measurementAccelerometerPath, filename);
+            Task gyrometerDeleteTask = DeleteFileFromFolderAsync(_measurementGyrometerPath, filename);
+            Task quaternionDeleteTask = DeleteFileFromFolderAsync(_measurementQuaternionPath, filename);
+            Task evaluationDeleteTask = DeleteFileFromFolderAsync(_evaluationPath, filename);
 
             await accelerometerDeleteTask;
             await gyrometerDeleteTask;
@@ -313,46 +461,17 @@ namespace BackgroundTask.Service
             return;
         }
 
-        private static async Task DeleteAccelerometerFileAsync(string filename)
+        private static async Task DeleteFileFromFolderAsync(string folderPath, string filename)
         {
-            if (filename != null && filename != string.Empty)
+            if (filename != null && filename != string.Empty &&
+                folderPath != null && folderPath != string.Empty)
             {
-                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                await DeleteFileAsync(accelerometerFolder, filename);
+                StorageFolder folder = await FindStorageFolder(folderPath);
+                await DeleteFileAsync(folder, filename);
             }
             return;
         }
 
-        private static async Task DeleteGyrometerFileAsync(string filename)
-        {
-            if (filename != null && filename != string.Empty)
-            {
-                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                await DeleteFileAsync(accelerometerFolder, filename);
-            }
-            return;
-        }
-
-        private static async Task DeleteQuaternionFileAsync(string filename)
-        {
-            if (filename != null && filename != string.Empty)
-            {
-                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementQuaternionPath);
-                await DeleteFileAsync(accelerometerFolder, filename);
-            }
-            return;
-        }
-
-        private static async Task DeleteEvaluationFileAsync(string filename)
-        {
-            if (filename != null && filename != string.Empty)
-            {
-                StorageFolder accelerometerEvaluationFolder = await FindStorageFolder(_evaluationPath);
-                await DeleteFileAsync(accelerometerEvaluationFolder, filename);
-            }
-            return;
-        }
-        
         private static async Task DeleteFileAsync(StorageFolder targetFolder, string filename)
         {
             try

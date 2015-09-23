@@ -133,11 +133,11 @@ namespace BackgroundTask.Service
             if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
             {
                 // find folder
-                StorageFolder accelerometerFolder = await FindStorageFolder(_evaluationPath);
+                StorageFolder folder = await FindStorageFolder(_evaluationPath);
                 // convert data into csv
                 string csvString = evaluationResultModel.ToEvaluationResultCSVString();
                 // save csv string
-                await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, filename);
+                await SaveStringToEndOfFileAsync(csvString, folder, filename);
             }
             return;
         }

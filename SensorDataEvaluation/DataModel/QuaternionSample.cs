@@ -9,10 +9,21 @@ namespace SensorDataEvaluation.DataModel
 {
     public class QuaternionSample
     {
+        public QuaternionSample() { }
+
+        public QuaternionSample(TimeSpan measurementTime, double angleW, double coordinateX, double coordinateY, double coordinateZ) 
+        {
+            this.MeasurementTime = measurementTime;
+            this.AngleW = angleW;
+            this.CoordinateX = coordinateX;
+            this.CoordinateY = coordinateY;
+            this.CoordinateZ = coordinateZ;
+        }
+
         public TimeSpan MeasurementTime { get; set; }
         public double AngleW { get; set; }
-        public double CoordianteX { get; set; }
-        public double CoordianteY { get; set; }
-        public double CoordianteZ { get; set; }
+        public double CoordinateX { get; set; }
+        public double CoordinateY { get; set; }
+        public double CoordinateZ { get; set; }
     }
 }

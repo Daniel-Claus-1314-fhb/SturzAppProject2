@@ -1,6 +1,7 @@
 ﻿using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using SensorDataEvaluation.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +22,10 @@ namespace BackgroundTask.DataModel
 
         public OxyplotData()
         {
-            AccelerometerReadings = new List<Tuple<TimeSpan, double, double, double>>();
-            AccelerometerEvaluationList = new List<Tuple<TimeSpan, double, int>>();
+            this.AccelerometerSamples = new List<AccelerometerSample>();
+            this.EvaluationSamples = new List<EvaluationSample>();
+            this.GyrometerSamples = new List<GyrometerSample>();
+            this.QuaternionSamples = new List<QuaternionSample>();
         }
 
         #endregion
@@ -33,107 +36,104 @@ namespace BackgroundTask.DataModel
 
         #region Properties
 
-        public List<Tuple<TimeSpan, double, double, double>> AccelerometerReadings { get; set; }
-        public List<Tuple<TimeSpan, double, int>> AccelerometerEvaluationList { get; set; }
+        public List<AccelerometerSample> AccelerometerSamples { get; set; }
+        public List<GyrometerSample> GyrometerSamples { get; set; }
+        public List<QuaternionSample> QuaternionSamples { get; set; }
+        public List<EvaluationSample> EvaluationSamples { get; set; }
 
-        public bool HasAccelerometerReadings
+        public bool HasAccelerometerSamples
         {
-            get { return this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0 ? true : false; }
+            get { return this.AccelerometerSamples != null && this.AccelerometerSamples.Count > 0 ? true : false; }
         }
-        public bool HasAccelerometerEvaluationList
+        public bool HasGyrometerSamples
         {
-            get { return this.AccelerometerEvaluationList != null && this.AccelerometerEvaluationList.Count > 0 ? true : false; }
+            get { return this.GyrometerSamples != null && this.GyrometerSamples.Count > 0 ? true : false; }
+        }
+        public bool HasQuaternionSamples
+        {
+            get { return this.QuaternionSamples != null && this.QuaternionSamples.Count > 0 ? true : false; }
+        }
+        public bool HasEvaluationSamples
+        {
+            get { return this.EvaluationSamples != null && this.EvaluationSamples.Count > 0 ? true : false; }
         }
 
+        #endregion
 
-        public LineSeries AccelerometerXLineSeries
+        //###################################################################################
+        //################################### Methods #######################################
+        //###################################################################################
+
+        #region Methods       
+
+        public LineSeries GetAccelerometerXLineSeries()
         {
-            get
+            LineSeries acclerometerXLineSeries = new LineSeries();
+            acclerometerXLineSeries.Title = "AccelerometerX";
+
+            var enumerator = this.AccelerometerSamples.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                LineSeries acclerometerXLineSeries = new LineSeries();
-                acclerometerXLineSeries.Title = "AccX";
-
-                if (this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0)
-                {
-                    foreach (Tuple<TimeSpan, double, double, double> accelerometerReading in this.AccelerometerReadings)
-                    {
-                        acclerometerXLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerReading.Item1), accelerometerReading.Item2));
-                    }
-                }
-                return acclerometerXLineSeries;
+                AccelerometerSample currentAccelerometerSample = enumerator.Current;
+                acclerometerXLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentAccelerometerSample.MeasurementTime), currentAccelerometerSample.CoordinateX));
             }
+            return acclerometerXLineSeries;
         }
 
-        public LineSeries AccelerometerYLineSeries
+        public LineSeries GetAccelerometerYLineSeries()
         {
-            get
-            {
-                LineSeries acclerometerYLineSeries = new LineSeries();
-                acclerometerYLineSeries.Title = "AccY";
+            LineSeries acclerometerYLineSeries = new LineSeries();
+            acclerometerYLineSeries.Title = "AccelerometerY";
 
-                if (this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0)
-                {
-                    foreach (Tuple<TimeSpan, double, double, double> accelerometerReading in this.AccelerometerReadings)
-                    {
-                        acclerometerYLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerReading.Item1), accelerometerReading.Item3));
-                    }
-                }
-                return acclerometerYLineSeries;
+            var enumerator = this.AccelerometerSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                AccelerometerSample currentAccelerometerSample = enumerator.Current;
+                acclerometerYLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentAccelerometerSample.MeasurementTime), currentAccelerometerSample.CoordinateY));
             }
+            return acclerometerYLineSeries;
         }
 
-        public LineSeries AccelerometerZLineSeries
+        public LineSeries GetAccelerometerZLineSeries()
         {
-            get
-            {
-                LineSeries acclerometerZLineSeries = new LineSeries();
-                acclerometerZLineSeries.Title = "AccZ";
+            LineSeries acclerometerZLineSeries = new LineSeries();
+            acclerometerZLineSeries.Title = "AccelerometerZ";
 
-                if (this.AccelerometerReadings != null && this.AccelerometerReadings.Count > 0)
-                {
-                    foreach (Tuple<TimeSpan, double, double, double> accelerometerReading in this.AccelerometerReadings)
-                    {
-                        acclerometerZLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerReading.Item1), accelerometerReading.Item4));
-                    }
-                }
-                return acclerometerZLineSeries;
+            var enumerator = this.AccelerometerSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                AccelerometerSample currentAccelerometerSample = enumerator.Current;
+                acclerometerZLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentAccelerometerSample.MeasurementTime), currentAccelerometerSample.CoordinateZ));
             }
+            return acclerometerZLineSeries;
         }
 
-        public LineSeries AccelerometerVectorLengthLineSeries
+        public LineSeries GetAccelerometerVectorLengthLineSeries()
         {
-            get
-            {
-                LineSeries accelerometerVectorLengthLineSeries = new LineSeries();
-                accelerometerVectorLengthLineSeries.Title = "Vektorlänge";
+            LineSeries accelerometerVectorLengthLineSeries = new LineSeries();
+            accelerometerVectorLengthLineSeries.Title = "Vektorlänge";
 
-                if (this.AccelerometerEvaluationList != null && this.AccelerometerEvaluationList.Count > 0)
-                {
-                    foreach (Tuple<TimeSpan, double, int> accelerometerVectorLength in this.AccelerometerEvaluationList)
-                    {
-                        accelerometerVectorLengthLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerVectorLength.Item1), accelerometerVectorLength.Item2));
-                    }
-                }
-                return accelerometerVectorLengthLineSeries;
+            var enumerator = this.EvaluationSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                EvaluationSample currentEvaluationSample = enumerator.Current;
+                accelerometerVectorLengthLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentEvaluationSample.MeasurementTime), currentEvaluationSample.AccelerometerVectorLength));
             }
+            return accelerometerVectorLengthLineSeries;
         }
 
-        public LineSeries AccelerometerStepLineSeries
+        public LineSeries GetAccelerometerStepLineSeries()
         {
-            get
-            {
-                LineSeries accelerometerStepLineSeries = new LineSeries();
-                accelerometerStepLineSeries.Title = "Schritte";
+            LineSeries accelerometerStepLineSeries = new LineSeries();
+            accelerometerStepLineSeries.Title = "Schritte";
 
-                if (this.AccelerometerEvaluationList != null && this.AccelerometerEvaluationList.Count > 0)
-                {
-                    foreach (Tuple<TimeSpan, double, int> accelerometerVectorLength in this.AccelerometerEvaluationList)
-                    {
-                        accelerometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(accelerometerVectorLength.Item1), accelerometerVectorLength.Item3));
-                    }
-                }
-                return accelerometerStepLineSeries;
+            var enumerator = this.EvaluationSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                EvaluationSample currentEvaluationSample = enumerator.Current;
+                accelerometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentEvaluationSample.MeasurementTime), currentEvaluationSample.IsStepDetected ? 1 : 0));
             }
+            return accelerometerStepLineSeries;
         }
 
         #endregion

@@ -49,7 +49,7 @@ namespace BackgroundTask
 
         public MeasurementPage()
         {
-            _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, DeleteMeasurement, ShowMeasurementGraph);
+            _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, ShowMeasurementGraph, RedoEvaluationGraph, DeleteMeasurement);
 
             this.InitializeComponent();
 
@@ -165,6 +165,10 @@ namespace BackgroundTask
         //############################################################################################################################################
         #region DelegateMethods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="measurementViewModel"></param>
         private async void StartMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isStarted = false;
@@ -191,6 +195,10 @@ namespace BackgroundTask
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="measurementViewModel"></param>
         private void StopMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isStopped = false;
@@ -216,11 +224,52 @@ namespace BackgroundTask
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="measurementViewModel"></param>
         private void ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
             _mainPage.ExportMeasurementData(measurementViewModel.Id);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="measurementViewModel"></param>
+        private void RedoEvaluationGraph(MeasurementViewModel measurementViewModel)
+        {
+            if (measurementViewModel != null)
+            {
+                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
+                contentFrame.Navigate(typeof(EvaluationPage), measurementViewModel.Id);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="measurementViewModel"></param>
+        private async void ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
+        {
+            measurementViewModel.OxyplotData = await _mainPage.FindMeasurementGraphData(measurementViewModel.Id);
+
+            if (measurementViewModel.OxyplotData.HasAccelerometerSamples)
+            {
+                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
+                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
+                contentFrame.Navigate(typeof(GraphPage), measurementViewModel.OxyplotData);
+            }
+            else
+            {
+                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurementViewModel.Name), NotifyLevel.Error);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="measurementViewModel"></param>
         private async void DeleteMeasurement(MeasurementViewModel measurementViewModel)
         {
             bool isDeleted = false;
@@ -242,29 +291,14 @@ namespace BackgroundTask
             }
         }
 
-        private async void ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
-        {
-            measurementViewModel.OxyplotData = await _mainPage.FindMeasurementGraphData(measurementViewModel.Id);
-
-            if (measurementViewModel.OxyplotData.HasAccelerometerReadings)
-            {
-                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
-                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
-                contentFrame.Navigate(typeof(GraphPage), measurementViewModel.OxyplotData);
-            }
-            else
-            {
-                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurementViewModel.Name), NotifyLevel.Error);
-            }
-        }
-
         private void RaiseCanExecuteChanged()
         {
             ((StartMeasurementCommand)_measurementPageViewModel.StartMeasurementCommand).OnCanExecuteChanged();
             ((StopMeasurementCommand)_measurementPageViewModel.StopMeasurementCommand).OnCanExecuteChanged();
             ((ExportMeasurementCommand)_measurementPageViewModel.ExportMeasurementCommand).OnCanExecuteChanged();
-            ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
             ((ShowMeasurementGraphCommand)_measurementPageViewModel.ShowMeasurementGraphCommand).OnCanExecuteChanged();
+            ((RedoEvaluationCommand)_measurementPageViewModel.RedoEvaluationCommand).OnCanExecuteChanged();
+            ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
             VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
         }
 

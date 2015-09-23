@@ -93,6 +93,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\EvaluationState.cs" />
+    <Compile Include="EvaluationPage.xaml.cs">
+      <DependentUpon>EvaluationPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\Converter\NumberToFormattedStringConverter.cs" />
     <Compile Include="Common\Converter\SilderValueConverter.cs" />
     <Compile Include="Common\Converter\TimeToFormattedStringConverter.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Service\ExportService.cs" />
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\MappingService.cs" />
+    <Compile Include="ViewModel\EvaluationPageViewModel.cs" />
     <Compile Include="ViewModel\GraphPageViewModel.cs" />
     <Compile Include="ViewModel\MeasurementPageViewModel.cs" />
     <Compile Include="ViewModel\MeasurementSettingViewModel.cs" />
@@ -169,6 +174,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="EvaluationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GraphPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

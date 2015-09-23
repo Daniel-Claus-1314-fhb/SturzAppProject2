@@ -187,7 +187,7 @@ namespace BackgroundTask
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
-                    oxyplotData = await FileService.LoadOxyplotDataAsync(measurement);
+                    oxyplotData = await FileService.LoadOxyplotDataAsync(measurement.Filename);
                 }
             }
             return oxyplotData;

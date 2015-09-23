@@ -17,6 +17,10 @@ namespace SensorDataEvaluation.DataModel
             this.AccelerometerAnalysisList = new List<object[]>();
             this.GyrometerAnalysisList = new List<object[]>();
             this.QuaternionAnalysisList = new List<object[]>();
+
+            this.AccelerometerSampleAnalysisList = new List<AccelerometerSample>();
+            this.GyrometerSampleAnalysisList = new List<GyrometerSample>();
+            this.QuaternionSampleAnalysisList = new List<QuaternionSample>();
         }
 
         //###################################################################################################################
@@ -33,6 +37,7 @@ namespace SensorDataEvaluation.DataModel
         /// object[4]: is accelerometer tuple already processed by analysis. (bool)
         /// </summary>
         public List<object[]> AccelerometerAnalysisList;
+        public List<AccelerometerSample> AccelerometerSampleAnalysisList;
 
         /// <summary>
         /// List of gyrometer tuples which will analysed.
@@ -44,6 +49,7 @@ namespace SensorDataEvaluation.DataModel
         /// object[4]: is gyrometer tuple already processed by analysis. (bool)
         /// </summary>
         public List<object[]> GyrometerAnalysisList;
+        public List<GyrometerSample> GyrometerSampleAnalysisList;
 
         /// <summary>
         /// List of quaternion tuples which will analysed.
@@ -56,36 +62,50 @@ namespace SensorDataEvaluation.DataModel
         /// object[5]: is quaternion tuple already processed by analysis. (bool)
         /// </summary>
         public List<object[]> QuaternionAnalysisList;
+        public List<QuaternionSample> QuaternionSampleAnalysisList;
 
 
         //###################################################################################################################
         //################################################## Methods ########################################################
         //###################################################################################################################
-
-        public void AddAllAccelerometerDataFromTupleList(IList<AccelerometerSample> accelerometerDataTupleList)
+        
+        public void AddAllAccelerometerAnalysisFromSampleList(List<AccelerometerSample> accelerometerSampleList)
         {
             //TODO think about to clean accelerometerAnalysisList at first.
             this.AccelerometerAnalysisList.Clear();
 
-            var enumerator = accelerometerDataTupleList.GetEnumerator();
+            var enumerator = accelerometerSampleList.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 AccelerometerSample currentAccelerometerSample = enumerator.Current;
                 TimeSpan timeSpan = currentAccelerometerSample.MeasurementTime;
-                double accelerometerX = currentAccelerometerSample.CoordianteX;
-                double accelerometerY = currentAccelerometerSample.CoordianteY;
-                double accelerometerZ = currentAccelerometerSample.CoordianteZ;
+                double accelerometerX = currentAccelerometerSample.CoordinateX;
+                double accelerometerY = currentAccelerometerSample.CoordinateY;
+                double accelerometerZ = currentAccelerometerSample.CoordinateZ;
                 bool isAnalysed = false;
                 this.AccelerometerAnalysisList.Add(new object[5] { timeSpan, accelerometerX, accelerometerY, accelerometerZ, isAnalysed });
             }
+
+            this.AccelerometerSampleAnalysisList.Clear();
+
+            var enumerator2 = accelerometerSampleList.GetEnumerator();
+            while (enumerator2.MoveNext())
+            {
+                AccelerometerSample currentAccelerometerSample = enumerator2.Current;
+                TimeSpan timeSpan = currentAccelerometerSample.MeasurementTime;
+                double accelerometerX = currentAccelerometerSample.CoordinateX;
+                double accelerometerY = currentAccelerometerSample.CoordinateY;
+                double accelerometerZ = currentAccelerometerSample.CoordinateZ;
+                this.AccelerometerSampleAnalysisList.Add(new AccelerometerSample(timeSpan, accelerometerX, accelerometerY, accelerometerZ));
+            }
         }
 
-        public void AddAllGyrometerDataFromTupleList(IList<GyrometerSample> gyrometerDataTupleList)
+        public void AddAllGyrometerAnalysisFromSampleList(List<GyrometerSample> gyrometerSampleList)
         {
             //TODO think about to clean gyrometerAnalysisList at first.
             this.GyrometerAnalysisList.Clear();
 
-            var enumerator = gyrometerDataTupleList.GetEnumerator();
+            var enumerator = gyrometerSampleList.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 GyrometerSample currentGyrometerSample = enumerator.Current;
@@ -96,24 +116,51 @@ namespace SensorDataEvaluation.DataModel
                 bool isAnalysed = false;
                 this.GyrometerAnalysisList.Add(new object[5] { timeSpan, gyrometerX, gyrometerY, gyrometerZ, isAnalysed });
             }
+
+            this.GyrometerSampleAnalysisList.Clear();
+
+            var enumerator2 = gyrometerSampleList.GetEnumerator();
+            while (enumerator2.MoveNext())
+            {
+                GyrometerSample currentGyrometerSample = enumerator2.Current;
+                TimeSpan timeSpan = currentGyrometerSample.MeasurementTime;
+                double velocityX = currentGyrometerSample.VelocityX;
+                double velocityY = currentGyrometerSample.VelocityY;
+                double velocityZ = currentGyrometerSample.VelocityZ;
+                this.GyrometerSampleAnalysisList.Add(new GyrometerSample(timeSpan, velocityX, velocityY, velocityZ));
+            }
         }
 
-        public void AddAllQuaternionDataFromTupleList(IList<QuaternionSample> quaternionDataTupleList)
+        public void AddAllQuaternionAnalysisFromSampleList(List<QuaternionSample> quaternionSampleList)
         {
             //TODO think about to clean gyrometerAnalysisList at first.
             this.QuaternionAnalysisList.Clear();
 
-            var enumerator = quaternionDataTupleList.GetEnumerator();
+            var enumerator = quaternionSampleList.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 QuaternionSample currentQuaternionSample = enumerator.Current;
                 TimeSpan timeSpan = currentQuaternionSample.MeasurementTime;
                 double quaternionW = currentQuaternionSample.AngleW;
-                double quaternionX = currentQuaternionSample.CoordianteX;
-                double quaternionY = currentQuaternionSample.CoordianteY;
-                double quaternionZ = currentQuaternionSample.CoordianteZ;
+                double quaternionX = currentQuaternionSample.CoordinateX;
+                double quaternionY = currentQuaternionSample.CoordinateY;
+                double quaternionZ = currentQuaternionSample.CoordinateZ;
                 bool isAnalysed = false;
                 this.QuaternionAnalysisList.Add(new object[6] { timeSpan, quaternionW, quaternionX, quaternionY, quaternionZ, isAnalysed });
+            } 
+            
+            this.QuaternionSampleAnalysisList.Clear();
+
+            var enumerator2 = quaternionSampleList.GetEnumerator();
+            while (enumerator2.MoveNext())
+            {
+                QuaternionSample currentQuaternionSample = enumerator2.Current;
+                TimeSpan timeSpan = currentQuaternionSample.MeasurementTime;
+                double angleW = currentQuaternionSample.AngleW;
+                double coordinateX = currentQuaternionSample.CoordinateX;
+                double coordinateY = currentQuaternionSample.CoordinateY;
+                double coordinateZ = currentQuaternionSample.CoordinateZ;
+                this.QuaternionSampleAnalysisList.Add(new QuaternionSample(timeSpan, angleW, coordinateX, coordinateY, coordinateZ));
             }
         }
     }

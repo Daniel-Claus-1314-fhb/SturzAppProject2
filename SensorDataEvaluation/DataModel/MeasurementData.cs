@@ -63,8 +63,8 @@ namespace SensorDataEvaluation.DataModel
         /// item3: Y coorfinate of the accelerometer.
         /// item4: Z coordinate of the accelerometer.
         /// </summary>
-        private IList<AccelerometerSample> _accelerometerListEven { get; set; }
-        private IList<AccelerometerSample> _accelerometerListOdd { get; set; }
+        private List<AccelerometerSample> _accelerometerListEven { get; set; }
+        private List<AccelerometerSample> _accelerometerListOdd { get; set; }
 
         /// <summary>
         /// item1: timespan since the start of measurement.
@@ -72,8 +72,8 @@ namespace SensorDataEvaluation.DataModel
         /// item3: Y angle velocity of the gyrometer.
         /// item4: Z angle velocity of the gyrometer.
         /// </summary>
-        private IList<GyrometerSample> _gyrometerListEven { get; set; }
-        private IList<GyrometerSample> _gyrometerListOdd { get; set; }
+        private List<GyrometerSample> _gyrometerListEven { get; set; }
+        private List<GyrometerSample> _gyrometerListOdd { get; set; }
 
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace SensorDataEvaluation.DataModel
         /// item4: Y coorfinate of the quaternion vector.
         /// item5: Z coordinate of the quaternion vector.
         /// </summary>
-        private IList<QuaternionSample> _quaternionListEven { get; set; }
-        private IList<QuaternionSample> _quaternionListOdd { get; set; }
+        private List<QuaternionSample> _quaternionListEven { get; set; }
+        private List<QuaternionSample> _quaternionListOdd { get; set; }
 
 
         //###################################################################################################################
@@ -119,9 +119,9 @@ namespace SensorDataEvaluation.DataModel
 
                 AccelerometerSample accelerometerSample = new AccelerometerSample();
                 accelerometerSample.MeasurementTime = accelerometerReading.Timestamp.Subtract(_startDateTime);
-                accelerometerSample.CoordianteX = accelerometerReading.AccelerationX;
-                accelerometerSample.CoordianteY = accelerometerReading.AccelerationY;
-                accelerometerSample.CoordianteZ = accelerometerReading.AccelerationZ;
+                accelerometerSample.CoordinateX = accelerometerReading.AccelerationX;
+                accelerometerSample.CoordinateY = accelerometerReading.AccelerationY;
+                accelerometerSample.CoordinateZ = accelerometerReading.AccelerationZ;
                 this.AddAccelerometerSample(accelerometerSample);
             }
         }
@@ -143,7 +143,7 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the accelerometer list which is currently used to store new accelerometer samples.
         /// </summary>
         /// <returns></returns>
-        public IList<AccelerometerSample> GetActivAccelerometerList()
+        public List<AccelerometerSample> GetActivAccelerometerList()
         {
             return _listChangeCounter % 2 == 0 ? _accelerometerListEven : _accelerometerListOdd;
         }
@@ -151,7 +151,7 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the accelerometer list which is currently NOT used store new accelerometer samples.
         /// </summary>
         /// <returns></returns>
-        public IList<AccelerometerSample> GetPassivAccelerometerList()
+        public List<AccelerometerSample> GetPassivAccelerometerList()
         {
             return _listChangeCounter % 2 == 1 ? _accelerometerListEven : _accelerometerListOdd;
         }
@@ -170,7 +170,7 @@ namespace SensorDataEvaluation.DataModel
             {
                 var accelerometerReadingModel = enumerator.Current;
                 stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3}\n",
-                    accelerometerReadingModel.MeasurementTime.TotalMilliseconds, accelerometerReadingModel.CoordianteX, accelerometerReadingModel.CoordianteY, accelerometerReadingModel.CoordianteZ));
+                    accelerometerReadingModel.MeasurementTime.TotalMilliseconds, accelerometerReadingModel.CoordinateX, accelerometerReadingModel.CoordinateY, accelerometerReadingModel.CoordinateZ));
             }
             return stringbuilder.ToString();
         }
@@ -216,7 +216,7 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the gyrometer list which is currently used to store new gyrometer sample.
         /// </summary>
         /// <returns></returns>
-        public IList<GyrometerSample> GetActivGyrometerList()
+        public List<GyrometerSample> GetActivGyrometerList()
         {
             return _listChangeCounter % 2 == 0 ? _gyrometerListEven : _gyrometerListOdd;
         }
@@ -224,7 +224,7 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the gyrometer list which is currently NOT used store new gyrometer sample.
         /// </summary>
         /// <returns></returns>
-        public IList<GyrometerSample> GetPassivGyrometerList()
+        public List<GyrometerSample> GetPassivGyrometerList()
         {
             return _listChangeCounter % 2 == 1 ? _gyrometerListEven : _gyrometerListOdd;
         }
@@ -265,9 +265,9 @@ namespace SensorDataEvaluation.DataModel
                 QuaternionSample quaternionSample = new QuaternionSample();
                 quaternionSample.MeasurementTime = orientationSensorReading.Timestamp.Subtract(_startDateTime);
                 quaternionSample.AngleW = orientationSensorReading.Quaternion.W;
-                quaternionSample.CoordianteX = orientationSensorReading.Quaternion.X;
-                quaternionSample.CoordianteY = orientationSensorReading.Quaternion.Y;
-                quaternionSample.CoordianteZ = orientationSensorReading.Quaternion.Z;
+                quaternionSample.CoordinateX = orientationSensorReading.Quaternion.X;
+                quaternionSample.CoordinateY = orientationSensorReading.Quaternion.Y;
+                quaternionSample.CoordinateZ = orientationSensorReading.Quaternion.Z;
                 this.AddQuaternionSample(quaternionSample);
             }
         }
@@ -289,7 +289,7 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the quaternion list which is currently used to store new quaternion samples.
         /// </summary>
         /// <returns></returns>
-        public IList<QuaternionSample> GetActivQuaternionList()
+        public List<QuaternionSample> GetActivQuaternionList()
         {
             return _listChangeCounter % 2 == 0 ? _quaternionListEven : _quaternionListOdd;
         }
@@ -297,7 +297,7 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the quaternion list which is currently NOT used store new quaternion samples.
         /// </summary>
         /// <returns></returns>
-        public IList<QuaternionSample> GetPassivQuaternionList()
+        public List<QuaternionSample> GetPassivQuaternionList()
         {
             return _listChangeCounter % 2 == 1 ? _quaternionListEven : _quaternionListOdd;
         }
@@ -316,7 +316,7 @@ namespace SensorDataEvaluation.DataModel
             {
                 QuaternionSample quaternionSample = enumerator.Current;
                 stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3},{4:f3}\n",
-                    quaternionSample.MeasurementTime.TotalMilliseconds, quaternionSample.AngleW, quaternionSample.CoordianteX, quaternionSample.CoordianteY, quaternionSample.CoordianteZ));
+                    quaternionSample.MeasurementTime.TotalMilliseconds, quaternionSample.AngleW, quaternionSample.CoordinateX, quaternionSample.CoordinateY, quaternionSample.CoordinateZ));
             }
             return stringbuilder.ToString();
         }

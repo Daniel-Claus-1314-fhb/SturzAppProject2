@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SensorDataEvaluation.DataModel
+namespace BackgroundTask.DataModel
 {
-    class EvaluationProcessingModel
+    public enum EvaluationState
     {
+        Started,
+        Stopped
     }
 }

@@ -19,14 +19,16 @@ namespace BackgroundTask.ViewModel
         #region Construtors
 
         public MeasurementPageViewModel(Action<MeasurementViewModel> startMeasurementMethod, Action<MeasurementViewModel> stopMeasurementMethod,
-            Action<MeasurementViewModel> exportMeasurementMethod, Action<MeasurementViewModel> deleteMeasurementMethod, Action<MeasurementViewModel> showMeasurementGraphMethod)
+            Action<MeasurementViewModel> exportMeasurementMethod, Action<MeasurementViewModel> showMeasurementGraphMethod, 
+            Action<MeasurementViewModel> RedoEvaluationMethod, Action<MeasurementViewModel> deleteMeasurementMethod)
         {
             this.MeasurementViewModel = new MeasurementViewModel();
             this.StartMeasurementCommand = new StartMeasurementCommand(startMeasurementMethod);
             this.StopMeasurementCommand = new StopMeasurementCommand(stopMeasurementMethod);
             this.ExportMeasurementCommand = new ExportMeasurementCommand(exportMeasurementMethod);
-            this.DeleteMeasurementCommand = new DeleteMeasurementCommand(deleteMeasurementMethod);
             this.ShowMeasurementGraphCommand = new ShowMeasurementGraphCommand(showMeasurementGraphMethod);
+            this.RedoEvaluationCommand = new RedoEvaluationCommand(RedoEvaluationMethod);
+            this.DeleteMeasurementCommand = new DeleteMeasurementCommand(deleteMeasurementMethod);
         }
 
         #endregion
@@ -47,8 +49,9 @@ namespace BackgroundTask.ViewModel
         public ICommand StartMeasurementCommand { get; set; }
         public ICommand StopMeasurementCommand { get; set; }
         public ICommand ExportMeasurementCommand { get; set; }
-        public ICommand DeleteMeasurementCommand { get; set; }
+        public ICommand RedoEvaluationCommand { get; set; }
         public ICommand ShowMeasurementGraphCommand { get; set; }
+        public ICommand DeleteMeasurementCommand { get; set; }
 
         #endregion
 
@@ -310,6 +313,60 @@ namespace BackgroundTask.ViewModel
     public class ShowMeasurementGraphCommand : ICommand
     {
         public ShowMeasurementGraphCommand(Action<MeasurementViewModel> actionPointer)
+        {
+            this.ActionPointer = actionPointer;
+        }
+
+        public Action<MeasurementViewModel> ActionPointer { get; set; }
+
+        public bool CanExecute(object parameter)
+        {
+            bool canExecute = false;
+
+            if (this.ActionPointer != null &&
+                parameter != null &&
+                parameter.GetType() == typeof(MeasurementViewModel))
+            {
+                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
+
+                if (measurementViewModel != null &&
+                    measurementViewModel.MeasurementState == MeasurementState.Stopped)
+                {
+                    canExecute = true;
+                }
+            }
+            return canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+        public void OnCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
+        }
+
+        public void Execute(object parameter)
+        {
+            if (this.ActionPointer != null &&
+                parameter != null &&
+                parameter.GetType() == typeof(MeasurementViewModel))
+            {
+                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
+                if (measurementViewModel != null)
+                {
+                    ActionPointer(measurementViewModel);
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Decides whether the measurement has data which can be shown in a oxyplot grath or not.
+    /// </summary>
+    public class RedoEvaluationCommand : ICommand
+    {
+        public RedoEvaluationCommand(Action<MeasurementViewModel> actionPointer)
         {
             this.ActionPointer = actionPointer;
         }

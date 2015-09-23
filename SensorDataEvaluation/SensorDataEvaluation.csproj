@@ -43,9 +43,9 @@
   <ItemGroup>
     <Compile Include="DataModel\AccelerometerSample.cs" />
     <Compile Include="DataModel\EvaluationDataModel.cs" />
+    <Compile Include="DataModel\EvaluationSample.cs" />
     <Compile Include="DataModel\EvaluationSettingModel.cs" />
     <Compile Include="DataModel\EvaluationResultModel.cs" />
-    <Compile Include="DataModel\EvaluationProcessingModel.cs" />
     <Compile Include="DataModel\GyrometerSample.cs" />
     <Compile Include="DataModel\MeasurementData.cs" />
     <Compile Include="DataModel\QuaternionSample.cs" />
