@@ -53,16 +53,21 @@ namespace BackgroundTask
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             string measurementId = e.Parameter as string;
-            if (measurementId != null)
+            if (measurementId != null && measurementId != String.Empty)
             {
                 Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
+                    // Show loader
+                    _mainPage.ShowLoader();
                     _evaluationPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
                     _evaluationPageViewModel.EvaluationDataModel = await FileService.LoadSamplesForEvaluationAsync(measurement.Filename);
                     ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
+                    // hide loader
+                    _mainPage.HideLoader();
                 }
             }
+
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -73,6 +78,9 @@ namespace BackgroundTask
 
         private async void StartEvaluationAppBarButton_Click(object sender, RoutedEventArgs e)
         {
+            // Show loader
+            _mainPage.ShowLoader();
+
             EvaluationDataModel evaluationDataModel = _evaluationPageViewModel.EvaluationDataModel;
 
             uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.ProcessedSampleCount;
@@ -98,6 +106,9 @@ namespace BackgroundTask
             _evaluationPageViewModel.EvaluationState = EvaluationState.Stopped;
             ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
             _mainPage.ShowNotifyMessage("Messung wurde erneut ausgewertet.", NotifyLevel.Info);
+
+            // hide loader
+            _mainPage.HideLoader();
         }
     }
 }

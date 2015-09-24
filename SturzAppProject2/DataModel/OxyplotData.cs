@@ -66,10 +66,14 @@ namespace BackgroundTask.DataModel
 
         #region Methods       
 
+        //###################################################################################
+        //################################### Accelerometer LineSeries ######################
+        //###################################################################################
+
         public LineSeries GetAccelerometerXLineSeries()
         {
             LineSeries acclerometerXLineSeries = new LineSeries();
-            acclerometerXLineSeries.Title = "AccelerometerX";
+            acclerometerXLineSeries.Title = "Accelerometer X";
 
             var enumerator = this.AccelerometerSamples.GetEnumerator();
             while (enumerator.MoveNext())
@@ -83,7 +87,7 @@ namespace BackgroundTask.DataModel
         public LineSeries GetAccelerometerYLineSeries()
         {
             LineSeries acclerometerYLineSeries = new LineSeries();
-            acclerometerYLineSeries.Title = "AccelerometerY";
+            acclerometerYLineSeries.Title = "Accelerometer Y";
 
             var enumerator = this.AccelerometerSamples.GetEnumerator();
             while (enumerator.MoveNext())
@@ -97,7 +101,7 @@ namespace BackgroundTask.DataModel
         public LineSeries GetAccelerometerZLineSeries()
         {
             LineSeries acclerometerZLineSeries = new LineSeries();
-            acclerometerZLineSeries.Title = "AccelerometerZ";
+            acclerometerZLineSeries.Title = "Accelerometer Z";
 
             var enumerator = this.AccelerometerSamples.GetEnumerator();
             while (enumerator.MoveNext())
@@ -107,6 +111,116 @@ namespace BackgroundTask.DataModel
             }
             return acclerometerZLineSeries;
         }
+
+        //###################################################################################
+        //################################### Gyrometer LineSeries ##########################
+        //###################################################################################
+
+        public LineSeries GetGyrometerXLineSeries()
+        {
+            LineSeries gyrometerXLineSeries = new LineSeries();
+            gyrometerXLineSeries.Title = "Gyrometer X";
+
+            var enumerator = this.GyrometerSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                GyrometerSample currentGyrometerSample = enumerator.Current;
+                gyrometerXLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentGyrometerSample.MeasurementTime), currentGyrometerSample.VelocityX));
+            }
+            return gyrometerXLineSeries;
+        }
+
+        public LineSeries GetGyrometerYLineSeries()
+        {
+            LineSeries gyrometerYLineSeries = new LineSeries();
+            gyrometerYLineSeries.Title = "Gyrometer Y";
+
+            var enumerator = this.GyrometerSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                GyrometerSample currentGyrometerSample = enumerator.Current;
+                gyrometerYLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentGyrometerSample.MeasurementTime), currentGyrometerSample.VelocityY));
+            }
+            return gyrometerYLineSeries;
+        }
+
+        public LineSeries GetGyrometerZLineSeries()
+        {
+            LineSeries gyrometerZLineSeries = new LineSeries();
+            gyrometerZLineSeries.Title = "Gyrometer Z";
+
+            var enumerator = this.GyrometerSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                GyrometerSample currentGyrometerSample = enumerator.Current;
+                gyrometerZLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentGyrometerSample.MeasurementTime), currentGyrometerSample.VelocityZ));
+            }
+            return gyrometerZLineSeries;
+        }
+
+        //###################################################################################
+        //################################### Quaternion LineSeries #########################
+        //###################################################################################
+
+        public LineSeries GetQuaterionWLineSeries()
+        {
+            LineSeries QuaterionWLineSeries = new LineSeries();
+            QuaterionWLineSeries.Title = "Quaterion angle W";
+
+            var enumerator = this.QuaternionSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                QuaternionSample currentQuaternionSample = enumerator.Current;
+                QuaterionWLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentQuaternionSample.MeasurementTime), currentQuaternionSample.AngleW));
+            }
+            return QuaterionWLineSeries;
+        }
+
+        public LineSeries GetQuaterionXLineSeries()
+        {
+            LineSeries QuaterionXLineSeries = new LineSeries();
+            QuaterionXLineSeries.Title = "Quaterion X";
+
+            var enumerator = this.QuaternionSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                QuaternionSample currentQuaternionSample = enumerator.Current;
+                QuaterionXLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentQuaternionSample.MeasurementTime), currentQuaternionSample.CoordinateX));
+            }
+            return QuaterionXLineSeries;
+        }
+
+        public LineSeries GetQuaterionYLineSeries()
+        {
+            LineSeries QuaterionYLineSeries = new LineSeries();
+            QuaterionYLineSeries.Title = "Quaterion Y";
+
+            var enumerator = this.QuaternionSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                QuaternionSample currentQuaternionSample = enumerator.Current;
+                QuaterionYLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentQuaternionSample.MeasurementTime), currentQuaternionSample.CoordinateY));
+            }
+            return QuaterionYLineSeries;
+        }
+
+        public LineSeries GetQuaterionZLineSeries()
+        {
+            LineSeries QuaterionZLineSeries = new LineSeries();
+            QuaterionZLineSeries.Title = "Quaterion Z";
+
+            var enumerator = this.QuaternionSamples.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                QuaternionSample currentQuaternionSample = enumerator.Current;
+                QuaterionZLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentQuaternionSample.MeasurementTime), currentQuaternionSample.CoordinateZ));
+            }
+            return QuaterionZLineSeries;
+        }
+
+        //###################################################################################
+        //################################### Evaluation LineSeries #########################
+        //###################################################################################
 
         public LineSeries GetAccelerometerVectorLengthLineSeries()
         {

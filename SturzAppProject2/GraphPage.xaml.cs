@@ -30,6 +30,8 @@ namespace BackgroundTask
     /// </summary>
     public sealed partial class GraphPage : Page
     {
+        MainPage _mainPage = MainPage.Current;
+
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
@@ -105,25 +107,74 @@ namespace BackgroundTask
         /// </summary>
         /// <param name="e">Stellt Daten für Navigationsmethoden und -ereignisse bereit.
         /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            OxyplotData oxyplotData = e.Parameter as OxyplotData;
-            if (oxyplotData != null)
+            // show loader
+            _mainPage.ShowLoader();
+
+            string measurementId = e.Parameter as string;
+            if (measurementId != null && measurementId != String.Empty)
             {
-                // Gruppe 1
-                _graphPageViewModel.AccelerometerXLineSeries = oxyplotData.GetAccelerometerXLineSeries();
-                _graphPageViewModel.AccelerometerYLineSeries = oxyplotData.GetAccelerometerYLineSeries();
-                _graphPageViewModel.AccelerometerZLineSeries = oxyplotData.GetAccelerometerZLineSeries();
+                Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementId);
+                if (measurement != null)
+                {
+                    _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wird geladen.", measurement.Name), NotifyLevel.Info);
+                    OxyplotData oxyplotData = await _mainPage.FindMeasurementGraphData(measurement.Id);
 
-                // Gruppe2
-                _graphPageViewModel.VectorLengthLineSeries = oxyplotData.GetAccelerometerVectorLengthLineSeries();
+                    if (oxyplotData != null)
+                    {
+                        _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurement.Name), NotifyLevel.Info);
 
-                // Gruppe3
-                _graphPageViewModel.StepLineSeries = oxyplotData.GetAccelerometerStepLineSeries();
+                        if (oxyplotData.HasAccelerometerSamples)
+                        {
+                            // Gruppe 1
+                            _graphPageViewModel.AccelerometerXLineSeries = oxyplotData.GetAccelerometerXLineSeries();
+                            _graphPageViewModel.AccelerometerYLineSeries = oxyplotData.GetAccelerometerYLineSeries();
+                            _graphPageViewModel.AccelerometerZLineSeries = oxyplotData.GetAccelerometerZLineSeries();
+                            ((ShowGroup1Command)_graphPageViewModel.ShowGroup1Command).OnCanExecuteChanged();
+                        }
 
-                PlotShownAccerlerometerGraphs(_graphPageViewModel);
+                        if (oxyplotData.HasGyrometerSamples)
+                        {
+                            // Gruppe 2
+                            _graphPageViewModel.GyrometerXLineSeries = oxyplotData.GetGyrometerXLineSeries();
+                            _graphPageViewModel.GyrometerYLineSeries = oxyplotData.GetGyrometerYLineSeries();
+                            _graphPageViewModel.GyrometerZLineSeries = oxyplotData.GetGyrometerZLineSeries();
+                            ((ShowGroup2Command)_graphPageViewModel.ShowGroup2Command).OnCanExecuteChanged();
+                        }
+
+                        if (oxyplotData.HasQuaternionSamples)
+                        {
+                            // Gruppe 3
+                            _graphPageViewModel.QuaterionWLineSeries = oxyplotData.GetQuaterionWLineSeries();
+                            _graphPageViewModel.QuaterionXLineSeries = oxyplotData.GetQuaterionXLineSeries();
+                            _graphPageViewModel.QuaterionYLineSeries = oxyplotData.GetQuaterionYLineSeries();
+                            _graphPageViewModel.QuaterionZLineSeries = oxyplotData.GetQuaterionZLineSeries();
+                            ((ShowGroup3Command)_graphPageViewModel.ShowGroup3Command).OnCanExecuteChanged();
+                        }
+
+                        if (oxyplotData.HasEvaluationSamples)
+                        {
+                            // Gruppe4
+                            _graphPageViewModel.VectorLengthLineSeries = oxyplotData.GetAccelerometerVectorLengthLineSeries();
+                            ((ShowGroup4Command)_graphPageViewModel.ShowGroup4Command).OnCanExecuteChanged();
+
+                            // Gruppe5
+                            _graphPageViewModel.StepLineSeries = oxyplotData.GetAccelerometerStepLineSeries();
+                            ((ShowGroup5Command)_graphPageViewModel.ShowGroup5Command).OnCanExecuteChanged();
+                        }
+
+                        PlotShownAccerlerometerGraphs(_graphPageViewModel);
+                    }
+                    else
+                        _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurement.Name), NotifyLevel.Error);
+                }
+                else
+                    _mainPage.ShowNotifyMessage(String.Format("Messung mit der ID '{0}' konnten nicht gefunden werden.", measurementId), NotifyLevel.Error);
+
             }
-
+            // hide loader
+            _mainPage.HideLoader();
             this.navigationHelper.OnNavigatedTo(e);
         }
 
@@ -134,7 +185,7 @@ namespace BackgroundTask
 
         #endregion
 
-        private void PlotShownAccerlerometerGraphs(GraphPageViewModel currentGrapPageViewModel) 
+        private void PlotShownAccerlerometerGraphs(GraphPageViewModel currentGrapPageViewModel)
         {
             currentGrapPageViewModel.PlotModel.Series.Clear();
             if (currentGrapPageViewModel.ShowGroup1)
@@ -143,15 +194,30 @@ namespace BackgroundTask
                 currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerXLineSeries);
                 currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerYLineSeries);
                 currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerZLineSeries);
-            }
+            } 
             if (currentGrapPageViewModel.ShowGroup2)
             {
                 // Show group 2
-                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.VectorLengthLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.GyrometerXLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.GyrometerYLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.GyrometerZLineSeries);
             }
             if (currentGrapPageViewModel.ShowGroup3)
             {
                 // Show group 3
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.QuaterionWLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.QuaterionXLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.QuaterionYLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.QuaterionZLineSeries);
+            }
+            if (currentGrapPageViewModel.ShowGroup4)
+            {
+                // Show group 4
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.VectorLengthLineSeries);
+            }
+            if (currentGrapPageViewModel.ShowGroup5)
+            {
+                // Show group 5
                 currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.StepLineSeries);
             }
             // call InvalidatePlot(true) to update the graph data.
@@ -161,9 +227,7 @@ namespace BackgroundTask
         private void ZoomInAppBarButton_Click(object sender, RoutedEventArgs e)
         {
             // beim clicken des Buttons "+" soll sich die Auflösung der X-Achse (Zeit-Achse) vergrößern. Der Zoom der Y-Achse soll unverändert beleiben.
-
             _graphPageViewModel.PlotModel.DefaultXAxis.ZoomAtCenter(1.25);
-
             // call InvalidatePlot(true) to update the graph data.
             _graphPageViewModel.PlotModel.InvalidatePlot(true);
         }
@@ -172,7 +236,6 @@ namespace BackgroundTask
         {
             // beim clicken des Buttons "-" soll sich die Auflösung der X-Achse (Zeit-Achse) verkleinern. Der Zoom der Y-Achse soll unverändert beleiben.
             _graphPageViewModel.PlotModel.DefaultXAxis.ZoomAtCenter(0.8);
-
             // call InvalidatePlot(true) to update the graph data.
             _graphPageViewModel.PlotModel.InvalidatePlot(true);
         }

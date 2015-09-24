@@ -12,18 +12,50 @@
         <valueConverter:NotifiedLevelToColorBrushConverter x:Key="NotifiedColorConverter"/>
     </Page.Resources>
 
-    <Grid>        
+    <Grid>
+    	<VisualStateManager.VisualStateGroups>
+    		<VisualStateGroup x:Name="VisualStateGroup">
+    			<VisualState x:Name="Load">
+    				<Storyboard>
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="progressRing">
+    						<DiscreteObjectKeyFrame KeyTime="0">
+    							<DiscreteObjectKeyFrame.Value>
+    								<Visibility>Visible</Visibility>
+    							</DiscreteObjectKeyFrame.Value>
+    						</DiscreteObjectKeyFrame>
+    					</ObjectAnimationUsingKeyFrames>
+    				</Storyboard>
+    			</VisualState>
+    			<VisualState x:Name="Loaded">
+    				<Storyboard>
+    					<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="progressRing">
+    						<DiscreteObjectKeyFrame KeyTime="0">
+    							<DiscreteObjectKeyFrame.Value>
+    								<Visibility>Collapsed</Visibility>
+    							</DiscreteObjectKeyFrame.Value>
+    						</DiscreteObjectKeyFrame>
+    					</ObjectAnimationUsingKeyFrames>
+    				</Storyboard>
+    			</VisualState>
+    		</VisualStateGroup>
+    	</VisualStateManager.VisualStateGroups>        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
-        <Frame Grid.Row="0" x:Name="ContentFrame" Background="{x:Null}"/>
-        
-        <Grid Grid.Row="0" Visibility="Collapsed">
-            <ProgressRing x:Name="progressRing" IsActive="True" Background="#CC000000"/>
+        <Frame Grid.Row="0" x:Name="ContentFrame" Background="Black"/>
+
+        <Grid Grid.Row="0" x:Name="progressRing">
+            <ProgressRing IsActive="True" Background="#CC000000"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,160,0,0">
+                <TextBlock Text="Oops, some heavy shit is going on here??!" FontSize="16" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <TextBlock Text="Keep calm" FontSize="16" HorizontalAlignment="Center"/>
+                <TextBlock Text="and eat" FontSize="16" HorizontalAlignment="Center"/>
+                <TextBlock Text="a cookie." FontSize="16" HorizontalAlignment="Center"/>
+            </StackPanel>
         </Grid>
-            
+
         <Grid x:Name="NotifyMessageGrid" Grid.Row="1" Background="{Binding Level, Converter={StaticResource NotifiedColorConverter}}">
             <TextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="10,0" MaxLines="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
         </Grid>

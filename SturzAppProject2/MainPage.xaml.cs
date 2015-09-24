@@ -132,12 +132,12 @@ namespace BackgroundTask
 
         public void ShowLoader()
         {
-            VisualStateManager.GoToState(this, "DataLoad", false);
+            VisualStateManager.GoToState(this, "Load", false);
         }
 
         public void HideLoader()
         {
-            VisualStateManager.GoToState(this, "DataLoaded", false);
+            VisualStateManager.GoToState(this, "Loaded", false);
         }
 
         //############################################################################################################################################

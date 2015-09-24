@@ -15,26 +15,19 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="ZoomInAppBarButton" Icon="Add" Label="vergrößern" Click="ZoomInAppBarButton_Click" />
                 <AppBarButton x:Name="ZoomOutAppBarButton" Icon="Remove" Label="verkleinern" Click="ZoomOutAppBarButton_Click" />
-                <AppBarButton x:Name="ResetViewAppBarButton" Icon="Refresh" Label="zurücksetzen" Click="ResetViewAppBarButton_Click" />
+                <AppBarButton x:Name="ResetViewAppBarButton" Icon="ClearSelection" Label="zurücksetzen" Click="ResetViewAppBarButton_Click" />
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="ShowGroup1AppBarButton" Label="Rohdaten anzeigen/verbergen" Command="{Binding ShowGroup1Command}" CommandParameter="{Binding}"/>
-                <AppBarButton x:Name="ShowGroup2AppBarButton" Label="Vektorlänge anzeigen/verbergen" Command="{Binding ShowGroup2Command}" CommandParameter="{Binding}"/>
-                <AppBarButton x:Name="ShowGroup3AppBarButton" Label="Schritte anzeigen/verbergen" Command="{Binding ShowGroup3Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup1AppBarButton" Label="Accelerometer anzeigen/verbergen" Command="{Binding ShowGroup1Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup2AppBarButton" Label="Gyrometer anzeigen/verbergen" Command="{Binding ShowGroup2Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup3AppBarButton" Label="Quaternion anzeigen/verbergen" Command="{Binding ShowGroup3Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup4AppBarButton" Label="Vektorlänge anzeigen/verbergen" Command="{Binding ShowGroup4Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup5AppBarButton" Label="Schritte anzeigen/verbergen" Command="{Binding ShowGroup5Command}" CommandParameter="{Binding}"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 
     <Grid x:Name="LayoutRoot">
-
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <EntranceThemeTransition/>
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
-
-        <Grid Grid.Row="1" x:Name="ContentRoot">
-            <oxy:PlotView x:Name="oxyplotView" Model="{Binding PlotModel}"/>
-        </Grid>
+        <oxy:PlotView x:Name="oxyplotView" Model="{Binding PlotModel}"/>
     </Grid>
 </Page>

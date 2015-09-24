@@ -171,6 +171,9 @@ namespace BackgroundTask
         /// <param name="measurementViewModel"></param>
         private async void StartMeasurement(MeasurementViewModel measurementViewModel)
         {
+            // Show loader
+            _mainPage.ShowLoader();
+
             bool isStarted = false;
             // first update for settings
             _mainPage.MainMeasurementListModel.Update(measurementViewModel);
@@ -193,6 +196,9 @@ namespace BackgroundTask
             {
                 _mainPage.ShowNotifyMessage("Messung konnte nicht gestarted werden.", NotifyLevel.Error);
             }
+
+            // Hide loader
+            _mainPage.HideLoader();
         }
 
         /// <summary>
@@ -201,6 +207,9 @@ namespace BackgroundTask
         /// <param name="measurementViewModel"></param>
         private void StopMeasurement(MeasurementViewModel measurementViewModel)
         {
+            // Show loader
+            _mainPage.ShowLoader();
+
             bool isStopped = false;
 
             // stop functionality
@@ -222,6 +231,9 @@ namespace BackgroundTask
             {
                 _mainPage.ShowNotifyMessage("Messung konnte nicht gestoppt werden.", NotifyLevel.Error);
             }
+
+            // Hide loader
+            _mainPage.HideLoader();
         }
 
         /// <summary>
@@ -230,7 +242,13 @@ namespace BackgroundTask
         /// <param name="measurementViewModel"></param>
         private void ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
+            // Show loader
+            _mainPage.ShowLoader();
+
             _mainPage.ExportMeasurementData(measurementViewModel.Id);
+
+            // Hide loader
+            _mainPage.HideLoader();
         }
 
         /// <summary>
@@ -252,17 +270,10 @@ namespace BackgroundTask
         /// <param name="measurementViewModel"></param>
         private async void ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
         {
-            measurementViewModel.OxyplotData = await _mainPage.FindMeasurementGraphData(measurementViewModel.Id);
-
-            if (measurementViewModel.OxyplotData.HasAccelerometerSamples)
+            if (measurementViewModel != null)
             {
-                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurementViewModel.Name), NotifyLevel.Info);
                 Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
-                contentFrame.Navigate(typeof(GraphPage), measurementViewModel.OxyplotData);
-            }
-            else
-            {
-                _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurementViewModel.Name), NotifyLevel.Error);
+                contentFrame.Navigate(typeof(GraphPage), measurementViewModel.Id);
             }
         }
 
