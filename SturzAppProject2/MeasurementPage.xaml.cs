@@ -419,10 +419,19 @@ namespace BackgroundTask
                 //}
 
                 StorageFolder resultFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync("Measurement");
-                StorageFolder resultFolder2 = await resultFolder.GetFolderAsync("Accelerometer");
-                StorageFile resultFile = await resultFolder2.GetFileAsync(file.Name.Remove(0,1));
+                StorageFolder resultFolderAcc = await resultFolder.GetFolderAsync("Accelerometer");
+                StorageFolder resultFolderGyr = await resultFolder.GetFolderAsync("Gyrometer");
+                StorageFolder resultFolderQua = await resultFolder.GetFolderAsync("Quaternion");
+                StorageFile resultFileAcc = await resultFolderAcc.GetFileAsync("Measurement_" + this.MeasurementPageViewModel.MeasurementViewModel.Id + ".csv");
+                StorageFile resultFileGyr = await resultFolderGyr.GetFileAsync("Measurement_" + this.MeasurementPageViewModel.MeasurementViewModel.Id + ".csv");
+                StorageFile resultFileQua = await resultFolderQua.GetFileAsync("Measurement_" + this.MeasurementPageViewModel.MeasurementViewModel.Id + ".csv");
 
-                string writetext = await FileIO.ReadTextAsync(resultFile);
+                string writetext = "Accelerometer \n";
+                writetext += await FileIO.ReadTextAsync(resultFileAcc);
+                writetext += "Gyrometer \n";
+                writetext += await FileIO.ReadTextAsync(resultFileGyr);
+                writetext += "Quaternion \n";
+                writetext += await FileIO.ReadTextAsync(resultFileQua);
 
                 await FileIO.WriteTextAsync(file, writetext);
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
