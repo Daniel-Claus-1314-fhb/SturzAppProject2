@@ -346,13 +346,20 @@ namespace BackgroundTask.Service
 
                         double timeStampTicks;
                         double accerlerometerVectorLength;
+                        double gyrometerVectorLength;
+                        int assumedAccelerometerStep;
+                        int assumedGyrometerStep;
                         int detectedStep;
 
                         if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
                             Double.TryParse(stringArray[1], _styles, _provider, out accerlerometerVectorLength) &&
-                            Int32.TryParse(stringArray[2], out detectedStep))
+                            Double.TryParse(stringArray[2], _styles, _provider, out gyrometerVectorLength) &&
+                            Int32.TryParse(stringArray[3], out assumedAccelerometerStep) &&
+                            Int32.TryParse(stringArray[4], out assumedGyrometerStep) &&
+                            Int32.TryParse(stringArray[5], out detectedStep))
                         {
-                            evaluationData.Add(new EvaluationSample(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerVectorLength, detectedStep == 0 ? false : true));
+                            evaluationData.Add(new EvaluationSample(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerVectorLength, gyrometerVectorLength,
+                                assumedAccelerometerStep == 0 ? false : true, assumedGyrometerStep == 0 ? false : true, detectedStep == 0 ? false : true));
                         }
                     }
                 }

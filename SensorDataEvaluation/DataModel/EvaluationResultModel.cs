@@ -46,7 +46,7 @@ namespace SensorDataEvaluation.DataModel
             var enumerator = _evaluationResultList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                if (enumerator.Current.IsStepDetected)
+                if (enumerator.Current.IsDetectedStep)
                 {
                     detectedStepsCount++;
                 }
@@ -61,8 +61,9 @@ namespace SensorDataEvaluation.DataModel
             while (enumerator.MoveNext())
             {
                 var currentEvaluation = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:g}\n",
-                    currentEvaluation.MeasurementTime.TotalMilliseconds, currentEvaluation.AccelerometerVectorLength, currentEvaluation.IsStepDetected ? 1 : 0));
+                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:g},{4:g},{5:g}\n",
+                    currentEvaluation.MeasurementTime.TotalMilliseconds, currentEvaluation.AccelerometerVectorLength, currentEvaluation.GyrometerVectorLength,
+                    currentEvaluation.IsAssumedAccelerometerStep ? 1 : 0, currentEvaluation.IsAssumedGyrometerStep ? 1 : 0, currentEvaluation.IsDetectedStep ? 1 : 0));
             }
             return stringbuilder.ToString();
         }

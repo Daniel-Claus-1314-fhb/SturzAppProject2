@@ -12,10 +12,11 @@ namespace SensorDataEvaluation.DataModel
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public EvaluationSettingModel(uint processingListCount, double peakThreshold, uint stepDistance)
+        public EvaluationSettingModel(uint processingListCount, double accelerometerThreshold, double gyrometerThreshold, uint stepDistance)
         {
             this.ProcessingListCount = processingListCount;
-            this.StepThreshold = peakThreshold;
+            this.AccelermeterVectorLengthThreshold = accelerometerThreshold;
+            this.GyrometerVectorLengthThreshold = gyrometerThreshold;
             this.StepDistance = new TimeSpan(TimeSpan.TicksPerMillisecond * stepDistance);
         }
 
@@ -24,7 +25,8 @@ namespace SensorDataEvaluation.DataModel
         //###################################################################################################################
 
         public uint ProcessingListCount { get; private set; }
-        public double StepThreshold { get; private set; }
+        public double AccelermeterVectorLengthThreshold { get; private set; }
+        public double GyrometerVectorLengthThreshold { get; private set; }
         public TimeSpan StepDistance { get; private set; }
     }
 }

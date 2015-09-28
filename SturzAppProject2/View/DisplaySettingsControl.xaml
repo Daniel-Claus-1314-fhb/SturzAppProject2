@@ -26,6 +26,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -43,12 +44,17 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,6">
+                    <TextBlock Text="Accelerometerschwellwert" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>                
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,6">
+                    <TextBlock Text="Gyrometerschwellwert" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.GyrometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=GyrometerThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,6">
                     <TextBlock Text="Schrittabstand" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
                     <TextBlock Text="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
-                </StackPanel>
-                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,6">
-                    <TextBlock Text="Amplitudenschwellwert" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
-                    <TextBlock Text="{Binding Path=MeasurementSetting.PeakThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=PeakThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </Grid>
         </Border>

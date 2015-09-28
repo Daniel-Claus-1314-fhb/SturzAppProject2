@@ -10,21 +10,28 @@ namespace SensorDataEvaluation.DataModel
     {
         public EvaluationSample() { }
 
-        public EvaluationSample(TimeSpan measurementTime, double accelerometerVectorLength)
+        public EvaluationSample(TimeSpan measurementTime, double accelerometerVectorLength, double gyrometerVectorLength)
         {
             this.MeasurementTime = measurementTime;
             this.AccelerometerVectorLength = accelerometerVectorLength;
-            this.IsStepDetected = false;
+            this.GyrometerVectorLength = gyrometerVectorLength;
+            this.IsDetectedStep = false;
         }
 
-        public EvaluationSample(TimeSpan measurementTime, double accelerometerVectorLength, bool isStepDetected)
-            : this(measurementTime, accelerometerVectorLength)
+        public EvaluationSample(TimeSpan measurementTime, double accelerometerVectorLength, double gyrometerVectorLength, 
+            bool isAssumedAccelerometerStep, bool isAssumedGyrometerStep, bool isDetectedStep)
+            : this(measurementTime, accelerometerVectorLength, gyrometerVectorLength)
         {
-            this.IsStepDetected = isStepDetected;
+            this.IsAssumedAccelerometerStep = isAssumedAccelerometerStep;
+            this.IsAssumedGyrometerStep = isAssumedGyrometerStep;
+            this.IsDetectedStep = isDetectedStep;
         }
 
         public TimeSpan MeasurementTime { get; set; }
         public double AccelerometerVectorLength { get; set; }
-        public bool IsStepDetected { get; set; }
+        public double GyrometerVectorLength { get; set; }
+        public bool IsAssumedAccelerometerStep { get; set; }
+        public bool IsAssumedGyrometerStep { get; set; }
+        public bool IsDetectedStep { get; set; }
     }
 }

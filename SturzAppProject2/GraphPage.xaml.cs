@@ -156,12 +156,18 @@ namespace BackgroundTask
                         if (oxyplotData.HasEvaluationSamples)
                         {
                             // Gruppe4
-                            _graphPageViewModel.VectorLengthLineSeries = oxyplotData.GetAccelerometerVectorLengthLineSeries();
+                            _graphPageViewModel.AccelerometerVectorLengthLineSeries = oxyplotData.GetAccelerometerVectorLengthLineSeries();
                             ((ShowGroup4Command)_graphPageViewModel.ShowGroup4Command).OnCanExecuteChanged();
 
                             // Gruppe5
-                            _graphPageViewModel.StepLineSeries = oxyplotData.GetAccelerometerStepLineSeries();
+                            _graphPageViewModel.GyrometerVectorLengthLineSeries = oxyplotData.GetGyrometerVectorLengthLineSeries();
                             ((ShowGroup5Command)_graphPageViewModel.ShowGroup5Command).OnCanExecuteChanged();
+
+                            // Gruppe6
+                            _graphPageViewModel.AssumedAccelerometerStepLineSeries = oxyplotData.GetAssumedAccelerometerStepLineSeries();
+                            _graphPageViewModel.AssumedGyrometerStepLineSeries = oxyplotData.GetAssumedGyrometerStepLineSeries();
+                            _graphPageViewModel.DetectedStepLineSeries = oxyplotData.GetDetectedStepLineSeries();
+                            ((ShowGroup6Command)_graphPageViewModel.ShowGroup6Command).OnCanExecuteChanged();
                         }
 
                         PlotShownAccerlerometerGraphs(_graphPageViewModel);
@@ -213,12 +219,19 @@ namespace BackgroundTask
             if (currentGrapPageViewModel.ShowGroup4)
             {
                 // Show group 4
-                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.VectorLengthLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AccelerometerVectorLengthLineSeries);
             }
             if (currentGrapPageViewModel.ShowGroup5)
             {
                 // Show group 5
-                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.StepLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.GyrometerVectorLengthLineSeries);
+            }
+            if (currentGrapPageViewModel.ShowGroup6)
+            {
+                // Show group 6
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AssumedAccelerometerStepLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.AssumedGyrometerStepLineSeries);
+                currentGrapPageViewModel.PlotModel.Series.Add(currentGrapPageViewModel.DetectedStepLineSeries);
             }
             // call InvalidatePlot(true) to update the graph data.
             currentGrapPageViewModel.PlotModel.InvalidatePlot(true);

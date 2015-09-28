@@ -13,16 +13,17 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
-                <AppBarButton x:Name="ZoomInAppBarButton" Icon="Add" Label="vergrößern" Click="ZoomInAppBarButton_Click" />
                 <AppBarButton x:Name="ZoomOutAppBarButton" Icon="Remove" Label="verkleinern" Click="ZoomOutAppBarButton_Click" />
+                <AppBarButton x:Name="ZoomInAppBarButton" Icon="Add" Label="vergrößern" Click="ZoomInAppBarButton_Click" />
                 <AppBarButton x:Name="ResetViewAppBarButton" Icon="ClearSelection" Label="zurücksetzen" Click="ResetViewAppBarButton_Click" />
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="ShowGroup1AppBarButton" Label="Accelerometer anzeigen/verbergen" Command="{Binding ShowGroup1Command}" CommandParameter="{Binding}"/>
-                <AppBarButton x:Name="ShowGroup2AppBarButton" Label="Gyrometer anzeigen/verbergen" Command="{Binding ShowGroup2Command}" CommandParameter="{Binding}"/>
-                <AppBarButton x:Name="ShowGroup3AppBarButton" Label="Quaternion anzeigen/verbergen" Command="{Binding ShowGroup3Command}" CommandParameter="{Binding}"/>
-                <AppBarButton x:Name="ShowGroup4AppBarButton" Label="Vektorlänge anzeigen/verbergen" Command="{Binding ShowGroup4Command}" CommandParameter="{Binding}"/>
-                <AppBarButton x:Name="ShowGroup5AppBarButton" Label="Schritte anzeigen/verbergen" Command="{Binding ShowGroup5Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup1AppBarButton" Label="Accelerometer Sonsordaten" Command="{Binding ShowGroup1Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup2AppBarButton" Label="Gyrometer Sonsordaten" Command="{Binding ShowGroup2Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup3AppBarButton" Label="Quaternion Sonsordaten" Command="{Binding ShowGroup3Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup4AppBarButton" Label="Accelerometer Vektorlänge" Command="{Binding ShowGroup4Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup5AppBarButton" Label="Gyrometer Vektorlänge" Command="{Binding ShowGroup5Command}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="ShowGroup6AppBarButton" Label="Ausgewertete Schritte" Command="{Binding ShowGroup6Command}" CommandParameter="{Binding}"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

@@ -25,13 +25,15 @@ namespace BackgroundTask.ViewModel
             this.ShowGroup1 = false;
             this.ShowGroup2 = false;
             this.ShowGroup3 = false;
-            this.ShowGroup4 = true;
+            this.ShowGroup4 = false;
             this.ShowGroup5 = false;
+            this.ShowGroup6 = true;
             this.ShowGroup1Command = new ShowGroup1Command(plotShownGraphsAction);
             this.ShowGroup2Command = new ShowGroup2Command(plotShownGraphsAction);
             this.ShowGroup3Command = new ShowGroup3Command(plotShownGraphsAction);
             this.ShowGroup4Command = new ShowGroup4Command(plotShownGraphsAction);
             this.ShowGroup5Command = new ShowGroup5Command(plotShownGraphsAction);
+            this.ShowGroup6Command = new ShowGroup6Command(plotShownGraphsAction);
         }
 
         #endregion
@@ -140,11 +142,11 @@ namespace BackgroundTask.ViewModel
 
 
         // LineSeries Group4 #################################################################################
-        private LineSeries _vectorLengthLineSeries;
-        public LineSeries VectorLengthLineSeries
+        private LineSeries _accelerometerVectorLengthLineSeries;
+        public LineSeries AccelerometerVectorLengthLineSeries
         {
-            get { return _vectorLengthLineSeries; }
-            set { this.SetProperty(ref this._vectorLengthLineSeries, value); }
+            get { return _accelerometerVectorLengthLineSeries; }
+            set { this.SetProperty(ref this._accelerometerVectorLengthLineSeries, value); }
         }
 
         private bool _showGroup4;
@@ -155,11 +157,11 @@ namespace BackgroundTask.ViewModel
         }
 
         // LineSeries Group5 #################################################################################
-        private LineSeries _stepLineSeries;
-        public LineSeries StepLineSeries
+        private LineSeries _gyrometerVectorLengthLineSeries;
+        public LineSeries GyrometerVectorLengthLineSeries
         {
-            get { return _stepLineSeries; }
-            set { this.SetProperty(ref this._stepLineSeries, value); }
+            get { return _gyrometerVectorLengthLineSeries; }
+            set { this.SetProperty(ref this._gyrometerVectorLengthLineSeries, value); }
         }
 
         private bool _showGroup5;
@@ -169,11 +171,41 @@ namespace BackgroundTask.ViewModel
             set { this.SetProperty(ref this._showGroup5, value); }
         }
 
+        // LineSeries Group6 #################################################################################
+        private LineSeries _assumedAccelerometerStepLineSeries;
+        public LineSeries AssumedAccelerometerStepLineSeries
+        {
+            get { return _assumedAccelerometerStepLineSeries; }
+            set { this.SetProperty(ref this._assumedAccelerometerStepLineSeries, value); }
+        }
+
+        private LineSeries _assumedGyrometerStepLineSeries;
+        public LineSeries AssumedGyrometerStepLineSeries
+        {
+            get { return _assumedGyrometerStepLineSeries; }
+            set { this.SetProperty(ref this._assumedGyrometerStepLineSeries, value); }
+        }
+
+        private LineSeries _detectedStepLineSeries;
+        public LineSeries DetectedStepLineSeries
+        {
+            get { return _detectedStepLineSeries; }
+            set { this.SetProperty(ref this._detectedStepLineSeries, value); }
+        }
+
+        private bool _showGroup6;
+        public bool ShowGroup6
+        {
+            get { return _showGroup6; }
+            set { this.SetProperty(ref this._showGroup6, value); }
+        }
+
         public ICommand ShowGroup1Command { get; set; }
         public ICommand ShowGroup2Command { get; set; }
         public ICommand ShowGroup3Command { get; set; }
         public ICommand ShowGroup4Command { get; set; }
         public ICommand ShowGroup5Command { get; set; }
+        public ICommand ShowGroup6Command { get; set; }
 
         #endregion
 
@@ -371,7 +403,7 @@ namespace BackgroundTask.ViewModel
             {
                 GraphPageViewModel currentViewModel = parameter as GraphPageViewModel;
                 if (currentViewModel != null &&
-                    currentViewModel.VectorLengthLineSeries != null && currentViewModel.VectorLengthLineSeries.Points.Count > 0)
+                    currentViewModel.AccelerometerVectorLengthLineSeries != null && currentViewModel.AccelerometerVectorLengthLineSeries.Points.Count > 0)
                 {
                     canExecute = true;
                 }
@@ -408,7 +440,7 @@ namespace BackgroundTask.ViewModel
             this.actionPointer = appBarButtonClickAction;
         }
 
-        public Action<GraphPageViewModel> actionPointer { get; set; }
+        private Action<GraphPageViewModel> actionPointer { get; set; }
 
         public bool CanExecute(object parameter)
         {
@@ -417,7 +449,7 @@ namespace BackgroundTask.ViewModel
             {
                 GraphPageViewModel currentViewModel = parameter as GraphPageViewModel;
                 if (currentViewModel != null &&
-                    currentViewModel.StepLineSeries != null && currentViewModel.StepLineSeries.Points.Count > 0)
+                    currentViewModel.GyrometerVectorLengthLineSeries != null && currentViewModel.GyrometerVectorLengthLineSeries.Points.Count > 0)
                 {
                     canExecute = true;
                 }
@@ -440,6 +472,54 @@ namespace BackgroundTask.ViewModel
                 if (currentViewModel != null)
                 {
                     currentViewModel.ShowGroup5 = !currentViewModel.ShowGroup5;
+                    this.actionPointer(currentViewModel);
+                    this.OnCanExecuteChanged();
+                }
+            }
+        }
+    }
+
+    public class ShowGroup6Command : ICommand
+    {
+        public ShowGroup6Command(Action<GraphPageViewModel> appBarButtonClickAction)
+        {
+            this.actionPointer = appBarButtonClickAction;
+        }
+
+        public Action<GraphPageViewModel> actionPointer { get; set; }
+
+        public bool CanExecute(object parameter)
+        {
+            bool canExecute = false;
+            if (actionPointer != null && parameter != null && parameter.GetType().Equals(typeof(GraphPageViewModel)))
+            {
+                GraphPageViewModel currentViewModel = parameter as GraphPageViewModel;
+                if (currentViewModel != null &&
+                    currentViewModel.AssumedAccelerometerStepLineSeries != null && currentViewModel.AssumedAccelerometerStepLineSeries.Points.Count > 0 &&
+                    currentViewModel.AssumedGyrometerStepLineSeries != null && currentViewModel.AssumedGyrometerStepLineSeries.Points.Count > 0 &&
+                    currentViewModel.DetectedStepLineSeries != null && currentViewModel.DetectedStepLineSeries.Points.Count > 0)
+                {
+                    canExecute = true;
+                }
+            }
+            return canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+        public void OnCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
+        }
+
+        public void Execute(object parameter)
+        {
+            if (actionPointer != null && parameter != null && parameter.GetType().Equals(typeof(GraphPageViewModel)))
+            {
+                GraphPageViewModel currentViewModel = parameter as GraphPageViewModel;
+                if (currentViewModel != null)
+                {
+                    currentViewModel.ShowGroup6 = !currentViewModel.ShowGroup6;
                     this.actionPointer(currentViewModel);
                     this.OnCanExecuteChanged();
                 }

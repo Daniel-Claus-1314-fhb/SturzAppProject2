@@ -22,7 +22,8 @@ namespace BackgroundTask.DataModel
         {
             this.ReportInterval = 50;
             this.ProcessedSamplesCount = 200;
-            this.PeakThreshold = 0.5d;
+            this.AccelerometerThreshold = 1.8d;
+            this.GyrometerThreshold = 275d;
             this.StepDistance = 300;
             this.UseAccelerometer = true;
         }
@@ -35,7 +36,8 @@ namespace BackgroundTask.DataModel
         {
             this.ReportInterval = measurementSettingViewModel.ReportInterval;
             this.ProcessedSamplesCount = measurementSettingViewModel.ProcessedSampleCount;
-            this.PeakThreshold = measurementSettingViewModel.PeakThreshold;
+            this.AccelerometerThreshold = measurementSettingViewModel.AccelerometerThreshold;
+            this.GyrometerThreshold = measurementSettingViewModel.GyrometerThreshold;
             this.StepDistance = measurementSettingViewModel.StepDistance;
             this.UseAccelerometer = measurementSettingViewModel.UseAccelerometer;
         }
@@ -59,7 +61,8 @@ namespace BackgroundTask.DataModel
         /// <summary>
         /// Threshold which must be exceeded to identify a step.
         /// </summary>
-        public double PeakThreshold { get; set; }
+        public double AccelerometerThreshold { get; set; }
+        public double GyrometerThreshold { get; set; }
         /// <summary>
         /// TimeSpan in milliseconds which have to be past between to detected Steps.
         /// </summary>

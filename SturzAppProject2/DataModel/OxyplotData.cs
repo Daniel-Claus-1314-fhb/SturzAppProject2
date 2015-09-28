@@ -225,7 +225,7 @@ namespace BackgroundTask.DataModel
         public LineSeries GetAccelerometerVectorLengthLineSeries()
         {
             LineSeries accelerometerVectorLengthLineSeries = new LineSeries();
-            accelerometerVectorLengthLineSeries.Title = "Vektorlänge";
+            accelerometerVectorLengthLineSeries.Title = "Accelerometer Vektorlänge";
 
             var enumerator = this.EvaluationSamples.GetEnumerator();
             while (enumerator.MoveNext())
@@ -236,18 +236,126 @@ namespace BackgroundTask.DataModel
             return accelerometerVectorLengthLineSeries;
         }
 
-        public LineSeries GetAccelerometerStepLineSeries()
+        public LineSeries GetGyrometerVectorLengthLineSeries()
         {
-            LineSeries accelerometerStepLineSeries = new LineSeries();
-            accelerometerStepLineSeries.Title = "Schritte";
+            LineSeries gyrometerVectorLengthLineSeries = new LineSeries();
+            gyrometerVectorLengthLineSeries.Title = "Gyrometer Vektorlänge";
 
             var enumerator = this.EvaluationSamples.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 EvaluationSample currentEvaluationSample = enumerator.Current;
-                accelerometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentEvaluationSample.MeasurementTime), currentEvaluationSample.IsStepDetected ? 1 : 0));
+                gyrometerVectorLengthLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(currentEvaluationSample.MeasurementTime), currentEvaluationSample.GyrometerVectorLength));
+            }
+            return gyrometerVectorLengthLineSeries;
+        }
+
+        public LineSeries GetAssumedAccelerometerStepLineSeries()
+        {
+            LineSeries accelerometerStepLineSeries = new LineSeries();
+            accelerometerStepLineSeries.Title = "Accelerometer Peaks";
+
+            for (int i = 0; i < this.EvaluationSamples.Count; i++)
+            {
+                bool setPointToLineSeries = false;
+
+                // Tritt ein, wenn das erste oder das letzte Evaluierungssample ausgewählt ist.
+                if (i == 0 || i == this.EvaluationSamples.Count - 1)
+                {
+                    setPointToLineSeries = true;
+                }
+                // Tritt ein, wenn das aktuelle Evaluierungssample einen vermuteten Schritt besitzt.
+                else if (this.EvaluationSamples.ElementAt(i).IsAssumedAccelerometerStep)
+                {
+                    setPointToLineSeries = true;
+                }
+                // Tritt ein, wenn das nachfolgende Evaluierungssample einen vermuteten Schritte besitzen wird.
+                // oder
+                // Tritt ein, wenn das vorherige Evaluierungssample einen vermuteten Schritte besäßen hat.
+                else if ((i < this.EvaluationSamples.Count - 1 && this.EvaluationSamples.ElementAt(i + 1).IsAssumedAccelerometerStep) ||
+                        (i > 0 && this.EvaluationSamples.ElementAt(i - 1).IsAssumedAccelerometerStep))
+                {
+                    setPointToLineSeries = true;
+                }
+
+                if (setPointToLineSeries)
+                {
+                    accelerometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsAssumedAccelerometerStep ? 0.5d : 0d));
+                }
             }
             return accelerometerStepLineSeries;
+        }
+
+        public LineSeries GetAssumedGyrometerStepLineSeries()
+        {
+            LineSeries gyrometerStepLineSeries = new LineSeries();
+            gyrometerStepLineSeries.Title = "Gyrometer Peaks";
+
+            for (int i = 0; i < this.EvaluationSamples.Count; i++)
+            {
+                bool setPointToLineSeries = false;
+
+                // Tritt ein, wenn das erste oder das letzte Evaluierungssample ausgewählt ist.
+                if (i == 0 || i == this.EvaluationSamples.Count - 1)
+                {
+                    setPointToLineSeries = true;
+                }
+                // Tritt ein, wenn das aktuelle Evaluierungssample einen vermuteten Schritt besitzt.
+                else if (this.EvaluationSamples.ElementAt(i).IsAssumedGyrometerStep)
+                {
+                    setPointToLineSeries = true;
+                }
+                // Tritt ein, wenn das nachfolgende Evaluierungssample einen vermuteten Schritte besitzen wird.
+                // oder
+                // Tritt ein, wenn das vorherige Evaluierungssample einen vermuteten Schritte besäßen hat.
+                else if ((i < this.EvaluationSamples.Count - 1 && this.EvaluationSamples.ElementAt(i + 1).IsAssumedGyrometerStep) ||
+                        (i > 0 && this.EvaluationSamples.ElementAt(i - 1).IsAssumedGyrometerStep))
+                {
+                    setPointToLineSeries = true;
+                }
+
+                if (setPointToLineSeries)
+                {
+                    gyrometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsAssumedGyrometerStep ? -0.5d : 0d));
+                }
+            }
+            return gyrometerStepLineSeries;
+        }
+
+        public LineSeries GetDetectedStepLineSeries()
+        {
+            LineSeries stepLineSeries = new LineSeries();
+            stepLineSeries.Title = "Erkannte Schritte";
+
+            for (int i = 0; i < this.EvaluationSamples.Count; i++)
+            {
+                bool setPointToLineSeries = false;
+
+                // Tritt ein, wenn das erste oder das letzte Evaluierungssample ausgewählt ist.
+                if (i == 0 || i == this.EvaluationSamples.Count - 1)
+                {
+                    setPointToLineSeries = true;
+                }
+                // Tritt ein, wenn das aktuelle Evaluierungssample einen Schritt besitzt.
+                else if (this.EvaluationSamples.ElementAt(i).IsDetectedStep)
+                {
+                    setPointToLineSeries = true;
+                }
+                // Tritt ein, wenn das nachfolgende Evaluierungssample einen Schritte besitzen wird.
+                // oder
+                // Tritt ein, wenn das vorherige Evaluierungssample einen Schritte besäßen hat.
+                else if ((i < this.EvaluationSamples.Count - 1 && this.EvaluationSamples.ElementAt(i + 1).IsDetectedStep) ||
+                        (i > 0 && this.EvaluationSamples.ElementAt(i - 1).IsDetectedStep))
+                {
+                    setPointToLineSeries = true;
+                }
+
+                if (setPointToLineSeries)
+                {
+                    stepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsDetectedStep ? 1d : 0d));
+                }
+            }
+            return stepLineSeries;
         }
 
         #endregion

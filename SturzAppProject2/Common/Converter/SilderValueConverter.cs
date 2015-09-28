@@ -11,12 +11,14 @@ namespace BackgroundTask.Common.Converter
     {
         private const string reportIntervalParam = "ReportInterval";
         private const string processedSampleCountParam = "ProcessedSampleCount";
-        private const string peakThresholdParam = "PeakThreshold";
+        private const string AccelerometerThresholdParam = "AccelerometerThreshold";
+        private const string GyrometerThresholdParam = "GyrometerThreshold";
         private const string stepDistanceParam = "StepDistance";
 
         private readonly uint[] reportInterval = new uint[6] { 10, 16, 20, 50, 100, 200 };
         private readonly uint[] processedSampleCount = new uint[7] { 50, 100, 200, 250, 500, 1000, 2000 };
-        private readonly double[] peakThreshold = new double[13] { 0.2d, 0.25d, 0.3d, 0.35d, 0.4d, 0.45d, 0.5d, 0.55d, 0.6d, 0.65d, 0.7d, 0.75d, 0.8d };
+        private readonly double[] accelerometerThreshold = new double[13] { 1.4d, 1.5d, 1.55d, 1.6d, 1.65d, 1.7d, 1.75d, 1.8d, 1.85d, 1.9d, 1.95d, 2.0d, 2.1d };
+        private readonly double[] gyrometerThreshold = new double[13] { 100d, 125d, 150d, 175d, 200d, 225d, 250d, 275d, 300d, 325d, 350d, 375d, 400d};
         private readonly uint[] stepDistance = new uint[13] { 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800 };
 
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -58,8 +60,11 @@ namespace BackgroundTask.Common.Converter
 
                         switch (parameterString)
                         {
-                            case peakThresholdParam:
-                                resultValue = (double) Array.IndexOf(peakThreshold, convertValue);
+                            case AccelerometerThresholdParam:
+                                resultValue = (double) Array.IndexOf(accelerometerThreshold, convertValue);
+                                break;
+                            case GyrometerThresholdParam:
+                                resultValue = (double)Array.IndexOf(gyrometerThreshold, convertValue);
                                 break;
                         }
                     }
@@ -96,10 +101,16 @@ namespace BackgroundTask.Common.Converter
                                     resultValue = processedSampleCount.ElementAt(convertValue);
                                 }
                                 break;
-                            case peakThresholdParam:
-                                if (convertValue >= 0 && convertValue < peakThreshold.Length)
+                            case AccelerometerThresholdParam:
+                                if (convertValue >= 0 && convertValue < accelerometerThreshold.Length)
                                 {
-                                    resultValue = peakThreshold.ElementAt(convertValue);
+                                    resultValue = accelerometerThreshold.ElementAt(convertValue);
+                                }
+                                break;
+                            case GyrometerThresholdParam:
+                                if (convertValue >= 0 && convertValue < gyrometerThreshold.Length)
+                                {
+                                    resultValue = gyrometerThreshold.ElementAt(convertValue);
                                 }
                                 break;
                             case stepDistanceParam:

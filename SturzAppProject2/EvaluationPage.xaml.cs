@@ -84,9 +84,10 @@ namespace BackgroundTask
             EvaluationDataModel evaluationDataModel = _evaluationPageViewModel.EvaluationDataModel;
 
             uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.ProcessedSampleCount;
-            double peakThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.PeakThreshold;
+            double accelerometerThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.AccelerometerThreshold;
+            double gyrometerThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.GyrometerThreshold;
             uint stepDistance = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.StepDistance;
-            EvaluationSettingModel evaluationSettingModel = new EvaluationSettingModel(processedSampleCount, peakThreshold, stepDistance);
+            EvaluationSettingModel evaluationSettingModel = new EvaluationSettingModel(processedSampleCount, accelerometerThreshold, gyrometerThreshold, stepDistance);
 
             //Start evaluation
             _evaluationPageViewModel.EvaluationState = EvaluationState.Started;

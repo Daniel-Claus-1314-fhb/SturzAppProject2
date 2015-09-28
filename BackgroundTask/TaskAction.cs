@@ -67,7 +67,8 @@ namespace BackgroundTask
                 _measurementData.ListsHasSwitched += MeasurementData_ReadingsListsHasSwitched;
 
                 //set evaluation setting model
-                _evaluationSettingModel = new EvaluationSettingModel(_taskArguments.ProcessedSampleCount, _taskArguments.PeakThreshold, _taskArguments.StepDistance);
+                _evaluationSettingModel = new EvaluationSettingModel(_taskArguments.ProcessedSampleCount, _taskArguments.AccelerometerThreshold, 
+                    _taskArguments.GyrometerThreshold, _taskArguments.StepDistance);
 
                 _deferral = _taskInstance.GetDeferral();
                 Debug.WriteLine(

@@ -54,10 +54,14 @@ namespace BackgroundTask.Common.Converter
 
                         switch (parameterString)
                         {
-                            case "PeakThresholdFull":
-                                return String.Format("Amplitudenschwellwert {0:f2}", convertDouble);
-                            case "PeakThresholdSimple":
-                                return String.Format("{0:f2}", convertDouble);
+                            case "AccelerometerThresholdFull":
+                                return String.Format("Accelerometerschwellwert {0:f2}G", convertDouble);
+                            case "AccelerometerThresholdSimple":
+                                return String.Format("{0:f2}G", convertDouble);
+                            case "GyrometerThresholdFull":
+                                return String.Format("Gyrometerschwellwert {0:G}", convertDouble);
+                            case "GyrometerThresholdSimple":
+                                return String.Format("{0:G}", convertDouble);
                             default:
                                 return String.Format("{0:G}", convertDouble);
                         }

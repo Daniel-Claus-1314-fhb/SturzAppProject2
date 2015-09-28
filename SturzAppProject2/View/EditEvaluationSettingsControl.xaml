@@ -27,12 +27,16 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Slider Grid.Row="0" Value="{Binding Path=MeasurementSetting.PeakThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=PeakThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
-                Header="{Binding Path=MeasurementSetting.PeakThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=PeakThresholdFull}"/>
+                <Slider Grid.Row="0" Value="{Binding Path=MeasurementSetting.AccelerometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=AccelerometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                Header="{Binding Path=MeasurementSetting.AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdFull}"/>
 
-                <Slider Grid.Row="1" Value="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource SliderConverter}, ConverterParameter=StepDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="12" LargeChange="1"
+                <Slider Grid.Row="1" Value="{Binding Path=MeasurementSetting.GyrometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=GyrometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                Header="{Binding Path=MeasurementSetting.GyrometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=GyrometerThresholdFull}"/>
+
+                <Slider Grid.Row="2" Value="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource SliderConverter}, ConverterParameter=StepDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="12" LargeChange="1"
                 Header="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceFull}"/>
             </Grid>
         </Border>
