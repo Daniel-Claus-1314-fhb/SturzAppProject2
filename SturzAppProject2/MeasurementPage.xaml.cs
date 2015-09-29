@@ -405,77 +405,41 @@ namespace BackgroundTask
 
         public async void ContinueFileSavePicker(FileSavePickerContinuationEventArgs args)
         {
+            // Show loader
+            _mainPage.ShowLoader();
             Measurement measurement = _mainPage.MainMeasurementListModel.GetById(this.MeasurementPageViewModel.MeasurementViewModel.Id);
             StorageFile file = args.File;
             if (file != null && measurement != null)
             {
-                // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
-                CachedFileManager.DeferUpdates(file);
+                
                 // load data for export
                 ExportData exportData = await FileService.LoadSamplesForExportAsync(measurement.Filename);
+                String exportCSVString = exportData.ToExportCSVString();
+
+                // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
+                CachedFileManager.DeferUpdates(file);
                 // write data into file
-                await FileIO.WriteTextAsync(file, exportData.ToExportCSVString());
+                await FileIO.WriteTextAsync(file, exportCSVString);
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
                 // Completing updates may require Windows to ask for user input.
                 FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
                 if (status == FileUpdateStatus.Complete)
                 {
-                    //OutputTextBlock.Text = "File " + file.Name + " was saved.";
                     _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
                 }
                 else
                 {
                     _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
                 }
+                exportCSVString = null;
+                exportData = null;
             }
             else
             {
                 _mainPage.ShowNotifyMessage("Exportiervorgang abgebrochen.", NotifyLevel.Warn);
             }
+            // Hide loader
+            _mainPage.HideLoader();
         }
-
-        //public async void ContinueFileSavePicker(FileSavePickerContinuationEventArgs args)
-        //{
-        //    StorageFile file = args.File;
-        //    if (file != null)
-        //    {
-        //        // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
-        //        CachedFileManager.DeferUpdates(file);
-        //        // write to file
-
-        //        StorageFolder resultFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync("Measurement");
-        //        StorageFolder resultFolderAcc = await resultFolder.GetFolderAsync("Accelerometer");
-        //        StorageFolder resultFolderGyr = await resultFolder.GetFolderAsync("Gyrometer");
-        //        StorageFolder resultFolderQua = await resultFolder.GetFolderAsync("Quaternion");
-        //        StorageFile resultFileAcc = await resultFolderAcc.GetFileAsync("Measurement_" + this.MeasurementPageViewModel.MeasurementViewModel.Id + ".csv");
-        //        StorageFile resultFileGyr = await resultFolderGyr.GetFileAsync("Measurement_" + this.MeasurementPageViewModel.MeasurementViewModel.Id + ".csv");
-        //        StorageFile resultFileQua = await resultFolderQua.GetFileAsync("Measurement_" + this.MeasurementPageViewModel.MeasurementViewModel.Id + ".csv");
-
-        //        string writetext = "Accelerometer \n";
-        //        writetext += await FileIO.ReadTextAsync(resultFileAcc);
-        //        writetext += "Gyrometer \n";
-        //        writetext += await FileIO.ReadTextAsync(resultFileGyr);
-        //        writetext += "Quaternion \n";
-        //        writetext += await FileIO.ReadTextAsync(resultFileQua);
-
-        //        await FileIO.WriteTextAsync(file, writetext);
-        //        // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
-        //        // Completing updates may require Windows to ask for user input.
-        //        FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
-        //        if (status == FileUpdateStatus.Complete)
-        //        {
-        //            //OutputTextBlock.Text = "File " + file.Name + " was saved.";
-        //            _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
-        //        }
-        //        else
-        //        {
-        //            _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        _mainPage.ShowNotifyMessage("Exportiervorgang abgebrochen.", NotifyLevel.Warn);
-        //    }
-        //}
     }
 }

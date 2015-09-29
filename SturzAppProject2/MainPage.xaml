@@ -49,10 +49,7 @@
         <Grid Grid.Row="0" x:Name="progressRing">
             <ProgressRing IsActive="True" Background="#CC000000"/>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,160,0,0">
-                <TextBlock Text="Oops, some heavy shit is going on here??!" FontSize="16" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <TextBlock Text="Keep calm" FontSize="16" HorizontalAlignment="Center"/>
-                <TextBlock Text="and eat" FontSize="16" HorizontalAlignment="Center"/>
-                <TextBlock Text="a cookie." FontSize="16" HorizontalAlignment="Center"/>
+                <TextBlock Text="Oops, some heavy sh** is going on here?!" FontSize="16" HorizontalAlignment="Center" FontWeight="Bold"/>
             </StackPanel>
         </Grid>
 

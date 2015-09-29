@@ -313,8 +313,7 @@ namespace SensorDataEvaluation.DataModel
             while (enumerator.MoveNext())
             {
                 QuaternionSample quaternionSample = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3},{4:f3}\n",
-                    quaternionSample.MeasurementTime.TotalMilliseconds, quaternionSample.AngleW, quaternionSample.CoordinateX, quaternionSample.CoordinateY, quaternionSample.CoordinateZ));
+                stringbuilder.Append(quaternionSample.ToCSVString());
             }
             return stringbuilder.ToString();
         }

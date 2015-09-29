@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <converter:NumberToFormattedStringConverter x:Key="NumberConverter"/>
         <converter:SilderValueConverter x:Key="SliderConverter"/>
+        <converter:StringToProperNameConverter x:Key="NameConverter"/>
     </UserControl.Resources>
 
     <Grid>
@@ -32,7 +33,7 @@
 
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="Messungsname" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
-                    <TextBox Text="{Binding Path=Name, Mode=TwoWay}"/>
+                    <TextBox Text="{Binding Path=Name, Converter={StaticResource NameConverter}, Mode=TwoWay}"/>
                 </StackPanel>
                 
                 <Slider Grid.Row="1" Value="{Binding Path=MeasurementSetting.ReportInterval, Converter={StaticResource SliderConverter}, ConverterParameter=ReportInterval, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="5"

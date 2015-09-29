@@ -60,10 +60,8 @@ namespace SensorDataEvaluation.DataModel
             var enumerator = _evaluationResultList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var currentEvaluation = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:g},{4:g},{5:g}\n",
-                    currentEvaluation.MeasurementTime.TotalMilliseconds, currentEvaluation.AccelerometerVectorLength, currentEvaluation.GyrometerVectorLength,
-                    currentEvaluation.IsAssumedAccelerometerStep ? 1 : 0, currentEvaluation.IsAssumedGyrometerStep ? 1 : 0, currentEvaluation.IsDetectedStep ? 1 : 0));
+                EvaluationSample evaluationSample = enumerator.Current;
+                stringbuilder.Append(evaluationSample.ToCSVString());
             }
             return stringbuilder.ToString();
         }
