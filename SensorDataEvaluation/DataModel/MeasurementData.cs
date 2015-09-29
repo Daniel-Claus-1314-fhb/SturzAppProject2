@@ -164,13 +164,12 @@ namespace SensorDataEvaluation.DataModel
         public string ToAccelerometerCSVString(bool useActiveList)
         {
             StringBuilder stringbuilder = new StringBuilder();
-            IList<AccelerometerSample> accelerometerReadingList = useActiveList ? this.GetActivAccelerometerList() : this.GetPassivAccelerometerList();
-            var enumerator = accelerometerReadingList.GetEnumerator();
+            IList<AccelerometerSample> accelerometerSampleList = useActiveList ? this.GetActivAccelerometerList() : this.GetPassivAccelerometerList();
+            var enumerator = accelerometerSampleList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var accelerometerReadingModel = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3}\n",
-                    accelerometerReadingModel.MeasurementTime.TotalMilliseconds, accelerometerReadingModel.CoordinateX, accelerometerReadingModel.CoordinateY, accelerometerReadingModel.CoordinateZ));
+                AccelerometerSample accelerometerSample = enumerator.Current;
+                stringbuilder.Append(accelerometerSample.ToCSVString());
             }
             return stringbuilder.ToString();
         }
@@ -242,8 +241,7 @@ namespace SensorDataEvaluation.DataModel
             while (enumerator.MoveNext())
             {
                 GyrometerSample gyrometerSample = enumerator.Current;
-                stringbuilder.Append(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:f3}\n",
-                    gyrometerSample.MeasurementTime.TotalMilliseconds, gyrometerSample.VelocityX, gyrometerSample.VelocityY, gyrometerSample.VelocityZ));
+                stringbuilder.Append(gyrometerSample.ToCSVString());
             }
             return stringbuilder.ToString();
         }

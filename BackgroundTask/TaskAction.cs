@@ -68,7 +68,7 @@ namespace BackgroundTask
 
                 //set evaluation setting model
                 _evaluationSettingModel = new EvaluationSettingModel(_taskArguments.ProcessedSampleCount, _taskArguments.AccelerometerThreshold, 
-                    _taskArguments.GyrometerThreshold, _taskArguments.StepDistance);
+                    _taskArguments.GyrometerThreshold, _taskArguments.StepDistance, _taskArguments.PeakJoinDistance);
 
                 _deferral = _taskInstance.GetDeferral();
                 Debug.WriteLine(

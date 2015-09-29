@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataModel\EvaluationState.cs" />
+    <Compile Include="DataModel\ExportData.cs" />
     <Compile Include="EvaluationPage.xaml.cs">
       <DependentUpon>EvaluationPage.xaml</DependentUpon>
     </Compile>

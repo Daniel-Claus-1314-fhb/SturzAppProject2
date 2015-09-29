@@ -20,12 +20,12 @@ namespace BackgroundTask.DataModel
         /// </summary>
         public MeasurementSetting()
         {
-            this.ReportInterval = 50;
-            this.ProcessedSamplesCount = 200;
-            this.AccelerometerThreshold = 1.8d;
-            this.GyrometerThreshold = 275d;
+            this.ReportInterval = 20;
+            this.ProcessedSamplesCount = 500;
+            this.AccelerometerThreshold = 1.5d;
+            this.GyrometerThreshold = 150d;
             this.StepDistance = 300;
-            this.UseAccelerometer = true;
+            this.PeakJoinDistance = 150;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace BackgroundTask.DataModel
             this.AccelerometerThreshold = measurementSettingViewModel.AccelerometerThreshold;
             this.GyrometerThreshold = measurementSettingViewModel.GyrometerThreshold;
             this.StepDistance = measurementSettingViewModel.StepDistance;
-            this.UseAccelerometer = measurementSettingViewModel.UseAccelerometer;
+            this.PeakJoinDistance = measurementSettingViewModel.PeakJoinDistance;
         }
 
         #endregion
@@ -59,18 +59,21 @@ namespace BackgroundTask.DataModel
         /// </summary>
         public uint ProcessedSamplesCount { get; set; }
         /// <summary>
-        /// Threshold which must be exceeded to identify a step.
+        /// Threshold which must be exceeded to become relevant for a step.
         /// </summary>
         public double AccelerometerThreshold { get; set; }
+        /// <summary>
+        /// Threshold which must be exceeded to become relevant for a step.
+        /// </summary>
         public double GyrometerThreshold { get; set; }
         /// <summary>
-        /// TimeSpan in milliseconds which have to be past between to detected Steps.
+        /// TimeSpan in milliseconds which have to be past between to detected steps.
         /// </summary>
         public uint StepDistance { get; set; }
         /// <summary>
-        /// Is true when the accelerometer is used to detect steps.
+        /// TimeSpan in milliseconds within a accelerometer peak and a gyrometer peak will join to a detected step.
         /// </summary>
-        public bool UseAccelerometer { get; set; }
+        public uint PeakJoinDistance { get; set; }
 
         #endregion
     }

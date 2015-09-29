@@ -56,6 +56,10 @@
                     <TextBlock Text="Schrittabstand" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
                     <TextBlock Text="{Binding Path=MeasurementSetting.StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,0,6">
+                    <TextBlock Text="Peak als Schritte erkennen" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding Path=MeasurementSetting.PeakJoinDistance, Converter={StaticResource NumberConverter}, ConverterParameter=PeakJoinDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>

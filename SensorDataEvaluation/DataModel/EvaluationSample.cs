@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,5 +34,24 @@ namespace SensorDataEvaluation.DataModel
         public bool IsAssumedAccelerometerStep { get; set; }
         public bool IsAssumedGyrometerStep { get; set; }
         public bool IsDetectedStep { get; set; }
+
+        public string ToCSVString()
+        {
+            return String.Format(String.Format(new CultureInfo("en-US"), "{0},{1:f3},{2:f3},{3:g},{4:g},{5:g}\n",
+                    this.MeasurementTime.TotalMilliseconds, this.AccelerometerVectorLength, this.GyrometerVectorLength,
+                    this.IsAssumedAccelerometerStep ? 1 : 0, this.IsAssumedGyrometerStep ? 1 : 0, this.IsDetectedStep ? 1 : 0));
+        }
+
+        public string GetExportHeader()
+        {
+            return String.Format(new CultureInfo("en-US"), "Evaluation,MeasurementTimeInMilliseconds,AccelerometerVectorLength,GyrometerVectorLength,AccelerometerPeak,GyrometerPeak,DetectedStep\n");
+        }
+
+        public string ToExportCSVString()
+        {
+            return String.Format(String.Format(new CultureInfo("en-US"), "3,{0},{1:f3},{2:f3},{3:g},{4:g},{5:g}\n",
+                    this.MeasurementTime.TotalMilliseconds, this.AccelerometerVectorLength, this.GyrometerVectorLength,
+                    this.IsAssumedAccelerometerStep ? 1 : 0, this.IsAssumedGyrometerStep ? 1 : 0, this.IsDetectedStep ? 1 : 0));
+        }
     }
 }

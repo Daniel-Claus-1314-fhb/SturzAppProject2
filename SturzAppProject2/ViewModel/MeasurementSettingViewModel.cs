@@ -18,30 +18,17 @@ namespace BackgroundTask.ViewModel
         #region Construtors
 
         /// <summary>
-        /// Create a default MeasurementSettingViewModel
-        /// </summary>
-        public MeasurementSettingViewModel()
-        {
-            this.ReportInterval = 50;
-            this.ProcessedSampleCount = 200;
-            this.AccelerometerThreshold = 1.8d;
-            this.GyrometerThreshold = 275d;
-            this.StepDistance = 300;
-            this.UseAccelerometer = true;
-        }
-
-        /// <summary>
         /// Create a new MeasurementSettingsViewModel by a given MeasurementSetting Model.
         /// </summary>
         /// <param name="setting"></param>
-        public MeasurementSettingViewModel(MeasurementSetting setting) : this()
+        public MeasurementSettingViewModel(MeasurementSetting setting)
         {
             this.ReportInterval = setting.ReportInterval;
             this.ProcessedSampleCount = setting.ProcessedSamplesCount;
             this.AccelerometerThreshold = setting.AccelerometerThreshold;
             this.GyrometerThreshold = setting.GyrometerThreshold;
             this.StepDistance = setting.StepDistance;
-            this.UseAccelerometer = setting.UseAccelerometer;
+            this.PeakJoinDistance = setting.PeakJoinDistance;
         }
 
         #endregion
@@ -98,13 +85,13 @@ namespace BackgroundTask.ViewModel
             set { this.SetProperty(ref this._stepDistance, value); }
         }
         /// <summary>
-        /// Is true when the accelerometer is used to detect steps.
+        /// TimeSpan in milliseconds within a accelerometer peak and a gyrometer peak will join to a detected step.
         /// </summary>
-        private bool _useAccelerometer;
-        public bool UseAccelerometer
+        private uint _peakJoinDistance;
+        public uint PeakJoinDistance
         {
-            get { return _useAccelerometer; }
-            set { this.SetProperty(ref this._useAccelerometer, value); }
+            get { return _peakJoinDistance; }
+            set { this.SetProperty(ref this._peakJoinDistance, value); }
         }
 
         #endregion

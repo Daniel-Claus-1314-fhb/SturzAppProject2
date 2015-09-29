@@ -175,19 +175,16 @@ namespace BackgroundTask
         public void ExportMeasurementData(string measurementId)
         {
             var savePicker = new Windows.Storage.Pickers.FileSavePicker();
-            //bool isExported = false;
             if (measurementId != null && measurementId.Length > 0)
             {
                 Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
                 if (measurement != null)
                 {
-                    //isExported = ExportService.ExportMeasurementData(measurement);
-                    //isExported = await ExportService.ExportMeasurementData(measurement);
                     savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
                     // Dropdown of file types the user can save the file as
                     savePicker.FileTypeChoices.Add("CSV-Datei", new List<string>() { ".csv" });
                     // Default file name if the user does not type one in or select a file to replace
-                    savePicker.SuggestedFileName = "e" + measurement.Filename;
+                    savePicker.SuggestedFileName = String.Format("{0}_{1:yyyy-MM-dd_HH-mm-ss}", measurement.Name, measurement.StartTime);
 
                     savePicker.PickSaveFileAndContinue();
                 }

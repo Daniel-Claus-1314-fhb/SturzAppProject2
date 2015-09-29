@@ -280,7 +280,7 @@ namespace BackgroundTask.DataModel
 
                 if (setPointToLineSeries)
                 {
-                    accelerometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsAssumedAccelerometerStep ? 0.5d : 0d));
+                    accelerometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsAssumedAccelerometerStep ? 1d : 0d));
                 }
             }
             return accelerometerStepLineSeries;
@@ -316,7 +316,7 @@ namespace BackgroundTask.DataModel
 
                 if (setPointToLineSeries)
                 {
-                    gyrometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsAssumedGyrometerStep ? -0.5d : 0d));
+                    gyrometerStepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsAssumedGyrometerStep ? -1d : 0d));
                 }
             }
             return gyrometerStepLineSeries;
@@ -325,7 +325,7 @@ namespace BackgroundTask.DataModel
         public LineSeries GetDetectedStepLineSeries()
         {
             LineSeries stepLineSeries = new LineSeries();
-            stepLineSeries.Title = "Erkannte Schritte";
+            stepLineSeries.Title = "Als Schritte erkannte Peaks";
 
             for (int i = 0; i < this.EvaluationSamples.Count; i++)
             {
@@ -352,7 +352,7 @@ namespace BackgroundTask.DataModel
 
                 if (setPointToLineSeries)
                 {
-                    stepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsDetectedStep ? 1d : 0d));
+                    stepLineSeries.Points.Add(new DataPoint(TimeSpanAxis.ToDouble(this.EvaluationSamples.ElementAt(i).MeasurementTime), this.EvaluationSamples.ElementAt(i).IsDetectedStep ? 0.7d : 0d));
                 }
             }
             return stepLineSeries;

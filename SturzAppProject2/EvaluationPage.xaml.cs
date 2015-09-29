@@ -81,17 +81,25 @@ namespace BackgroundTask
             // Show loader
             _mainPage.ShowLoader();
 
-            EvaluationDataModel evaluationDataModel = _evaluationPageViewModel.EvaluationDataModel;
+            //prepare timer
+            DateTime startTime = DateTime.MinValue;
+            DateTime endTime = DateTime.MinValue;
+            TimeSpan evaluationDuration = TimeSpan.Zero;
 
+            //prepare evaluation settings and evaluation data
             uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.ProcessedSampleCount;
             double accelerometerThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.AccelerometerThreshold;
             double gyrometerThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.GyrometerThreshold;
             uint stepDistance = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.StepDistance;
-            EvaluationSettingModel evaluationSettingModel = new EvaluationSettingModel(processedSampleCount, accelerometerThreshold, gyrometerThreshold, stepDistance);
+            uint peakJoinDistance = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.PeakJoinDistance;
+            EvaluationSettingModel evaluationSettingModel = new EvaluationSettingModel(processedSampleCount, accelerometerThreshold, gyrometerThreshold, stepDistance, peakJoinDistance);
+            
+            EvaluationDataModel evaluationDataModel = _evaluationPageViewModel.EvaluationDataModel;
 
-            //Start evaluation
+            //set evaluation state to started
             _evaluationPageViewModel.EvaluationState = EvaluationState.Started;
             ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
+            startTime = DateTime.Now;
 
             //process evaluation
             _evaluationPageViewModel.EvalautionResultModel = await _measurementEvaluationService.RunEvaluationAfterMeasurementAsync(evaluationDataModel, evaluationSettingModel);
@@ -103,10 +111,12 @@ namespace BackgroundTask
             _mainPage.MainMeasurementListModel.Update(_evaluationPageViewModel.MeasurementViewModel);
             await FileService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
 
-            //Stop evaluation
+            //set evaluation state to stopped
+            endTime = DateTime.Now;
+            evaluationDuration = endTime.Subtract(startTime);
             _evaluationPageViewModel.EvaluationState = EvaluationState.Stopped;
             ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
-            _mainPage.ShowNotifyMessage("Messung wurde erneut ausgewertet.", NotifyLevel.Info);
+            _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von {0:ss\\.fff} sec erneut ausgewertet.", evaluationDuration), NotifyLevel.Info);
 
             // hide loader
             _mainPage.HideLoader();

@@ -59,14 +59,14 @@ namespace BackgroundTask.Service
                 measurement.Setting != null)
             {
                 TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.Filename, measurement.Setting.ReportInterval, 
-                    measurement.Setting.ProcessedSamplesCount, measurement.Setting.AccelerometerThreshold, measurement.Setting.GyrometerThreshold, measurement.Setting.StepDistance);
+                    measurement.Setting.ProcessedSamplesCount, measurement.Setting.AccelerometerThreshold, measurement.Setting.GyrometerThreshold, 
+                    measurement.Setting.StepDistance, measurement.Setting.PeakJoinDistance);
 
-                string arguments = JsonConvert.SerializeObject(taskArguments);
-                if (measurement.Setting.UseAccelerometer)
+                string arguments = JsonConvert.SerializeObject(taskArguments);                
+                if (await StartAccelerometerTask(measurement.Id, arguments))
                 {
-                    await StartAccelerometerTask(measurement.Id, arguments);
-                    isStarted = true;
-                }                
+                    isStarted = true;    
+                }    
             }
             return isStarted;
         }
@@ -138,8 +138,10 @@ namespace BackgroundTask.Service
 
         #region Start BackgroundTask
 
-        public static async Task StartAccelerometerTask(string taskName, string arguments)
+        public static async Task<bool> StartAccelerometerTask(string taskName, string arguments)
         {
+            bool isBackgroundTaskRegistered = false;
+
             Accelerometer accelerometer = Accelerometer.GetDefault();
             if (accelerometer != null && taskName != null && taskName.Length > 0)
             {
@@ -148,13 +150,10 @@ namespace BackgroundTask.Service
                 if ((BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity.Equals(backgroundAccessStatus))
                     || (BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity.Equals(backgroundAccessStatus)))
                 {
-                    await RegisterAccelerometerTaskAsync(accelerometer.DeviceId, taskName, arguments);
-                }
-                else
-                {
-                    //ShowNotifyMessage("App darf keine Background Tasks starten.", NotifyLevel.Error);
+                    isBackgroundTaskRegistered = await RegisterAccelerometerTaskAsync(accelerometer.DeviceId, taskName, arguments);
                 }
             }
+            return isBackgroundTaskRegistered;
         }
 
         private static async Task<bool> RegisterAccelerometerTaskAsync(string deviceId, string taskName, string arguments)
@@ -227,7 +226,6 @@ namespace BackgroundTask.Service
                     {
                         currentTask.Value.Unregister(true);
                         isDeregistered = true;
-                        //ShowNotifyMessage("Background Task wurde beendet.", NotifyLevel.Info);
                     }
                 }
             }

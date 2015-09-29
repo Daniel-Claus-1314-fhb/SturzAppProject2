@@ -83,7 +83,7 @@ namespace SensorDataEvaluation.Service
             if (evaluationList != null && evaluationList.Count > 2)
             {
                 // detect Steps
-                for (int i = 0; i < evaluationList.Count; i++)
+                for (int i = 1; i < evaluationList.Count - 1; i++)
                 {
                     double twicePreviousAccelerometerVectorLength = evaluationList.ElementAt(i).AccelerometerVectorLength;
                     double previousAccelerometerVectorLength = evaluationList.ElementAt(i).AccelerometerVectorLength;
@@ -132,9 +132,8 @@ namespace SensorDataEvaluation.Service
             if (evaluationList != null && evaluationList.Count > 2)
             {
                 // detect Steps
-                for (int i = 0; i < evaluationList.Count; i++)
+                for (int i = 1; i < evaluationList.Count - 1; i++)
                 {
-
                     double twicePreviousGyrometerVectorLength = evaluationList.ElementAt(i).GyrometerVectorLength;
                     double previousGyrometerVectorLength = evaluationList.ElementAt(i).GyrometerVectorLength;
                     double currentGyrometerVectorLength = evaluationList.ElementAt(i).GyrometerVectorLength;
@@ -176,9 +175,7 @@ namespace SensorDataEvaluation.Service
         private void DetectSteps(EvaluationResultModel evaluationResultModel, EvaluationSettingModel evaluationSetting)
         {
             TimeSpan stepTimeDistence = evaluationSetting.StepDistance;
-
-            // TimeSpan of 150 milliseconds
-            TimeSpan assumedStepsPairingThreshold = TimeSpan.FromTicks(TimeSpan.TicksPerMillisecond * 150);
+            TimeSpan assumedStepsPairingThreshold = evaluationSetting.PeakJoinDistance;
             
             var evaluationList = evaluationResultModel.EvaluationResultList;
 
@@ -202,6 +199,7 @@ namespace SensorDataEvaluation.Service
                             lastAssumedGyrometerStepTime = evaluationList.ElementAt(i).MeasurementTime;
                         }
 
+                        // Vergleichen der zuletzt gefundenen peaks
                         if (lastAssumedAcclerometerStepTime != TimeSpan.Zero &&
                             lastAssumedGyrometerStepTime != TimeSpan.Zero)
                         {

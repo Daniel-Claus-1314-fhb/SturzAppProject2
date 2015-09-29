@@ -135,6 +135,38 @@ namespace BackgroundTask.Service
         #endregion
 
         //##################################################################################################################################
+        //################################################## Load Export Data ##############################################################
+        //##################################################################################################################################
+
+        #region Load Evaluation Data
+
+        internal static async Task<ExportData> LoadSamplesForExportAsync(string filename)
+        {
+            ExportData exportData = new ExportData();
+
+            if (filename != null && filename != string.Empty)
+            {
+                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
+                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
+                StorageFolder quaternionFolder = await FindStorageFolder(_measurementQuaternionPath);
+                StorageFolder evaluationFolder = await FindStorageFolder(_evaluationPath);
+
+                Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
+                Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
+                Task<List<QuaternionSample>> loadQuaternionTask = LoadQuaternionSamplesFromFile(quaternionFolder, filename);
+                Task<List<EvaluationSample>> loadEvaluationSamplesTask = LoadEvaluationSamplesFromFile(evaluationFolder, filename);
+
+                exportData.AccelerometerSamples = await loadAccelerometerTask;
+                exportData.GyrometerSamples = await loadGyrometerTask;
+                exportData.QuaternionSamples = await loadQuaternionTask;
+                exportData.EvaluationSamples = await loadEvaluationSamplesTask;
+            }
+            return exportData;
+        }
+
+        #endregion
+
+        //##################################################################################################################################
         //################################################## Load Evaluation Data ##########################################################
         //##################################################################################################################################
 

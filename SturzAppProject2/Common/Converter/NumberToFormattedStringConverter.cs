@@ -35,6 +35,10 @@ namespace BackgroundTask.Common.Converter
                                 return String.Format("Schrittabstand {0:G} ms", convertUnsignedInteger);
                             case "StepDistanceSimple":
                                 return String.Format("{0:G} ms", convertUnsignedInteger);
+                            case "PeakJoinDistanceFull":
+                                return String.Format("Peaks innerhalb {0:G} ms als Schritte erkennen", convertUnsignedInteger);
+                            case "PeakJoinDistanceSimple":
+                                return String.Format("{0:G} ms", convertUnsignedInteger);
                             default:
                                 return String.Format("{0:G}", convertUnsignedInteger);
                         }
@@ -55,13 +59,13 @@ namespace BackgroundTask.Common.Converter
                         switch (parameterString)
                         {
                             case "AccelerometerThresholdFull":
-                                return String.Format("Accelerometerschwellwert {0:f2}G", convertDouble);
+                                return String.Format("Accelerometerschwellwert {0:f2} G", convertDouble);
                             case "AccelerometerThresholdSimple":
-                                return String.Format("{0:f2}G", convertDouble);
+                                return String.Format("{0:f2} G", convertDouble);
                             case "GyrometerThresholdFull":
-                                return String.Format("Gyrometerschwellwert {0:G}", convertDouble);
+                                return String.Format("Gyrometerschwellwert {0:G} rad/s", convertDouble);
                             case "GyrometerThresholdSimple":
-                                return String.Format("{0:G}", convertDouble);
+                                return String.Format("{0:G} rad/s", convertDouble);
                             default:
                                 return String.Format("{0:G}", convertDouble);
                         }
