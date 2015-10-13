@@ -69,6 +69,66 @@ namespace BackgroundTask.Service
         }
 
         //##################################################################################################################################
+        //################################################## Save export data ##############################################################
+        //##################################################################################################################################
+
+        public static async Task SaveExportDataToFileAsync(StorageFile file, ExportData exportData)
+        {
+            using (IRandomAccessStream textStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                using (DataWriter textWriter = new DataWriter(textStream.GetOutputStreamAt(textStream.Size)))
+                {
+                    // Append accelerometer header and accelerometer samples
+                    if (exportData.AccelerometerSamples != null && exportData.AccelerometerSamples.Count > 0)
+                    {
+                        // insert header for accelerometer data
+                        textWriter.WriteString(exportData.AccelerometerSamples.ElementAt(0).GetExportHeader());
+                        var enumerator = exportData.AccelerometerSamples.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                        }
+                    }
+                    // Append gyrometer header and gyrometer samples
+                    if (exportData.GyrometerSamples != null && exportData.GyrometerSamples.Count > 0)
+                    {
+                        // insert header for gyrometer data
+                        textWriter.WriteString(exportData.GyrometerSamples.ElementAt(0).GetExportHeader());
+                        var enumerator = exportData.GyrometerSamples.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                        }
+                    }
+                    // Append quaternion header and quaternion samples
+                    if (exportData.QuaternionSamples != null && exportData.QuaternionSamples.Count > 0)
+                    {
+                        // insert header for quaternion data
+                        textWriter.WriteString(exportData.QuaternionSamples.ElementAt(0).GetExportHeader());
+                        var enumerator = exportData.QuaternionSamples.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                        }
+                    }
+                    // Append evaluation header and evaluation samples
+                    if (exportData.EvaluationSamples != null && exportData.EvaluationSamples.Count > 0)
+                    {
+                        // insert header for evaluation data
+                        textWriter.WriteString(exportData.EvaluationSamples.ElementAt(0).GetExportHeader());
+                        var enumerator = exportData.EvaluationSamples.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                        }
+                    }
+                    await textWriter.StoreAsync();
+                }
+            }
+            return;
+        }
+
+        //##################################################################################################################################
         //################################################## Load Measurements #############################################################
         //##################################################################################################################################
 

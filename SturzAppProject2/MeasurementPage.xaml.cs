@@ -28,6 +28,8 @@ using Windows.UI.Xaml.Navigation;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.Storage.Provider;
+using Windows.Storage.Streams;
+using SensorDataEvaluation.DataModel;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -244,9 +246,23 @@ namespace BackgroundTask
         {
             // Show loader
             _mainPage.ShowLoader();
+            //_mainPage.ExportMeasurementData(measurementViewMdel.Id);
 
-            _mainPage.ExportMeasurementData(measurementViewModel.Id);
-
+            if (measurementViewModel.Id != null && measurementViewModel.Id.Length > 0)
+            {
+                Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementViewModel.Id);
+                if (measurement != null)
+                {
+                    var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+                    savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                    // Dropdown of file types the user can save the file as
+                    savePicker.FileTypeChoices.Add("CSV-Datei", new List<string>() { ".csv" });
+                    // Default file name if the user does not type one in or select a file to replace
+                    savePicker.SuggestedFileName = String.Format("{0}_{1:yyyy-MM-dd_HH-mm-ss}", measurement.Name, measurement.StartTime);
+                    // Open the file picker and call the method "ContinueFileSavePicker" when the user select a file.
+                    savePicker.PickSaveFileAndContinue();
+                }
+            }
             // Hide loader
             _mainPage.HideLoader();
         }
@@ -411,18 +427,25 @@ namespace BackgroundTask
             StorageFile file = args.File;
             if (file != null && measurement != null)
             {
-                
+                Stopwatch stopwatch = new Stopwatch();
+
+                stopwatch.Start();
                 // load data for export
                 ExportData exportData = await FileService.LoadSamplesForExportAsync(measurement.Filename);
-                String exportCSVString = exportData.ToExportCSVString();
-
+                stopwatch.Stop();
+                Debug.WriteLine("Load export data from file: {0}", stopwatch.Elapsed.Duration());
+                
+                stopwatch.Restart();
                 // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
                 CachedFileManager.DeferUpdates(file);
                 // write data into file
-                await FileIO.WriteTextAsync(file, exportCSVString);
+                await FileService.SaveExportDataToFileAsync(file, exportData);
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
                 // Completing updates may require Windows to ask for user input.
                 FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
+                stopwatch.Stop();
+                Debug.WriteLine("Write export data to file: {0}", stopwatch.Elapsed.Duration());
+
                 if (status == FileUpdateStatus.Complete)
                 {
                     _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
@@ -431,8 +454,6 @@ namespace BackgroundTask
                 {
                     _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
                 }
-                exportCSVString = null;
-                exportData = null;
             }
             else
             {

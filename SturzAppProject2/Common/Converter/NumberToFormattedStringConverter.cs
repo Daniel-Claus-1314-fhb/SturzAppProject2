@@ -63,7 +63,7 @@ namespace BackgroundTask.Common.Converter
                             case "AccelerometerThresholdSimple":
                                 return String.Format("{0:f2} G", convertDouble);
                             case "GyrometerThresholdFull":
-                                return String.Format("Gyrometerschwellwert {0:G} rad/s", convertDouble);
+                                return String.Format("Gyrometerschwellwert {0:G} Grad/s", convertDouble);
                             case "GyrometerThresholdSimple":
                                 return String.Format("{0:G} rad/s", convertDouble);
                             default:
