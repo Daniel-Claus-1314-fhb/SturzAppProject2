@@ -1,6 +1,7 @@
 ﻿using SensorDataEvaluation.DataModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -31,8 +32,8 @@ namespace SensorDataEvaluation.DataModel
             this._quaternionListOdd = new List<QuaternionSample>();
         }
 
-        public MeasurementData(string measurementFilename, uint processingListSize) 
-            : this (measurementFilename)
+        public MeasurementData(string measurementFilename, uint processingListSize)
+            : this(measurementFilename)
         {
             this._processingListCount = processingListSize;
         }
@@ -86,7 +87,6 @@ namespace SensorDataEvaluation.DataModel
         private List<QuaternionSample> _quaternionListEven { get; set; }
         private List<QuaternionSample> _quaternionListOdd { get; set; }
 
-
         //###################################################################################################################
         //################################################## Methods ########################################################
         //###################################################################################################################
@@ -117,12 +117,11 @@ namespace SensorDataEvaluation.DataModel
                     _startDateTime = accelerometerReading.Timestamp;
                 }
 
-                AccelerometerSample accelerometerSample = new AccelerometerSample();
-                accelerometerSample.MeasurementTime = accelerometerReading.Timestamp.Subtract(_startDateTime);
-                accelerometerSample.CoordinateX = accelerometerReading.AccelerationX;
-                accelerometerSample.CoordinateY = accelerometerReading.AccelerationY;
-                accelerometerSample.CoordinateZ = accelerometerReading.AccelerationZ;
-                this.AddAccelerometerSample(accelerometerSample);
+                TimeSpan measurementTime = accelerometerReading.Timestamp.Subtract(_startDateTime);
+                double coordinateX = accelerometerReading.AccelerationX;
+                double coordinateY = accelerometerReading.AccelerationY;
+                double coordinateZ = accelerometerReading.AccelerationZ;
+                this.AddAccelerometerSample(new AccelerometerSample(measurementTime, coordinateX, coordinateY, coordinateZ));
             }
         }
         /// <summary>
@@ -161,7 +160,7 @@ namespace SensorDataEvaluation.DataModel
         /// </summary>
         /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
         /// <returns></returns>
-        public string ToAccelerometerCSVString(bool useActiveList)
+        public string ToAccelerometerExportCSVString(bool useActiveList)
         {
             StringBuilder stringbuilder = new StringBuilder();
             IList<AccelerometerSample> accelerometerSampleList = useActiveList ? this.GetActivAccelerometerList() : this.GetPassivAccelerometerList();
@@ -169,13 +168,25 @@ namespace SensorDataEvaluation.DataModel
             while (enumerator.MoveNext())
             {
                 AccelerometerSample accelerometerSample = enumerator.Current;
-                stringbuilder.Append(accelerometerSample.ToCSVString());
+                stringbuilder.Append(accelerometerSample.ToExportCSVString());
             }
             return stringbuilder.ToString();
         }
 
+        public byte[] ToAccelerometerBytes(bool useActiveList)
+        {
+            IList<AccelerometerSample> accelerometerSampleList = useActiveList ? this.GetActivAccelerometerList() : this.GetPassivAccelerometerList();
+            List<byte[]> resultByteArrays = new List<byte[]>();
+            var enumerator = accelerometerSampleList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                resultByteArrays.Add(enumerator.Current.ToByteArray());
+            }
+            return resultByteArrays.SelectMany(a => a).ToArray();
+        }
+
         //################################################## Gyrometer ######################################################
-        
+
         /// <summary>
         /// Adds a new gyrometer reading into the active gyrometer reading list.
         /// </summary>
@@ -188,13 +199,11 @@ namespace SensorDataEvaluation.DataModel
                 {
                     _startDateTime = gyrometerReading.Timestamp;
                 }
-
-                GyrometerSample gyrometerSample = new GyrometerSample();
-                gyrometerSample.MeasurementTime = gyrometerReading.Timestamp.Subtract(_startDateTime);
-                gyrometerSample.VelocityX = gyrometerReading.AngularVelocityX;
-                gyrometerSample.VelocityY = gyrometerReading.AngularVelocityY;
-                gyrometerSample.VelocityZ = gyrometerReading.AngularVelocityZ;
-                this.AddGyrometerSample(gyrometerSample);
+                TimeSpan measurementTime = gyrometerReading.Timestamp.Subtract(_startDateTime);
+                double velocityX = gyrometerReading.AngularVelocityX;
+                double velocityY = gyrometerReading.AngularVelocityY;
+                double velocityZ = gyrometerReading.AngularVelocityZ;
+                this.AddGyrometerSample(new GyrometerSample(measurementTime, velocityX, velocityY, velocityZ));
             }
         }
         /// <summary>
@@ -233,7 +242,7 @@ namespace SensorDataEvaluation.DataModel
         /// </summary>
         /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
         /// <returns></returns>
-        public string ToGyrometerCSVString(bool useActiveList)
+        public string ToGyrometerExportCSVString(bool useActiveList)
         {
             StringBuilder stringbuilder = new StringBuilder();
             IList<GyrometerSample> gyrometerList = useActiveList ? this.GetActivGyrometerList() : this.GetPassivGyrometerList();
@@ -241,9 +250,21 @@ namespace SensorDataEvaluation.DataModel
             while (enumerator.MoveNext())
             {
                 GyrometerSample gyrometerSample = enumerator.Current;
-                stringbuilder.Append(gyrometerSample.ToCSVString());
+                stringbuilder.Append(gyrometerSample.ToExportCSVString());
             }
             return stringbuilder.ToString();
+        }
+
+        public byte[] ToGyrometerBytes(bool useActiveList)
+        {
+            IList<GyrometerSample> gyrometerList = useActiveList ? this.GetActivGyrometerList() : this.GetPassivGyrometerList();
+            List<byte[]> resultByteArrays = new List<byte[]>();
+            var enumerator = gyrometerList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                resultByteArrays.Add(enumerator.Current.ToByteArray());
+            }
+            return resultByteArrays.SelectMany(a => a).ToArray();
         }
 
         //################################################## Quaternion #####################################################
@@ -259,14 +280,12 @@ namespace SensorDataEvaluation.DataModel
                 {
                     _startDateTime = orientationSensorReading.Timestamp;
                 }
-
-                QuaternionSample quaternionSample = new QuaternionSample();
-                quaternionSample.MeasurementTime = orientationSensorReading.Timestamp.Subtract(_startDateTime);
-                quaternionSample.AngleW = orientationSensorReading.Quaternion.W;
-                quaternionSample.CoordinateX = orientationSensorReading.Quaternion.X;
-                quaternionSample.CoordinateY = orientationSensorReading.Quaternion.Y;
-                quaternionSample.CoordinateZ = orientationSensorReading.Quaternion.Z;
-                this.AddQuaternionSample(quaternionSample);
+                TimeSpan measurementTime = orientationSensorReading.Timestamp.Subtract(_startDateTime);
+                double angleW = orientationSensorReading.Quaternion.W;
+                double coordinateX = orientationSensorReading.Quaternion.X;
+                double coordinateY = orientationSensorReading.Quaternion.Y;
+                double coordinateZ = orientationSensorReading.Quaternion.Z;
+                this.AddQuaternionSample(new QuaternionSample(measurementTime, angleW, coordinateX, coordinateY, coordinateZ));
             }
         }
         /// <summary>
@@ -299,13 +318,13 @@ namespace SensorDataEvaluation.DataModel
         {
             return _listChangeCounter % 2 == 1 ? _quaternionListEven : _quaternionListOdd;
         }
-        
+
         /// <summary>
         /// Creates a csv string of the quaternion list.
         /// </summary>
         /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
         /// <returns></returns>
-        public string ToQuaternionCSVString(bool useActiveList)
+        public string ToQuaternionExportCSVString(bool useActiveList)
         {
             StringBuilder stringbuilder = new StringBuilder();
             IList<QuaternionSample> quaternionList = useActiveList ? this.GetActivQuaternionList() : this.GetPassivQuaternionList();
@@ -313,9 +332,21 @@ namespace SensorDataEvaluation.DataModel
             while (enumerator.MoveNext())
             {
                 QuaternionSample quaternionSample = enumerator.Current;
-                stringbuilder.Append(quaternionSample.ToCSVString());
+                stringbuilder.Append(quaternionSample.ToExportCSVString());
             }
             return stringbuilder.ToString();
+        }
+
+        public byte[] ToQuaternionBytes(bool useActiveList)
+        {
+            IList<QuaternionSample> quaternionList = useActiveList ? this.GetActivQuaternionList() : this.GetPassivQuaternionList();
+            List<byte[]> resultByteArrays = new List<byte[]>();
+            var enumerator = quaternionList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                resultByteArrays.Add(enumerator.Current.ToByteArray());
+            }
+            return resultByteArrays.SelectMany(a => a).ToArray();
         }
 
         //###################################################################################################################

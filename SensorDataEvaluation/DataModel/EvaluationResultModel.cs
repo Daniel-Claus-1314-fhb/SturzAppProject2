@@ -54,16 +54,27 @@ namespace SensorDataEvaluation.DataModel
             return detectedStepsCount;
         }
         
-        public string ToEvaluationResultCSVString()
+        public string ToEvaluationExportCSVString()
         {
             StringBuilder stringbuilder = new StringBuilder();
             var enumerator = _evaluationResultList.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 EvaluationSample evaluationSample = enumerator.Current;
-                stringbuilder.Append(evaluationSample.ToCSVString());
+                stringbuilder.Append(evaluationSample.ToExportCSVString());
             }
             return stringbuilder.ToString();
+        }
+
+        public byte[] ToEvaluationBytes()
+        {
+            List<byte[]> resultByteArrays = new List<byte[]>();
+            var enumerator = _evaluationResultList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                resultByteArrays.Add(enumerator.Current.ToByteArray());
+            }
+            return resultByteArrays.SelectMany(a => a).ToArray();
         }
     }
 }

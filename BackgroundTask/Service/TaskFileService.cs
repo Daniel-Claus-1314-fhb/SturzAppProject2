@@ -49,14 +49,14 @@ namespace BackgroundTask.Service
         {
             if (filename != null && filename != String.Empty)
             {
-                // convert data into csv
-                string csvString = measurementData.ToAccelerometerCSVString(isActiveListChoosen);
-                if (csvString != null && csvString != String.Empty)
+                // convert data into byte array
+                byte[] bytes = measurementData.ToAccelerometerBytes(isActiveListChoosen);
+                if (bytes != null && bytes.Length > 0)
                 {
                     // find folder
                     StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                    // save csv string
-                    await SaveStringToEndOfFileAsync(csvString, accelerometerFolder, filename);
+                    // save byte array
+                    await SaveBytesToEndOfFileAsync(bytes, accelerometerFolder, filename);
                 }
             }
             return;
@@ -78,14 +78,14 @@ namespace BackgroundTask.Service
         {
             if (filename != null && filename != String.Empty)
             {
-                // convert data into csv
-                string csvString = measurementData.ToGyrometerCSVString(isActiveListChoosen);
-                if (csvString != null && csvString != String.Empty)
+                // convert data into byte array
+                byte[] bytes = measurementData.ToGyrometerBytes(isActiveListChoosen);
+                if (bytes != null && bytes.Length > 0)
                 {
                     // find folder
                     StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                    // save csv string
-                    await SaveStringToEndOfFileAsync(csvString, gyrometerFolder, filename);
+                    // save byte array
+                    await SaveBytesToEndOfFileAsync(bytes, gyrometerFolder, filename);
                 }
             }
             return;
@@ -106,14 +106,14 @@ namespace BackgroundTask.Service
         {
             if (filename != null && filename != String.Empty)
             {
-                // convert data into csv
-                string csvString = measurementData.ToQuaternionCSVString(isActiveListChoosen);
-                if (csvString != null && csvString != String.Empty)
+                // convert data into byte array
+                byte[] bytes = measurementData.ToQuaternionBytes(isActiveListChoosen);
+                if (bytes != null && bytes.Length > 0)
                 {
                     // find folder
                     StorageFolder gyrometerFolder = await FindStorageFolder(_measurementQuaternionPath);
                     // save csv string
-                    await SaveStringToEndOfFileAsync(csvString, gyrometerFolder, filename);
+                    await SaveBytesToEndOfFileAsync(bytes, gyrometerFolder, filename);
                 }
             }
             return;
@@ -132,12 +132,15 @@ namespace BackgroundTask.Service
         {
             if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
             {
-                // find folder
-                StorageFolder folder = await FindStorageFolder(_evaluationPath);
-                // convert data into csv
-                string csvString = evaluationResultModel.ToEvaluationResultCSVString();
-                // save csv string
-                await SaveStringToEndOfFileAsync(csvString, folder, filename);
+                // convert data into byte array
+                byte[] bytes = evaluationResultModel.ToEvaluationBytes();
+                if (bytes != null && bytes.Length > 0)
+                {
+                    // find folder
+                    StorageFolder folder = await FindStorageFolder(_evaluationPath);
+                    // save byte array
+                    await SaveBytesToEndOfFileAsync(bytes, folder, filename);
+                }
             }
             return;
         }
@@ -170,8 +173,8 @@ namespace BackgroundTask.Service
         //##################################################################################################################################
         //################################################## save sting into folder ########################################################
         //##################################################################################################################################
-
-        private static async Task SaveStringToEndOfFileAsync(String appendString, StorageFolder targetFolder, string filename)
+        
+        private static async Task SaveBytesToEndOfFileAsync(byte[] appendBytes, StorageFolder targetFolder, string filename)
         {
             try
             {
@@ -180,7 +183,7 @@ namespace BackgroundTask.Service
                 {
                     using (DataWriter textWriter = new DataWriter(textStream.GetOutputStreamAt(textStream.Size)))
                     {
-                        textWriter.WriteString(appendString);
+                        textWriter.WriteBytes(appendBytes);
                         await textWriter.StoreAsync();
                     }
                     Debug.WriteLine("############## Current file size: '{0}' in '{1}' ################", textStream.Size, filename);

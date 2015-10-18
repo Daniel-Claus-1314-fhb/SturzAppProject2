@@ -115,14 +115,14 @@ namespace BackgroundTask.ViewModel
                 if (evaluationPageViewModel.MeasurementViewModel != null &&
                     evaluationPageViewModel.MeasurementViewModel.MeasurementState == MeasurementState.Stopped &&
 
-                    evaluationPageViewModel.EvaluationDataModel.AccelerometerAnalysisList != null &&
-                    evaluationPageViewModel.EvaluationDataModel.AccelerometerAnalysisList.Count > 0 &&
+                    evaluationPageViewModel.EvaluationDataModel.AccelerometerSampleAnalysisList != null &&
+                    evaluationPageViewModel.EvaluationDataModel.AccelerometerSampleAnalysisList.Count > 0 &&
 
-                    evaluationPageViewModel.EvaluationDataModel.GyrometerAnalysisList != null &&
-                    evaluationPageViewModel.EvaluationDataModel.GyrometerAnalysisList.Count > 0 &&
+                    evaluationPageViewModel.EvaluationDataModel.GyrometerSampleAnalysisList != null &&
+                    evaluationPageViewModel.EvaluationDataModel.GyrometerSampleAnalysisList.Count > 0 &&
 
-                    evaluationPageViewModel.EvaluationDataModel.QuaternionAnalysisList != null &&
-                    evaluationPageViewModel.EvaluationDataModel.QuaternionAnalysisList.Count > 0 &&
+                    evaluationPageViewModel.EvaluationDataModel.QuaternionSampleAnalysisList != null &&
+                    evaluationPageViewModel.EvaluationDataModel.QuaternionSampleAnalysisList.Count > 0 &&
 
                     evaluationPageViewModel.EvaluationState == EvaluationState.Stopped)
                 {

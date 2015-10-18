@@ -56,14 +56,17 @@ namespace BackgroundTask.Service
         {
             if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
             {
-                // find folder
-                StorageFolder folder = await FindStorageFolder(_evaluationPath);
-                // convert data into csv
-                string csvString = evaluationResultModel.ToEvaluationResultCSVString();
-                // delete old evaluationData
-                await DeleteFileAsync(folder, filename);
-                // save csv string
-                await SaveJsonStringToFile(csvString, folder, filename);
+                // convert data into byte array
+                byte[] bytes = evaluationResultModel.ToEvaluationBytes();
+                if (bytes != null && bytes.Length > 0)
+                {
+                    // find folder
+                    StorageFolder folder = await FindStorageFolder(_evaluationPath);
+                    // delete old evaluationData
+                    await DeleteFileAsync(folder, filename);
+                    // save byte array
+                    await SaveBytesToEndOfFileAsync(bytes, folder, filename);
+                }
             }
             return;
         }
@@ -86,8 +89,9 @@ namespace BackgroundTask.Service
                         var enumerator = exportData.AccelerometerSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
                         }
+                        await textWriter.StoreAsync();
                     }
                     // Append gyrometer header and gyrometer samples
                     if (exportData.GyrometerSamples != null && exportData.GyrometerSamples.Count > 0)
@@ -97,8 +101,9 @@ namespace BackgroundTask.Service
                         var enumerator = exportData.GyrometerSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
                         }
+                        await textWriter.StoreAsync();
                     }
                     // Append quaternion header and quaternion samples
                     if (exportData.QuaternionSamples != null && exportData.QuaternionSamples.Count > 0)
@@ -108,8 +113,9 @@ namespace BackgroundTask.Service
                         var enumerator = exportData.QuaternionSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
                         }
+                        await textWriter.StoreAsync();
                     }
                     // Append evaluation header and evaluation samples
                     if (exportData.EvaluationSamples != null && exportData.EvaluationSamples.Count > 0)
@@ -119,10 +125,10 @@ namespace BackgroundTask.Service
                         var enumerator = exportData.EvaluationSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteString(enumerator.Current.ToExportCSVString());
+                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
                         }
+                        await textWriter.StoreAsync();
                     }
-                    await textWriter.StoreAsync();
                 }
             }
             return;
@@ -289,29 +295,20 @@ namespace BackgroundTask.Service
         private static async Task<List<AccelerometerSample>> LoadAccelerometerSamplesFromFile(StorageFolder targetFolder, string filename)
         {
             List<AccelerometerSample> accelerometerSampleList = new List<AccelerometerSample>();
-
             try
             {
                 StorageFile file = await targetFolder.GetFileAsync(filename);
-                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    while (!stream.EndOfStream)
+                    int subArrayLength = GyrometerSample.AmountOfBytes;
+                    // Set Position to the beginning of the stream.
+                    stream.BaseStream.Position = 0;
+                    byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
+                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
                     {
-                        string currentReadLineOfFile = await stream.ReadLineAsync();
-                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
-
-                        double timeStampTicks;
-                        double accerlerometerX;
-                        double accerlerometerY;
-                        double accerlerometerZ;
-
-                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
-                            Double.TryParse(stringArray[1], _styles, _provider, out accerlerometerX) &&
-                            Double.TryParse(stringArray[2], _styles, _provider, out accerlerometerY) &&
-                            Double.TryParse(stringArray[3], _styles, _provider, out accerlerometerZ))
-                        {
-                            accelerometerSampleList.Add(new AccelerometerSample(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerX, accerlerometerY, accerlerometerZ));
-                        }
+                        byte[] subArray = new byte[subArrayLength];
+                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
+                        accelerometerSampleList.Add(new AccelerometerSample(subArray));
                     }
                 }
             }
@@ -335,31 +332,22 @@ namespace BackgroundTask.Service
         private static async Task<List<GyrometerSample>> LoadGyrometerSamplesFromFile(StorageFolder targetFolder, string filename)
         {
             List<GyrometerSample> gyrometerSampleList = new List<GyrometerSample>();
-
             try
             {
-                StorageFile file = await targetFolder.GetFileAsync(filename);
-                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                StorageFile file = await targetFolder.GetFileAsync(filename); 
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    while (!stream.EndOfStream)
+                    int subArrayLength = GyrometerSample.AmountOfBytes;
+                    // Set Position to the beginning of the stream.
+                    stream.BaseStream.Position = 0;
+                    byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
+                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
                     {
-                        string currentReadLineOfFile = await stream.ReadLineAsync();
-                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
-
-                        double timeStampTicks;
-                        double velocityX;
-                        double velocityY;
-                        double velocityZ;
-
-                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
-                            Double.TryParse(stringArray[1], _styles, _provider, out velocityX) &&
-                            Double.TryParse(stringArray[2], _styles, _provider, out velocityY) &&
-                            Double.TryParse(stringArray[3], _styles, _provider, out velocityZ))
-                        {
-                            gyrometerSampleList.Add(new GyrometerSample(TimeSpan.FromMilliseconds(timeStampTicks), velocityX, velocityY, velocityZ));
-                        }
+                        byte[] subArray = new byte[subArrayLength];
+                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
+                        gyrometerSampleList.Add(new GyrometerSample(subArray));
                     }
-                }
+                } 
             }
             catch (FileNotFoundException)
             {
@@ -379,31 +367,20 @@ namespace BackgroundTask.Service
         private static async Task<List<QuaternionSample>> LoadQuaternionSamplesFromFile(StorageFolder targetFolder, string filename)
         {
             List<QuaternionSample> quaternionSampleList = new List<QuaternionSample>();
-
             try
             {
                 StorageFile file = await targetFolder.GetFileAsync(filename);
-                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    while (!stream.EndOfStream)
+                    int subArrayLength = QuaternionSample.AmountOfBytes;
+                    // Set Position to the beginning of the stream.
+                    stream.BaseStream.Position = 0;
+                    byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
+                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
                     {
-                        string currentReadLineOfFile = await stream.ReadLineAsync();
-                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
-
-                        double timeStampTicks;
-                        double angleW;
-                        double coordinateX;
-                        double coordinateY;
-                        double coordinateZ;
-
-                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
-                            Double.TryParse(stringArray[1], _styles, _provider, out angleW) &&
-                            Double.TryParse(stringArray[2], _styles, _provider, out coordinateX) &&
-                            Double.TryParse(stringArray[3], _styles, _provider, out coordinateY) &&
-                            Double.TryParse(stringArray[4], _styles, _provider, out coordinateZ))
-                        {
-                            quaternionSampleList.Add(new QuaternionSample(TimeSpan.FromMilliseconds(timeStampTicks), angleW, coordinateX, coordinateY, coordinateZ));
-                        }
+                        byte[] subArray = new byte[subArrayLength];
+                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
+                        quaternionSampleList.Add(new QuaternionSample(subArray));
                     }
                 }
             }
@@ -425,44 +402,30 @@ namespace BackgroundTask.Service
         private static async Task<List<EvaluationSample>> LoadEvaluationSamplesFromFile(StorageFolder targetFolder, string filename)
         {
             List<EvaluationSample> evaluationData = new List<EvaluationSample>();
-
             try
             {
                 StorageFile file = await targetFolder.GetFileAsync(filename);
-                using (StreamReader stream = new StreamReader(await file.OpenStreamForReadAsync()))
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    while (!stream.EndOfStream)
+                    int subArrayLength = EvaluationSample.AmountOfBytes;
+                    // Set Position to the beginning of the stream.
+                    stream.BaseStream.Position = 0;
+                    byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
+                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
                     {
-                        string currentReadLineOfFile = await stream.ReadLineAsync();
-                        string[] stringArray = currentReadLineOfFile.Split(new Char[] { ',' });
-
-                        double timeStampTicks;
-                        double accerlerometerVectorLength;
-                        double gyrometerVectorLength;
-                        int assumedAccelerometerStep;
-                        int assumedGyrometerStep;
-                        int detectedStep;
-
-                        if (Double.TryParse(stringArray[0], _styles, _provider, out timeStampTicks) &&
-                            Double.TryParse(stringArray[1], _styles, _provider, out accerlerometerVectorLength) &&
-                            Double.TryParse(stringArray[2], _styles, _provider, out gyrometerVectorLength) &&
-                            Int32.TryParse(stringArray[3], out assumedAccelerometerStep) &&
-                            Int32.TryParse(stringArray[4], out assumedGyrometerStep) &&
-                            Int32.TryParse(stringArray[5], out detectedStep))
-                        {
-                            evaluationData.Add(new EvaluationSample(TimeSpan.FromMilliseconds(timeStampTicks), accerlerometerVectorLength, gyrometerVectorLength,
-                                assumedAccelerometerStep == 0 ? false : true, assumedGyrometerStep == 0 ? false : true, detectedStep == 0 ? false : true));
-                        }
+                        byte[] subArray = new byte[subArrayLength];
+                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
+                        evaluationData.Add(new EvaluationSample(subArray));
                     }
                 }
             }
             catch (FileNotFoundException)
             {
-                Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerEvaluationFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadEvaluationFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
             }
             catch (UnauthorizedAccessException)
             {
-                Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerEvaluationFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadEvaluationFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return evaluationData;
         }
@@ -497,6 +460,32 @@ namespace BackgroundTask.Service
             catch (UnauthorizedAccessException)
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.SaveJsonStringToFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return;
+        }
+
+        private static async Task SaveBytesToEndOfFileAsync(byte[] appendBytes, StorageFolder targetFolder, string filename)
+        {
+            try
+            {
+                StorageFile file = await targetFolder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
+                using (IRandomAccessStream textStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                {
+                    using (DataWriter textWriter = new DataWriter(textStream.GetOutputStreamAt(textStream.Size)))
+                    {
+                        textWriter.WriteBytes(appendBytes);
+                        await textWriter.StoreAsync();
+                    }
+                    Debug.WriteLine("############## Current file size: '{0}' in '{1}' ################", textStream.Size, filename);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[BackgroundTask.Service.TaskFileService.SaveStringToFile] Datei: {0} konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[BackgroundTask.Service.TaskFileService.SaveStringToFile] Datei: {0} konnte nicht zugegriffen werden.", filename);
             }
             return;
         }
