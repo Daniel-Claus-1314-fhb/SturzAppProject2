@@ -30,6 +30,7 @@ using Windows.Storage;
 using Windows.Storage.Provider;
 using Windows.Storage.Streams;
 using SensorDataEvaluation.DataModel;
+using Windows.UI.Popups;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -256,7 +257,7 @@ namespace BackgroundTask
                     var savePicker = new Windows.Storage.Pickers.FileSavePicker();
                     savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
                     // Dropdown of file types the user can save the file as
-                    savePicker.FileTypeChoices.Add("CSV-Datei", new List<string>() { ".csv" });
+                    savePicker.FileTypeChoices.Add("Binary-File", new List<string>() { ".bin" });
                     // Default file name if the user does not type one in or select a file to replace
                     savePicker.SuggestedFileName = String.Format("{0}_{1:yyyy-MM-dd_HH-mm-ss}", measurement.Name, measurement.StartTime);
                     // Open the file picker and call the method "ContinueFileSavePicker" when the user select a file.
@@ -299,22 +300,35 @@ namespace BackgroundTask
         /// <param name="measurementViewModel"></param>
         private async void DeleteMeasurement(MeasurementViewModel measurementViewModel)
         {
-            bool isDeleted = false;
-            isDeleted = await _mainPage.MainMeasurementListModel.Delete(measurementViewModel.Id);
+            MessageDialog dialog = new MessageDialog("Messung löschen?");
+            dialog.Commands.Add(new UICommand("OK"));
+            dialog.Commands.Add(new UICommand("Abbrechen"));
 
-            if (isDeleted)
+            var dialogResult = await dialog.ShowAsync();
+
+            if (dialogResult.Label.Equals("OK"))
             {
-                _measurementPageViewModel.MeasurementViewModel.DeleteMeasurement();
-                RaiseCanExecuteChanged();
-                _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
+                bool isDeleted = false;
+                isDeleted = await _mainPage.MainMeasurementListModel.Delete(measurementViewModel.Id);
 
-                Frame contentFrame = MainPage.Current.FindName("ContentFrame") as Frame;
-                if (contentFrame != null && contentFrame.CanGoBack)
-                    contentFrame.GoBack();
+                if (isDeleted)
+                {
+                    _measurementPageViewModel.MeasurementViewModel.DeleteMeasurement();
+                    RaiseCanExecuteChanged();
+                    _mainPage.ShowNotifyMessage("Messung wurde gelöscht.", NotifyLevel.Info);
+
+                    Frame contentFrame = MainPage.Current.FindName("ContentFrame") as Frame;
+                    if (contentFrame != null && contentFrame.CanGoBack)
+                        contentFrame.GoBack();
+                }
+                else
+                {
+                    _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Error);
+                }
             }
-            else
+            if (dialogResult.Label.Equals("Abbrechen"))
             {
-                _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Error);
+                _mainPage.ShowNotifyMessage("Messung wurden nicht gelöscht.", NotifyLevel.Info);
             }
         }
 
@@ -427,15 +441,18 @@ namespace BackgroundTask
             StorageFile file = args.File;
             if (file != null && measurement != null)
             {
-                Stopwatch stopwatch = new Stopwatch();
+                _mainPage.ShowNotifyMessage(String.Format("Messung wird exportiert! Dies kann einige Zeit dauern."), NotifyLevel.Info);
 
+                Stopwatch stopwatch = new Stopwatch();
+                Stopwatch stopwatch2 = new Stopwatch();
+                
                 stopwatch.Start();
                 // load data for export
                 ExportData exportData = await FileService.LoadSamplesForExportAsync(measurement.Filename);
                 stopwatch.Stop();
                 Debug.WriteLine("Load export data from file: {0}", stopwatch.Elapsed.Duration());
-                
-                stopwatch.Restart();
+
+                stopwatch2.Start();
                 // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
                 CachedFileManager.DeferUpdates(file);
                 // write data into file
@@ -443,12 +460,12 @@ namespace BackgroundTask
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
                 // Completing updates may require Windows to ask for user input.
                 FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
-                stopwatch.Stop();
-                Debug.WriteLine("Write export data to file: {0}", stopwatch.Elapsed.Duration());
+                stopwatch2.Stop();
+                Debug.WriteLine("Write export data to file: {0}", stopwatch2.Elapsed.Duration());
 
                 if (status == FileUpdateStatus.Complete)
                 {
-                    _mainPage.ShowNotifyMessage("Messung wurde exportiert.", NotifyLevel.Info);
+                    _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von '{0:f4}' Sekunden exportiert.", stopwatch.Elapsed.Duration().TotalSeconds + stopwatch2.Elapsed.Duration().TotalSeconds), NotifyLevel.Info);
                 }
                 else
                 {

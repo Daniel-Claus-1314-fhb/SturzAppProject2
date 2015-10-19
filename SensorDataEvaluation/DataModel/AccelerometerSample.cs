@@ -4,21 +4,22 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 
 namespace SensorDataEvaluation.DataModel
 {
     public class AccelerometerSample
     {
         /// <summary>
-        /// long + double + double + double = 8 + 8 + 8 + 8 = 32
+        /// long + float + float + float = 8 + 4 + 4 + 4 = 20
         /// </summary>
-        public const int AmountOfBytes = 8 + 8 + 8 + 8;
+        public const int AmountOfBytes = 8 + 4 + 4 + 4;
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
         //###################################################################################################################
-        
-        public AccelerometerSample(TimeSpan measurementTime, double coordinateX, double coordinateY, double coordinateZ)
+
+        public AccelerometerSample(TimeSpan measurementTime, float coordinateX, float coordinateY, float coordinateZ)
         {
             this.MeasurementTime = measurementTime;
             this.CoordinateX = coordinateX;
@@ -26,17 +27,25 @@ namespace SensorDataEvaluation.DataModel
             this.CoordinateZ = coordinateZ;
         }
 
+        public AccelerometerSample(AccelerometerReading accelerometerReading, DateTimeOffset _startDateTime)
+        {
+            this.MeasurementTime = accelerometerReading.Timestamp.Subtract(_startDateTime);
+            this.CoordinateX = Convert.ToSingle(accelerometerReading.AccelerationX);
+            this.CoordinateY = Convert.ToSingle(accelerometerReading.AccelerationY);
+            this.CoordinateZ = Convert.ToSingle(accelerometerReading.AccelerationZ);
+        }
+
         public AccelerometerSample(byte[] byteArray)
         {
             int i = 0;
             this.MeasurementTime = TimeSpan.FromTicks(BitConverter.ToInt64(byteArray, i));
             i += 8;
-            this.CoordinateX = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.CoordinateY = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.CoordinateZ = BitConverter.ToDouble(byteArray, i);
-            i += 8;
+            this.CoordinateX = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.CoordinateY = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.CoordinateZ = BitConverter.ToSingle(byteArray, i);
+            i += 4;
         }
 
         //###################################################################################################################
@@ -44,9 +53,9 @@ namespace SensorDataEvaluation.DataModel
         //###################################################################################################################
 
         public TimeSpan MeasurementTime { get; set; }
-        public double CoordinateX { get; set; }
-        public double CoordinateY { get; set; }
-        public double CoordinateZ { get; set; }
+        public float CoordinateX { get; set; }
+        public float CoordinateY { get; set; }
+        public float CoordinateZ { get; set; }
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -64,7 +73,7 @@ namespace SensorDataEvaluation.DataModel
 
         public string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Accelerometer,MeasurementTimeInMilliseconds,CoordinateX,CoordinateY,CoordinateZ\n");
+            return String.Format(new CultureInfo("en-US"), "Accelerometer(2byte),MeasurementTimeInTicks(8byte),CoordinateX(4byte),CoordinateY(4byte),CoordinateZ(4byte)\n");
         }
 
         /// <summary>

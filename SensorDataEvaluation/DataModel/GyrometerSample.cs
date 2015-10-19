@@ -4,21 +4,22 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 
 namespace SensorDataEvaluation.DataModel
 {
     public class GyrometerSample
     {
         /// <summary>
-        /// long + double + double + double = 8 + 8 + 8 + 8 = 32
+        /// long + float + float + float = 8 + 4 + 4 + 4 = 20
         /// </summary>
-        public const int AmountOfBytes = 8 + 8 + 8 + 8;
+        public const int AmountOfBytes = 8 + 4 + 4 + 4;
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public GyrometerSample(TimeSpan measurementTime, double velocityX, double velocityY, double velocityZ) 
+        public GyrometerSample(TimeSpan measurementTime, float velocityX, float velocityY, float velocityZ) 
         {
             this.MeasurementTime = measurementTime;
             this.VelocityX = velocityX;
@@ -26,17 +27,25 @@ namespace SensorDataEvaluation.DataModel
             this.VelocityZ = velocityZ;
         }
 
+        public GyrometerSample(GyrometerReading gyrometerReading, DateTimeOffset _startDateTime)
+        {
+            this.MeasurementTime = gyrometerReading.Timestamp.Subtract(_startDateTime);
+            this.VelocityX = Convert.ToSingle(gyrometerReading.AngularVelocityX);
+            this.VelocityY = Convert.ToSingle(gyrometerReading.AngularVelocityY);
+            this.VelocityZ = Convert.ToSingle(gyrometerReading.AngularVelocityZ);
+        }
+
         public GyrometerSample(byte[] byteArray)
         {
             int i = 0;
             this.MeasurementTime = TimeSpan.FromTicks(BitConverter.ToInt64(byteArray, i));
             i += 8;
-            this.VelocityX = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.VelocityY = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.VelocityY = BitConverter.ToDouble(byteArray, i);
-            i += 8;
+            this.VelocityX = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.VelocityY = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.VelocityY = BitConverter.ToSingle(byteArray, i);
+            i += 4;
         }
 
         //###################################################################################################################
@@ -44,9 +53,9 @@ namespace SensorDataEvaluation.DataModel
         //###################################################################################################################
 
         public TimeSpan MeasurementTime { get; set; }
-        public double VelocityX { get; set; }
-        public double VelocityY { get; set; }
-        public double VelocityZ { get; set; }
+        public float VelocityX { get; set; }
+        public float VelocityY { get; set; }
+        public float VelocityZ { get; set; }
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -64,7 +73,7 @@ namespace SensorDataEvaluation.DataModel
 
         public string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Gyrometer,MeasurementTimeInMilliseconds,VelocityX,VelocityY,VelocityZ\n");
+            return String.Format(new CultureInfo("en-US"), "Gyrometer(2byte),MeasurementTimeInTicks(8byte),VelocityX(4byte),VelocityY(4byte),VelocityZ(4byte)\n");
         }
 
         /// <summary>

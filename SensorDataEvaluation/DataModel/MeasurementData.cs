@@ -116,12 +116,7 @@ namespace SensorDataEvaluation.DataModel
                 {
                     _startDateTime = accelerometerReading.Timestamp;
                 }
-
-                TimeSpan measurementTime = accelerometerReading.Timestamp.Subtract(_startDateTime);
-                double coordinateX = accelerometerReading.AccelerationX;
-                double coordinateY = accelerometerReading.AccelerationY;
-                double coordinateZ = accelerometerReading.AccelerationZ;
-                this.AddAccelerometerSample(new AccelerometerSample(measurementTime, coordinateX, coordinateY, coordinateZ));
+                this.AddAccelerometerSample(new AccelerometerSample(accelerometerReading, _startDateTime));
             }
         }
         /// <summary>
@@ -167,8 +162,7 @@ namespace SensorDataEvaluation.DataModel
             var enumerator = accelerometerSampleList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                AccelerometerSample accelerometerSample = enumerator.Current;
-                stringbuilder.Append(accelerometerSample.ToExportCSVString());
+                stringbuilder.Append(enumerator.Current.ToExportCSVString());
             }
             return stringbuilder.ToString();
         }
@@ -199,11 +193,7 @@ namespace SensorDataEvaluation.DataModel
                 {
                     _startDateTime = gyrometerReading.Timestamp;
                 }
-                TimeSpan measurementTime = gyrometerReading.Timestamp.Subtract(_startDateTime);
-                double velocityX = gyrometerReading.AngularVelocityX;
-                double velocityY = gyrometerReading.AngularVelocityY;
-                double velocityZ = gyrometerReading.AngularVelocityZ;
-                this.AddGyrometerSample(new GyrometerSample(measurementTime, velocityX, velocityY, velocityZ));
+                this.AddGyrometerSample(new GyrometerSample(gyrometerReading, _startDateTime));
             }
         }
         /// <summary>
@@ -249,8 +239,7 @@ namespace SensorDataEvaluation.DataModel
             var enumerator = gyrometerList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                GyrometerSample gyrometerSample = enumerator.Current;
-                stringbuilder.Append(gyrometerSample.ToExportCSVString());
+                stringbuilder.Append(enumerator.Current.ToExportCSVString());
             }
             return stringbuilder.ToString();
         }
@@ -280,12 +269,7 @@ namespace SensorDataEvaluation.DataModel
                 {
                     _startDateTime = orientationSensorReading.Timestamp;
                 }
-                TimeSpan measurementTime = orientationSensorReading.Timestamp.Subtract(_startDateTime);
-                double angleW = orientationSensorReading.Quaternion.W;
-                double coordinateX = orientationSensorReading.Quaternion.X;
-                double coordinateY = orientationSensorReading.Quaternion.Y;
-                double coordinateZ = orientationSensorReading.Quaternion.Z;
-                this.AddQuaternionSample(new QuaternionSample(measurementTime, angleW, coordinateX, coordinateY, coordinateZ));
+                this.AddQuaternionSample(new QuaternionSample(orientationSensorReading, _startDateTime));
             }
         }
         /// <summary>
@@ -331,8 +315,7 @@ namespace SensorDataEvaluation.DataModel
             var enumerator = quaternionList.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                QuaternionSample quaternionSample = enumerator.Current;
-                stringbuilder.Append(quaternionSample.ToExportCSVString());
+                stringbuilder.Append(enumerator.Current.ToExportCSVString());
             }
             return stringbuilder.ToString();
         }

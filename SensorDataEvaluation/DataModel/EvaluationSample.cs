@@ -10,15 +10,15 @@ namespace SensorDataEvaluation.DataModel
     public class EvaluationSample
     {
         /// <summary>
-        /// long + double + double + bool + bool + bool = 8 + 8 + 8 + 1 + 1 + 1 = 27
+        /// long + double + double + bool + bool + bool = 8 + 4 + 4 + 1 + 1 + 1 = 19
         /// </summary>
-        public const int AmountOfBytes = 8 + 8 + 8 + 1 + 1 + 1;
+        public const int AmountOfBytes = 8 + 4 + 4 + 1 + 1 + 1;
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public EvaluationSample(TimeSpan measurementTime, double accelerometerVectorLength, double gyrometerVectorLength)
+        public EvaluationSample(TimeSpan measurementTime, float accelerometerVectorLength, float gyrometerVectorLength)
         {
             this.MeasurementTime = measurementTime;
             this.AccelerometerVectorLength = accelerometerVectorLength;
@@ -26,7 +26,7 @@ namespace SensorDataEvaluation.DataModel
             this.IsDetectedStep = false;
         }
 
-        public EvaluationSample(TimeSpan measurementTime, double accelerometerVectorLength, double gyrometerVectorLength, 
+        public EvaluationSample(TimeSpan measurementTime, float accelerometerVectorLength, float gyrometerVectorLength, 
             bool isAssumedAccelerometerStep, bool isAssumedGyrometerStep, bool isDetectedStep)
             : this(measurementTime, accelerometerVectorLength, gyrometerVectorLength)
         {
@@ -40,10 +40,10 @@ namespace SensorDataEvaluation.DataModel
             int i = 0;
             this.MeasurementTime = TimeSpan.FromTicks(BitConverter.ToInt64(byteArray, i));
             i += 8;
-            this.AccelerometerVectorLength = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.GyrometerVectorLength = BitConverter.ToDouble(byteArray, i);
-            i += 8;
+            this.AccelerometerVectorLength = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.GyrometerVectorLength = BitConverter.ToSingle(byteArray, i);
+            i += 4;
             this.IsAssumedAccelerometerStep = BitConverter.ToBoolean(byteArray, i);
             i += 1;
             this.IsAssumedGyrometerStep = BitConverter.ToBoolean(byteArray, i);
@@ -57,8 +57,8 @@ namespace SensorDataEvaluation.DataModel
         //###################################################################################################################
 
         public TimeSpan MeasurementTime { get; set; }
-        public double AccelerometerVectorLength { get; set; }
-        public double GyrometerVectorLength { get; set; }
+        public float AccelerometerVectorLength { get; set; }
+        public float GyrometerVectorLength { get; set; }
         public bool IsAssumedAccelerometerStep { get; set; }
         public bool IsAssumedGyrometerStep { get; set; }
         public bool IsDetectedStep { get; set; }
@@ -81,7 +81,7 @@ namespace SensorDataEvaluation.DataModel
 
         public string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Evaluation,MeasurementTimeInMilliseconds,AccelerometerVectorLength,GyrometerVectorLength,AccelerometerPeak,GyrometerPeak,DetectedStep\n");
+            return String.Format(new CultureInfo("en-US"), "Evaluation(2byte),MeasurementTimeInTicks(8byte),AccelerometerVectorLength(4byte),GyrometerVectorLength(4byte),AccelerometerPeak(1byte),GyrometerPeak(1byte),DetectedStep(1byte)\n");
         }
 
         /// <summary>

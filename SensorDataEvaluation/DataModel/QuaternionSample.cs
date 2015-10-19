@@ -5,21 +5,22 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 
 namespace SensorDataEvaluation.DataModel
 {
     public class QuaternionSample
     {
         /// <summary>
-        /// long + double + double + double + double = 8 + 8 + 8 + 8 + 8 = 40
+        /// long + float + float + float + float = 8 + 4 + 4 + 4 + 4 = 24
         /// </summary>
-        public const int AmountOfBytes = 8 + 8 + 8 + 8 + 8;
+        public const int AmountOfBytes = 8 + 4 + 4 + 4 + 4;
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public QuaternionSample(TimeSpan measurementTime, double angleW, double coordinateX, double coordinateY, double coordinateZ) 
+        public QuaternionSample(TimeSpan measurementTime, float angleW, float coordinateX, float coordinateY, float coordinateZ) 
         {
             this.MeasurementTime = measurementTime;
             this.AngleW = angleW;
@@ -28,19 +29,28 @@ namespace SensorDataEvaluation.DataModel
             this.CoordinateZ = coordinateZ;
         }
 
+        public QuaternionSample(OrientationSensorReading orientationSensorReading, DateTimeOffset _startDateTime)
+        {
+            this.MeasurementTime = orientationSensorReading.Timestamp.Subtract(_startDateTime);
+            this.AngleW = orientationSensorReading.Quaternion.W;
+            this.CoordinateX = orientationSensorReading.Quaternion.X;
+            this.CoordinateY = orientationSensorReading.Quaternion.Y;
+            this.CoordinateZ = orientationSensorReading.Quaternion.Z;
+        }
+
         public QuaternionSample(byte[] byteArray)
         {
             int i = 0;
             this.MeasurementTime = TimeSpan.FromTicks(BitConverter.ToInt64(byteArray, i));
             i += 8;
-            this.AngleW = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.CoordinateX = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.CoordinateY = BitConverter.ToDouble(byteArray, i);
-            i += 8;
-            this.CoordinateZ = BitConverter.ToDouble(byteArray, i);
-            i += 8;
+            this.AngleW = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.CoordinateX = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.CoordinateY = BitConverter.ToSingle(byteArray, i);
+            i += 4;
+            this.CoordinateZ = BitConverter.ToSingle(byteArray, i);
+            i += 4;
         }
 
         //###################################################################################################################
@@ -48,10 +58,10 @@ namespace SensorDataEvaluation.DataModel
         //###################################################################################################################
 
         public TimeSpan MeasurementTime { get; set; }
-        public double AngleW { get; set; }
-        public double CoordinateX { get; set; }
-        public double CoordinateY { get; set; }
-        public double CoordinateZ { get; set; }
+        public float AngleW { get; set; }
+        public float CoordinateX { get; set; }
+        public float CoordinateY { get; set; }
+        public float CoordinateZ { get; set; }
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -70,7 +80,7 @@ namespace SensorDataEvaluation.DataModel
         
         public string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Quaternion,MeasurementTimeInMilliseconds,AngleW,CoordinateX,CoordinateY,CoordinateZ\n");
+            return String.Format(new CultureInfo("en-US"), "Quaternion(2byte),MeasurementTimeInTicks(8byte),AngleW(4byte),CoordinateX(4byte),CoordinateY(4byte),CoordinateZ(4byte)\n");
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace BackgroundTask.DataModel
         {
             this.Name = "Neue_Messung";
             this.Id = String.Format("{0}", DateTime.Now.Ticks);
-            this.Filename = String.Format("Measurement_{0}.csv", this._id);
+            this.Filename = String.Format("Measurement_{0}.bin", this._id);
             this.CreateDateTime = DateTime.Now;
             this.Setting = new MeasurementSetting();
         }

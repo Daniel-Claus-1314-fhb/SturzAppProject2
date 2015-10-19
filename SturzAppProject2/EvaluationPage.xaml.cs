@@ -82,9 +82,7 @@ namespace BackgroundTask
             _mainPage.ShowLoader();
 
             //prepare timer
-            DateTime startTime = DateTime.MinValue;
-            DateTime endTime = DateTime.MinValue;
-            TimeSpan evaluationDuration = TimeSpan.Zero;
+            Stopwatch stopwatch = new Stopwatch();
 
             //prepare evaluation settings and evaluation data
             uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.ProcessedSampleCount;
@@ -99,9 +97,9 @@ namespace BackgroundTask
             //set evaluation state to started
             _evaluationPageViewModel.EvaluationState = EvaluationState.Started;
             ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
-            startTime = DateTime.Now;
 
             //process evaluation
+            stopwatch.Start();
             _evaluationPageViewModel.EvalautionResultModel = await _measurementEvaluationService.RunEvaluationAfterMeasurementAsync(evaluationDataModel, evaluationSettingModel);
             uint totalDetectedSteps = _evaluationPageViewModel.EvalautionResultModel.DetectedSteps;
             _evaluationPageViewModel.MeasurementViewModel.TotalSteps = totalDetectedSteps;
@@ -112,11 +110,10 @@ namespace BackgroundTask
             await FileService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
 
             //set evaluation state to stopped
-            endTime = DateTime.Now;
-            evaluationDuration = endTime.Subtract(startTime);
+            stopwatch.Stop();
             _evaluationPageViewModel.EvaluationState = EvaluationState.Stopped;
             ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
-            _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von {0:ss\\.fff} sec erneut ausgewertet.", evaluationDuration), NotifyLevel.Info);
+            _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von '{0:f4}' Sekunden erneut ausgewertet.", stopwatch.Elapsed.Duration().TotalSeconds), NotifyLevel.Info);
 
             // hide loader
             _mainPage.HideLoader();

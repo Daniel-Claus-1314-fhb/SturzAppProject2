@@ -57,18 +57,18 @@ namespace SensorDataEvaluation.Service
                 {
                     // Vectorlength Accelerometer
                     TimeSpan currentTimeSpan = accelerometerList.ElementAt(i).MeasurementTime;
-                    double currentAccelerometerX = accelerometerList.ElementAt(i).CoordinateX;
-                    double currentAccelerometerY = accelerometerList.ElementAt(i).CoordinateY;
-                    double currentAccelerometerZ = accelerometerList.ElementAt(i).CoordinateZ;
+                    float currentAccelerometerX = accelerometerList.ElementAt(i).CoordinateX;
+                    float currentAccelerometerY = accelerometerList.ElementAt(i).CoordinateY;
+                    float currentAccelerometerZ = accelerometerList.ElementAt(i).CoordinateZ;
                     // In kartesischen Koordinaten kann die Länge von Vektoren nach dem Satz des Pythagoras berechnet werden.
-                    double accelerometerVectorLength = Math.Sqrt(Math.Pow(currentAccelerometerX, 2d) + Math.Pow(currentAccelerometerY, 2) + Math.Pow(currentAccelerometerZ, 2));
+                    float accelerometerVectorLength = Convert.ToSingle(Math.Sqrt(Math.Pow(currentAccelerometerX, 2d) + Math.Pow(currentAccelerometerY, 2) + Math.Pow(currentAccelerometerZ, 2)));
 
                     // Vectorlength Gyrometer
-                    double currentGyrometerVelocityX = gyrometerList.ElementAt(i).VelocityX;
-                    double currentGyrometerVelocityY = gyrometerList.ElementAt(i).VelocityY;
-                    double currentGyrometerVelocityZ = gyrometerList.ElementAt(i).VelocityZ;
+                    float currentGyrometerVelocityX = gyrometerList.ElementAt(i).VelocityX;
+                    float currentGyrometerVelocityY = gyrometerList.ElementAt(i).VelocityY;
+                    float currentGyrometerVelocityZ = gyrometerList.ElementAt(i).VelocityZ;
                     // In kartesischen Koordinaten kann die Länge von Vektoren nach dem Satz des Pythagoras berechnet werden.
-                    double gyrometerVectorLength = Math.Sqrt(Math.Pow(currentGyrometerVelocityX, 2d) + Math.Pow(currentGyrometerVelocityY, 2) + Math.Pow(currentGyrometerVelocityZ, 2));
+                    float gyrometerVectorLength = Convert.ToSingle(Math.Sqrt(Math.Pow(currentGyrometerVelocityX, 2d) + Math.Pow(currentGyrometerVelocityY, 2) + Math.Pow(currentGyrometerVelocityZ, 2)));
 
                     evaluationResultModel.EvaluationResultList.Add(new EvaluationSample(currentTimeSpan, accelerometerVectorLength, gyrometerVectorLength));
                 }

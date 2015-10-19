@@ -25,9 +25,6 @@ namespace BackgroundTask.Service
         private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
         private static readonly string _evaluationPath = @"Evaluation";
 
-        private static NumberStyles _styles = NumberStyles.Any;
-        private static IFormatProvider _provider = new CultureInfo("en-US");
-
         #region Save/Load MeasurementList
 
         //##################################################################################################################################

@@ -46,47 +46,19 @@ namespace SensorDataEvaluation.DataModel
         public void AddAllAccelerometerAnalysisFromSampleList(List<AccelerometerSample> accelerometerSampleList)
         {
             this.AccelerometerSampleAnalysisList.Clear();
-            var enumerator2 = accelerometerSampleList.GetEnumerator();
-            while (enumerator2.MoveNext())
-            {
-                AccelerometerSample currentAccelerometerSample = enumerator2.Current;
-                TimeSpan timeSpan = currentAccelerometerSample.MeasurementTime;
-                double accelerometerX = currentAccelerometerSample.CoordinateX;
-                double accelerometerY = currentAccelerometerSample.CoordinateY;
-                double accelerometerZ = currentAccelerometerSample.CoordinateZ;
-                this.AccelerometerSampleAnalysisList.Add(new AccelerometerSample(timeSpan, accelerometerX, accelerometerY, accelerometerZ));
-            }
+            this.AccelerometerSampleAnalysisList.AddRange(accelerometerSampleList);
         }
 
         public void AddAllGyrometerAnalysisFromSampleList(List<GyrometerSample> gyrometerSampleList)
         {
             this.GyrometerSampleAnalysisList.Clear();
-            var enumerator2 = gyrometerSampleList.GetEnumerator();
-            while (enumerator2.MoveNext())
-            {
-                GyrometerSample currentGyrometerSample = enumerator2.Current;
-                TimeSpan timeSpan = currentGyrometerSample.MeasurementTime;
-                double velocityX = currentGyrometerSample.VelocityX;
-                double velocityY = currentGyrometerSample.VelocityY;
-                double velocityZ = currentGyrometerSample.VelocityZ;
-                this.GyrometerSampleAnalysisList.Add(new GyrometerSample(timeSpan, velocityX, velocityY, velocityZ));
-            }
+            this.GyrometerSampleAnalysisList.AddRange(gyrometerSampleList);
         }
 
         public void AddAllQuaternionAnalysisFromSampleList(List<QuaternionSample> quaternionSampleList)
         {
             this.QuaternionSampleAnalysisList.Clear();
-            var enumerator2 = quaternionSampleList.GetEnumerator();
-            while (enumerator2.MoveNext())
-            {
-                QuaternionSample currentQuaternionSample = enumerator2.Current;
-                TimeSpan timeSpan = currentQuaternionSample.MeasurementTime;
-                double angleW = currentQuaternionSample.AngleW;
-                double coordinateX = currentQuaternionSample.CoordinateX;
-                double coordinateY = currentQuaternionSample.CoordinateY;
-                double coordinateZ = currentQuaternionSample.CoordinateZ;
-                this.QuaternionSampleAnalysisList.Add(new QuaternionSample(timeSpan, angleW, coordinateX, coordinateY, coordinateZ));
-            }
+            this.QuaternionSampleAnalysisList.AddRange(quaternionSampleList);
         }
     }
 }
