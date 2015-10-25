@@ -13,6 +13,7 @@ using Windows.ApplicationModel.Background;
 using Windows.Devices.Background;
 using Windows.Devices.Sensors;
 using Windows.Foundation;
+using Windows.Devices.Geolocation;
 
 namespace BackgroundTask
 {
@@ -21,6 +22,7 @@ namespace BackgroundTask
         private Accelerometer _accelerometer;      
         private Gyrometer _gyrometer;
         private OrientationSensor _orientationSensor;
+        private Geolocator _locator = new Geolocator();
         private uint _totalSteps = 0; 
 
         TypedEventHandler<Accelerometer, AccelerometerReadingChangedEventArgs> _accelerometerEventHandler;

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Geolocation;
 using Windows.Devices.Sensors;
 
 namespace SensorDataEvaluation.DataModel
@@ -30,6 +31,9 @@ namespace SensorDataEvaluation.DataModel
 
             this._quaternionListEven = new List<QuaternionSample>();
             this._quaternionListOdd = new List<QuaternionSample>();
+
+            this._locationListEven = new List<GeolocationSample>();
+            this._locationListOdd = new List<GeolocationSample>();
         }
 
         public MeasurementData(string measurementFilename, uint processingListSize)
@@ -41,7 +45,6 @@ namespace SensorDataEvaluation.DataModel
         //###################################################################################################################
         //################################################## Properties #####################################################
         //###################################################################################################################
-
 
         private string _filename;
         public string Filename
@@ -58,34 +61,17 @@ namespace SensorDataEvaluation.DataModel
         private DateTimeOffset _startDateTime;
         private uint _processingListCount;
 
-        /// <summary>
-        /// item1: timespan since the start of measurement.
-        /// item2: X coordinate of the accelerometer.
-        /// item3: Y coorfinate of the accelerometer.
-        /// item4: Z coordinate of the accelerometer.
-        /// </summary>
         private List<AccelerometerSample> _accelerometerListEven { get; set; }
         private List<AccelerometerSample> _accelerometerListOdd { get; set; }
 
-        /// <summary>
-        /// item1: timespan since the start of measurement.
-        /// item2: X angle velocity of the gyrometer.
-        /// item3: Y angle velocity of the gyrometer.
-        /// item4: Z angle velocity of the gyrometer.
-        /// </summary>
         private List<GyrometerSample> _gyrometerListEven { get; set; }
         private List<GyrometerSample> _gyrometerListOdd { get; set; }
 
-
-        /// <summary>
-        /// item1: timespan since the start of measurement.
-        /// item2: W rotaion angle of the quaternion.
-        /// item3: X coordinate of the quaternion vector.
-        /// item4: Y coorfinate of the quaternion vector.
-        /// item5: Z coordinate of the quaternion vector.
-        /// </summary>
         private List<QuaternionSample> _quaternionListEven { get; set; }
         private List<QuaternionSample> _quaternionListOdd { get; set; }
+
+        private List<GeolocationSample> _locationListEven { get; set; }
+        private List<GeolocationSample> _locationListOdd { get; set; }
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -325,6 +311,82 @@ namespace SensorDataEvaluation.DataModel
             IList<QuaternionSample> quaternionList = useActiveList ? this.GetActivQuaternionList() : this.GetPassivQuaternionList();
             List<byte[]> resultByteArrays = new List<byte[]>();
             var enumerator = quaternionList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                resultByteArrays.Add(enumerator.Current.ToByteArray());
+            }
+            return resultByteArrays.SelectMany(a => a).ToArray();
+        }
+
+        //################################################## Geolocation #####################################################
+        /// <summary>
+        /// Adds a new location sensor reading into the active location sensor reading list.
+        /// </summary>
+        /// <param name="Geocoordinate"></param>
+        public void AddGeolocationReading(Geocoordinate geocoordinateReading)
+        {
+            if (geocoordinateReading != null)
+            {
+                if (_startDateTime.CompareTo(DateTimeOffset.MinValue) == 0)
+                {
+                    _startDateTime = geocoordinateReading.Timestamp;
+                }
+                this.AddGeolocationSample(new GeolocationSample(geocoordinateReading, _startDateTime));
+            }
+        }
+        /// <summary>
+        /// Adds a new location sample into the active location list.
+        /// </summary>
+        /// <param name="LocationSample"></param>
+        private void AddGeolocationSample(GeolocationSample locationSample)
+        {
+            GetActivLocationList().Add(locationSample);
+            // Decides whether a list switch is necessary.
+            if (GetActivLocationList().Count >= _processingListCount)
+            {
+                SwitchBetweenLists();
+            }
+        }
+
+        /// <summary>
+        /// Returns the location list which is currently used to store new location samples.
+        /// </summary>
+        /// <returns></returns>
+        public List<GeolocationSample> GetActivLocationList()
+        {
+            return _listChangeCounter % 2 == 0 ? _locationListEven : _locationListOdd;
+        }
+        /// <summary>
+        /// Returns the location list which is currently NOT used store new location samples.
+        /// </summary>
+        /// <returns></returns>
+        public List<GeolocationSample> GetPassivLocationList()
+        {
+            return _listChangeCounter % 2 == 1 ? _locationListEven : _locationListOdd;
+        }
+
+        /// <summary>
+        /// Creates a csv string of the location list.
+        /// </summary>
+        /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
+        /// <returns></returns>
+        public string ToLocationExportCSVString(bool useActiveList)
+        {
+            StringBuilder stringbuilder = new StringBuilder();
+            IList<GeolocationSample> locationList = useActiveList ? this.GetActivLocationList() : this.GetPassivLocationList();
+            var enumerator = locationList.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                stringbuilder.Append(enumerator.Current.ToExportCSVString());
+            }
+            return stringbuilder.ToString();
+        }
+
+        public byte[] ToLocationBytes(bool useActiveList)
+        {
+            IList<GeolocationSample> locationList = useActiveList ? this.GetActivLocationList() : this.GetPassivLocationList();
+            List<byte[]> resultByteArrays = new List<byte[]>();
+            var enumerator = locationList.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 resultByteArrays.Add(enumerator.Current.ToByteArray());

@@ -82,7 +82,7 @@ namespace SensorDataEvaluation.DataModel
         /// <returns></returns>
         public string ToExportCSVString()
         {
-            return String.Format(new CultureInfo("en-US"), "0,{0},{1:f3},{2:f3},{3:f3}\n", this.MeasurementTime.TotalMilliseconds, this.CoordinateX, this.CoordinateY, this.CoordinateZ);
+            return String.Format(new CultureInfo("en-US"), "0,{0},{1:f3},{2:f3},{3:f3}\n", this.MeasurementTime.Ticks, this.CoordinateX, this.CoordinateY, this.CoordinateZ);
         }
 
         /// <summary>

@@ -20,6 +20,7 @@ namespace BackgroundTask.Service
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
         private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
         private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
+        private static readonly string _measurementGeolocationPath = @"Measurement\Geolocation";
         private static readonly string _evaluationPath = @"Evaluation";
 
         public static async Task AppendMeasurementDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
@@ -114,6 +115,34 @@ namespace BackgroundTask.Service
                     StorageFolder gyrometerFolder = await FindStorageFolder(_measurementQuaternionPath);
                     // save csv string
                     await SaveBytesToEndOfFileAsync(bytes, gyrometerFolder, filename);
+                }
+            }
+            return;
+        }
+
+        //##################################################################################################################################
+        //################################################## Save Geolocation data #########################################################
+        //##################################################################################################################################
+
+        /// <summary>
+        /// Saves quaternion tuples form the given quaternion tuples list to the end of file.
+        /// Importent: Await Task to be sure all quaternion tuples has been saved.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="accelerometerTupleList"></param>
+        /// <returns></returns>
+        public static async Task AppendGeolocationDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
+        {
+            if (filename != null && filename != String.Empty)
+            {
+                // convert data into byte array
+                byte[] bytes = measurementData.ToLocationBytes(isActiveListChoosen);
+                if (bytes != null && bytes.Length > 0)
+                {
+                    // find folder
+                    StorageFolder folder = await FindStorageFolder(_measurementGeolocationPath);
+                    // save csv string
+                    await SaveBytesToEndOfFileAsync(bytes, folder, filename);
                 }
             }
             return;

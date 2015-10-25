@@ -4,58 +4,51 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Devices.Sensors;
+using Windows.Devices.Geolocation;
 
 namespace SensorDataEvaluation.DataModel
 {
-    public class GyrometerSample
+    public class GeolocationSample
     {
         /// <summary>
-        /// long + float + float + float = 8 + 4 + 4 + 4 = 20
+        /// long + double + double + double = 8 + 8 + 8 + 8 = 32
         /// </summary>
-        public const int AmountOfBytes = 8 + 4 + 4 + 4;
+        public const int AmountOfBytes = 8 + 8 + 8 + 8;
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public GyrometerSample(TimeSpan measurementTime, float velocityX, float velocityY, float velocityZ) 
+        public GeolocationSample(Geocoordinate geocoordinate, DateTimeOffset _startDateTime) 
         {
-            this.MeasurementTime = measurementTime;
-            this.VelocityX = velocityX;
-            this.VelocityY = velocityY;
-            this.VelocityZ = velocityZ;
+            this.MeasurementTime = geocoordinate.Timestamp.Subtract(_startDateTime);
+            this.Latitude = geocoordinate.Point.Position.Latitude;
+            this.Longitude = geocoordinate.Point.Position.Longitude;
+            this.Altitude = geocoordinate.Point.Position.Altitude;
         }
 
-        public GyrometerSample(GyrometerReading gyrometerReading, DateTimeOffset _startDateTime)
-        {
-            this.MeasurementTime = gyrometerReading.Timestamp.Subtract(_startDateTime);
-            this.VelocityX = Convert.ToSingle(gyrometerReading.AngularVelocityX);
-            this.VelocityY = Convert.ToSingle(gyrometerReading.AngularVelocityY);
-            this.VelocityZ = Convert.ToSingle(gyrometerReading.AngularVelocityZ);
-        }
-
-        public GyrometerSample(byte[] byteArray)
+        public GeolocationSample(byte[] byteArray)
         {
             int i = 0;
             this.MeasurementTime = TimeSpan.FromTicks(BitConverter.ToInt64(byteArray, i));
             i += 8;
-            this.VelocityX = BitConverter.ToSingle(byteArray, i);
-            i += 4;
-            this.VelocityY = BitConverter.ToSingle(byteArray, i);
-            i += 4;
-            this.VelocityY = BitConverter.ToSingle(byteArray, i);
-            i += 4;
+            this.Latitude = BitConverter.ToDouble(byteArray, i);
+            i += 8;
+            this.Longitude = BitConverter.ToDouble(byteArray, i);
+            i += 8;
+            this.Altitude = BitConverter.ToDouble(byteArray, i);
+            i += 8;
         }
 
         //###################################################################################################################
         //################################################## Properties #####################################################
         //###################################################################################################################
 
-        public TimeSpan MeasurementTime { get; set; }
-        public float VelocityX { get; set; }
-        public float VelocityY { get; set; }
-        public float VelocityZ { get; set; }
+        private TimeSpan MeasurementTime { get; set; }
+        private double Latitude { get; set; }
+        private double Longitude { get; set; }
+        private double Altitude { get; set; }
+
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -65,15 +58,15 @@ namespace SensorDataEvaluation.DataModel
         {
             List<byte[]> listOfArrays = new List<byte[]>();
             listOfArrays.Add(BitConverter.GetBytes(this.MeasurementTime.Ticks));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityX));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityY));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityZ));
+            listOfArrays.Add(BitConverter.GetBytes(this.Latitude));
+            listOfArrays.Add(BitConverter.GetBytes(this.Longitude));
+            listOfArrays.Add(BitConverter.GetBytes(this.Altitude));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
 
         public string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Gyrometer(2byte),MeasurementTimeInTicks(8byte),VelocityX(4byte),VelocityY(4byte),VelocityZ(4byte)\n");
+            return String.Format(new CultureInfo("en-US"), "Geolocation(2byte),MeasurementTimeInTicks(8byte),Latitude(8byte),Longitude(8byte),Altitude(8byte)\n");
         }
 
         /// <summary>
@@ -82,7 +75,7 @@ namespace SensorDataEvaluation.DataModel
         /// <returns></returns>
         public string ToExportCSVString()
         {
-            return String.Format(new CultureInfo("en-US"), "1,{0},{1:f3},{2:f3},{3:f3}\n", this.MeasurementTime.Ticks, this.VelocityX, this.VelocityY, this.VelocityZ);
+            return String.Format(new CultureInfo("en-US"), "0,{0},{1:f3},{2:f3},{3:f3}\n", this.MeasurementTime.Ticks, this.Latitude, this.Longitude, this.Altitude);
         }
 
         /// <summary>
@@ -92,11 +85,11 @@ namespace SensorDataEvaluation.DataModel
         public byte[] ToExportByteArray()
         {
             List<byte[]> listOfArrays = new List<byte[]>();
-            listOfArrays.Add(BitConverter.GetBytes((short) 1));
+            listOfArrays.Add(BitConverter.GetBytes((short)4));
             listOfArrays.Add(BitConverter.GetBytes(this.MeasurementTime.Ticks));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityX));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityY));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityZ));
+            listOfArrays.Add(BitConverter.GetBytes(this.Latitude));
+            listOfArrays.Add(BitConverter.GetBytes(this.Longitude));
+            listOfArrays.Add(BitConverter.GetBytes(this.Altitude));
             listOfArrays.Add(BitConverter.GetBytes((char)13));
             return listOfArrays.SelectMany(a => a).ToArray();
         }

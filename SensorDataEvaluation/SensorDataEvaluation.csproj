@@ -46,6 +46,7 @@
     <Compile Include="DataModel\EvaluationSample.cs" />
     <Compile Include="DataModel\EvaluationSettingModel.cs" />
     <Compile Include="DataModel\EvaluationResultModel.cs" />
+    <Compile Include="DataModel\GeolocationSample.cs" />
     <Compile Include="DataModel\GyrometerSample.cs" />
     <Compile Include="DataModel\MeasurementData.cs" />
     <Compile Include="DataModel\QuaternionSample.cs" />
