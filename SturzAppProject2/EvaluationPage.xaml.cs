@@ -85,11 +85,11 @@ namespace BackgroundTask
             Stopwatch stopwatch = new Stopwatch();
 
             //prepare evaluation settings and evaluation data
-            uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.ProcessedSampleCount;
-            double accelerometerThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.AccelerometerThreshold;
-            double gyrometerThreshold = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.GyrometerThreshold;
-            uint stepDistance = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.StepDistance;
-            uint peakJoinDistance = _evaluationPageViewModel.MeasurementViewModel.MeasurementSetting.PeakJoinDistance;
+            uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.SampleBufferSize;
+            double accelerometerThreshold = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.AccelerometerThreshold;
+            double gyrometerThreshold = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.GyrometerThreshold;
+            uint stepDistance = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.StepDistance;
+            uint peakJoinDistance = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.PeakJoinDistance;
             EvaluationSettingModel evaluationSettingModel = new EvaluationSettingModel(processedSampleCount, accelerometerThreshold, gyrometerThreshold, stepDistance, peakJoinDistance);
             
             EvaluationDataModel evaluationDataModel = _evaluationPageViewModel.EvaluationDataModel;

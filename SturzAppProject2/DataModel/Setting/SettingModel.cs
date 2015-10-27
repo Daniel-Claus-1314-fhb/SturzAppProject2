@@ -117,7 +117,7 @@ namespace BackgroundTask.DataModel.Setting
         public static SettingModel DefaultSettingModel()
         {
             SettingModel defaultSettingModel = new SettingModel();
-            defaultSettingModel.Name = "Neue_Messung";
+            defaultSettingModel.Name = "NeueMessung";
             defaultSettingModel.TargetDuration = TimeSpan.MinValue;
             defaultSettingModel.StartOffsetDuration = TimeSpan.MinValue;
             defaultSettingModel.IsUsedEvaluation = true;

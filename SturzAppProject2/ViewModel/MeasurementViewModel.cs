@@ -33,14 +33,12 @@ namespace BackgroundTask.ViewModel
         /// <param name="measurement"></param>
         public MeasurementViewModel(MeasurementModel measurement) : this()
         {
-            this.Name = measurement.Name;
             this.Id = measurement.Id;
             this.CreateDateTime = measurement.CreateDateTime;
             this.StartTime = measurement.StartTime;
             this.EndTime = measurement.EndTime;
             this.MeasurementState = measurement.MeasurementState;
             this.Setting = new SettingViewModel(measurement.Setting);
-            this.MeasurementSetting = new MeasurementSettingViewModel(measurement.MeasurementSettings);
             this.TotalSteps = measurement.TotalSteps;
         }
 
@@ -53,15 +51,6 @@ namespace BackgroundTask.ViewModel
         #region Properties
 
         /// <summary>
-        /// Name of the measurment.
-        /// </summary>
-        private string _name;
-        public string Name
-        {
-            get { return _name; }
-            set { this.SetProperty(ref this._name, value); }
-        }
-        /// <summary>
         /// Id of the measurment.
         /// </summary>
         private string _id;
@@ -73,12 +62,6 @@ namespace BackgroundTask.ViewModel
         /// <summary>
         /// Settings of the measurement
         /// </summary>
-        private MeasurementSettingViewModel _measuermentSetting;
-        public MeasurementSettingViewModel MeasurementSetting
-        {
-            get { return _measuermentSetting; }
-            set { this.SetProperty(ref this._measuermentSetting, value); }
-        }
         private SettingViewModel _setting;
         public SettingViewModel Setting
         {

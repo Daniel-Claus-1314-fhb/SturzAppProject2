@@ -95,13 +95,11 @@ namespace BackgroundTask.DataModel
                 if (measurementFromList != null)
                 {
                     // update relevant informations
-                    measurementFromList.Name = updateMeasurementViewModel.Name;
                     measurementFromList.StartTime = updateMeasurementViewModel.StartTime;
                     measurementFromList.EndTime = updateMeasurementViewModel.EndTime;
                     measurementFromList.MeasurementState = updateMeasurementViewModel.MeasurementState;
                     measurementFromList.TotalSteps = updateMeasurementViewModel.TotalSteps;
                     measurementFromList.Setting = new SettingModel(updateMeasurementViewModel.Setting);
-                    measurementFromList.MeasurementSettings = new MeasurementSetting(updateMeasurementViewModel.MeasurementSetting);
 
                     isUpdated = true;
                     OnMeasurementListUpdated(EventArgs.Empty);

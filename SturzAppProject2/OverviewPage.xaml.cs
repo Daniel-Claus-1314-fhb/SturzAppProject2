@@ -158,7 +158,7 @@ namespace BackgroundTask
                 MeasurementViewModel selectedMeasurementViewModel = listView.SelectedItem as MeasurementViewModel;
                 if (selectedMeasurementViewModel != null)
                 {
-                    _mainPage.ShowNotifyMessage(String.Format("Messung mit dem Namen '{0}' wurde ausgewählt.", selectedMeasurementViewModel.Name), NotifyLevel.Info);
+                    _mainPage.ShowNotifyMessage(String.Format("Messung mit dem Namen '{0}' wurde ausgewählt.", selectedMeasurementViewModel.Setting.BaseSettingViewModel.Name), NotifyLevel.Info);
                     contentFrame.Navigate(typeof(MeasurementPage), selectedMeasurementViewModel.Id);
                 }
             }

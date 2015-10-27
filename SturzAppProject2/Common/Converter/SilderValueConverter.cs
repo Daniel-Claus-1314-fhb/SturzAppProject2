@@ -11,7 +11,7 @@ namespace BackgroundTask.Common.Converter
     {
         private const string reportIntervalParam = "ReportInterval";
         private const string gpsReportIntervalParam = "GPSReportInterval";
-        private const string processedSampleCountParam = "ProcessedSampleCount";
+        private const string SampleBufferSizeParam = "SampleBufferSize";
         private const string AccelerometerThresholdParam = "AccelerometerThreshold";
         private const string GyrometerThresholdParam = "GyrometerThreshold";
         private const string StepDistanceParam = "StepDistance";
@@ -19,7 +19,7 @@ namespace BackgroundTask.Common.Converter
 
         private readonly uint[] reportInterval = new uint[6] { 10, 16, 20, 40, 50, 100 };
         private readonly uint[] gpsReportInterval = new uint[7] { 1, 2, 5, 10, 15, 20, 30 };
-        private readonly uint[] processedSampleCount = new uint[7] { 100, 200, 250, 500, 1000, 2000, 5000 };
+        private readonly uint[] sampleBufferSize = new uint[7] { 100, 200, 250, 500, 1000, 2000, 5000 };
         private readonly double[] accelerometerThreshold = new double[13] { 1.2d, 1.3d, 1.35d, 1.4d, 1.45d, 1.5d, 1.55d, 1.6d, 1.65d, 1.7d, 1.75d, 1.8d, 1.9d };
         private readonly double[] gyrometerThreshold = new double[13] { 50d, 75d, 100d, 125d, 150d, 175d, 200d, 225d, 250d, 275d, 300d, 325d, 350d };
         private readonly uint[] stepDistance = new uint[9] { 100, 150, 200, 250, 300, 350, 400, 450, 500};
@@ -46,8 +46,8 @@ namespace BackgroundTask.Common.Converter
                             case gpsReportIntervalParam:
                                 resultValue = (double)Array.IndexOf(gpsReportInterval, convertValue);
                                 break;
-                            case processedSampleCountParam:
-                                resultValue = (double) Array.IndexOf(processedSampleCount, convertValue);
+                            case SampleBufferSizeParam:
+                                resultValue = (double) Array.IndexOf(sampleBufferSize, convertValue);
                                 break;
                             case StepDistanceParam:
                                 resultValue = (double) Array.IndexOf(stepDistance, convertValue);
@@ -111,10 +111,10 @@ namespace BackgroundTask.Common.Converter
                                     resultValue = gpsReportInterval.ElementAt(convertValue);
                                 }
                                 break;
-                            case processedSampleCountParam:
-                                if (convertValue >= 0 && convertValue < processedSampleCount.Length)
+                            case SampleBufferSizeParam:
+                                if (convertValue >= 0 && convertValue < sampleBufferSize.Length)
                                 {
-                                    resultValue = processedSampleCount.ElementAt(convertValue);
+                                    resultValue = sampleBufferSize.ElementAt(convertValue);
                                 }
                                 break;
                             case AccelerometerThresholdParam:

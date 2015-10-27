@@ -31,9 +31,9 @@ namespace BackgroundTask.Common.Converter
                                 return String.Format("Abtastrate {0:G} s", convertUnsignedInteger);
                             case "GPSReportIntervalSimple":
                                 return String.Format("{0:G} s", convertUnsignedInteger);
-                            case "ProcessedSampleCountFull":
+                            case "SampleBufferSizeFull":
                                 return String.Format("Auswertung für {0:G} Messwerte", convertUnsignedInteger);
-                            case "ProcessedSampleCountSimple":
+                            case "SampleBufferSizeSimple":
                                 return String.Format("{0:G} Messwerte", convertUnsignedInteger);
                             case "StepDistanceFull":
                                 return String.Format("Schrittabstand {0:G} ms", convertUnsignedInteger);

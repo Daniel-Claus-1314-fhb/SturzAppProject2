@@ -61,12 +61,12 @@ namespace BackgroundTask
                 MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
-                    _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wird geladen.", measurement.Name), NotifyLevel.Info);
+                    _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wird geladen.", measurement.Setting.Name), NotifyLevel.Info);
                     OxyplotData oxyplotData = await _mainPage.FindMeasurementGraphData(measurement.Id);
 
                     if (oxyplotData != null)
                     {
-                        _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurement.Name), NotifyLevel.Info);
+                        _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' wurde geladen.", measurement.Setting.Name), NotifyLevel.Info);
 
                         if (oxyplotData.HasAccelerometerSamples)
                         {
@@ -116,7 +116,7 @@ namespace BackgroundTask
                         PlotShownAccerlerometerGraphs(_graphPageViewModel);
                     }
                     else
-                        _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurement.Name), NotifyLevel.Error);
+                        _mainPage.ShowNotifyMessage(String.Format("Graph der Messung mit dem Namen '{0}' konnten nicht geladen werden.", measurement.Setting.Name), NotifyLevel.Error);
                 }
                 else
                     _mainPage.ShowNotifyMessage(String.Format("Messung mit der ID '{0}' konnten nicht gefunden werden.", measurementId), NotifyLevel.Error);

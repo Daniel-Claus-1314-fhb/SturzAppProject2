@@ -20,13 +20,11 @@ namespace BackgroundTask.DataModel
 
         public MeasurementModel(MeasurementViewModel measurementViewModel)
         {
-            this.Name = measurementViewModel.Name;
             this.StartTime = measurementViewModel.StartTime;
             this.EndTime = measurementViewModel.EndTime;
             this.MeasurementState = measurementViewModel.MeasurementState;
             this.TotalSteps = measurementViewModel.TotalSteps;
             this.Setting = new SettingModel(measurementViewModel.Setting);
-            this.MeasurementSettings = new MeasurementSetting(measurementViewModel.MeasurementSetting);
         }
 
         #endregion
@@ -38,10 +36,6 @@ namespace BackgroundTask.DataModel
         #region Properties
 
         /// <summary>
-        /// Name of the measurment.
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
         /// Id of the measurment.
         /// </summary>
         public string Id { get; set; }
@@ -52,7 +46,6 @@ namespace BackgroundTask.DataModel
         /// <summary>
         /// Settings of the measurement
         /// </summary>
-        public MeasurementSetting MeasurementSettings { get; set; }
         public SettingModel Setting { get; set; }
         /// <summary>
         /// Enumation which discribes the current state of the measurment
@@ -84,11 +77,9 @@ namespace BackgroundTask.DataModel
         public static MeasurementModel NewMeasurementModel(SettingModel settingModel)
         {
             MeasurementModel createMeasurementModel = new MeasurementModel();
-            createMeasurementModel.Name = "Neue_Messung";
             createMeasurementModel.Id = String.Format("{0}", DateTime.Now.Ticks);
             createMeasurementModel.Filename = String.Format("Measurement_{0}.bin", createMeasurementModel.Id);
             createMeasurementModel.CreateDateTime = DateTime.Now;
-            createMeasurementModel.MeasurementSettings = new MeasurementSetting();
             if (settingModel != null)
             {
                 createMeasurementModel.Setting = settingModel;

@@ -11,7 +11,7 @@
         
         <templateSelector:MeasurementTypeSelector.InitializedMeasurementTemplate>
             <DataTemplate>
-                <Border BorderThickness="0,2" BorderBrush="#FF12C161" Background="#FF096E37" Padding="10,5" Height="60">
+                <Border BorderThickness="0,2" BorderBrush="#FF12C161" Background="#FF096E37" Padding="10,5" Height="70">
                     <Grid VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -23,7 +23,7 @@
                         </Grid.RowDefinitions>
 
                         <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Source="Assets/Icons/plus-round.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,10,0"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Setting.BaseSettingViewModel.Name}" Style="{StaticResource BodyTextBlockStyle}"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=CreateDateTime, Converter={StaticResource TimeConverter}, ConverterParameter=CreateFull}"/>
                     </Grid>
                 </Border>
@@ -33,7 +33,7 @@
 
         <templateSelector:MeasurementTypeSelector.StartedMeasurementTemplate>
             <DataTemplate>
-                <Border BorderThickness="0,2" BorderBrush="#FFEE3333" Background="#FF9C2525" Padding="10,5" Height="60">
+                <Border BorderThickness="0,2" BorderBrush="#FFEE3333" Background="#FF9C2525" Padding="10,5" Height="80">
                         <Grid VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -46,7 +46,7 @@
                         </Grid.RowDefinitions>
 
                         <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Source="Assets/Icons/play.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,10,0"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Setting.BaseSettingViewModel.Name}" Style="{StaticResource BodyTextBlockStyle}"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=StartFull}"/>
                         <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=DurationFull}"/>
                     </Grid>
@@ -57,7 +57,7 @@
         
         <templateSelector:MeasurementTypeSelector.StoppedMeasurementTemplate>
             <DataTemplate>
-                <Border BorderThickness="0,2" BorderBrush="#FF1E91BD" Background="#FF105772" Padding="10,5" Height="60">
+                <Border BorderThickness="0,2" BorderBrush="#FF1E91BD" Background="#FF105772" Padding="10,5" Height="80">
                     <Grid VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -70,7 +70,7 @@
                         </Grid.RowDefinitions>
 
                         <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Source="Assets/Icons/stop.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,10,0"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Name}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Setting.BaseSettingViewModel.Name}" Style="{StaticResource BodyTextBlockStyle}"/>
                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=StartTime, Converter={StaticResource TimeConverter}, ConverterParameter=StartFull}"/>
                         <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Duration, Converter={StaticResource TimeConverter}, ConverterParameter=DurationFull}"/>
                     </Grid>

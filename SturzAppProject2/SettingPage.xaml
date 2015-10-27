@@ -13,15 +13,15 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.PrimaryCommands>
-                <AppBarButton x:Name="SaveAppBarButton" Icon="Save" Label="Speichern" Click="SaveAppBarButton_Click" />
+                <AppBarButton x:Name="SaveAppBarButton" Icon="Save" Label="Speichern" Click="SaveAppBarButton_Click"/>
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
     
     <Grid x:Name="LayoutRoot">
         <Pivot Title="Einstellungen">
-            <PivotItem Header="Auswertung">
-                <view:EvaluationSettingControl x:Name="EvaluationSettingsControl" DataContext="{Binding Path=SettingViewModel.EvaluationSettingViewModel}"/>
+            <PivotItem Header="Messung">
+                <view:MeasurementSettingControl x:Name="MeasurementSettingControl" DataContext="{Binding Path=SettingViewModel.BaseSettingViewModel}"/>
             </PivotItem>
             <PivotItem Header="Accelerometer">
                 <view:AccerlerometerSettingControl x:Name="AccelerometerSettingControl" DataContext="{Binding Path=SettingViewModel.AccerlerometerSettingViewModel}"/>
@@ -34,6 +34,9 @@
             </PivotItem>
             <PivotItem Header="Geolocation">
                 <view:GeolocationSettingControl x:Name="GeolocationSettingControl" DataContext="{Binding Path=SettingViewModel.GeolocationSettingViewModel}"/>
+            </PivotItem>
+            <PivotItem Header="Auswertung">
+                <view:EvaluationSettingControl x:Name="EvaluationSettingControl" DataContext="{Binding Path=SettingViewModel.EvaluationSettingViewModel}"/>
             </PivotItem>
         </Pivot>
     </Grid>

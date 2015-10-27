@@ -167,6 +167,18 @@
     <Compile Include="View\MeasurementTimeControl.xaml.cs">
       <DependentUpon>MeasurementTimeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Measurement\DisplayDataControl.xaml.cs">
+      <DependentUpon>DisplayDataControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Measurement\DisplaySettingControl.xaml.cs">
+      <DependentUpon>DisplaySettingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Measurement\DisplayTimeControl.xaml.cs">
+      <DependentUpon>DisplayTimeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\MeasurementSettingControl.xaml.cs">
+      <DependentUpon>MeasurementSettingControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\GeolocationSettingControl.xaml.cs">
       <DependentUpon>GeolocationSettingControl.xaml</DependentUpon>
     </Compile>
@@ -253,6 +265,22 @@
     <Page Include="View\MeasurementTimeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Measurement\DisplayDataControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Measurement\DisplaySettingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Measurement\DisplayTimeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\MeasurementSettingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Setting\GeolocationSettingControl.xaml">
       <SubType>Designer</SubType>

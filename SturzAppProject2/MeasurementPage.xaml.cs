@@ -160,7 +160,7 @@ namespace BackgroundTask
                     // Dropdown of file types the user can save the file as
                     savePicker.FileTypeChoices.Add("Binary-File", new List<string>() { ".bin" });
                     // Default file name if the user does not type one in or select a file to replace
-                    savePicker.SuggestedFileName = String.Format("{0}_{1:yyyy-MM-dd_HH-mm-ss}", measurement.Name, measurement.StartTime);
+                    savePicker.SuggestedFileName = String.Format("{0}_{1:yyyy-MM-dd_HH-mm-ss}", measurement.Setting.Name, measurement.StartTime);
                     // Open the file picker and call the method "ContinueFileSavePicker" when the user select a file.
                     savePicker.PickSaveFileAndContinue();
                 }
