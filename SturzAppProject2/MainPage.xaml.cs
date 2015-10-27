@@ -23,6 +23,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.Storage.Provider;
+using BackgroundTask.DataModel.Setting;
 
 // Die Elementvorlage "Leere Seite" ist unter http://go.microsoft.com/fwlink/?LinkId=391641 dokumentiert.
 
@@ -36,9 +37,7 @@ namespace BackgroundTask
         public static MainPage Current;
 
         private NotifyViewModel _notifyViewModel = new NotifyViewModel();
-        private MeasurementList _mainMeasurementListModel;
-
-        public MappingService mapping = new MappingService();
+        private GlobalMeasurementModel _globalMeasurementModel;
 
         public MainPage()
         {
@@ -52,10 +51,14 @@ namespace BackgroundTask
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }
 
-        public MeasurementList MainMeasurementListModel
+        public GlobalMeasurementModel GlobalMeasurementModel
         {
-            get { return _mainMeasurementListModel; }
-            set { _mainMeasurementListModel = value; }
+            get { return _globalMeasurementModel; }
+        }
+
+        public SettingModel GlobalSettingModel
+        {
+            get { return _globalMeasurementModel.GlobalSetting; }
         }
 
         #region Notify
@@ -90,16 +93,16 @@ namespace BackgroundTask
             // Show loader
             this.ShowLoader();
 
-            if (_mainMeasurementListModel == null)
+            if (_globalMeasurementModel == null)
             {
-                _mainMeasurementListModel = new MeasurementList();
-                _mainMeasurementListModel.Measurements = await FileService.LoadMeasurementListAsync();
-                
-                _mainMeasurementListModel.MeasurementListUpdated += SaveMeasurementList;
+                _globalMeasurementModel = new GlobalMeasurementModel();
+                _globalMeasurementModel.Measurements = await FileService.LoadMeasurementListAsync();
+                _globalMeasurementModel.GlobalSetting = await FileService.LoadGlobalSettingAsync();
+                _globalMeasurementModel.MeasurementListUpdated += SaveMeasurementList;
+                _globalMeasurementModel.GlobalSettingUpdated += SaveGlobalSetting;
             }
-
-            BackgroundTaskService.SynchronizeMeasurementsWithActiveBackgroundTasks(_mainMeasurementListModel.Measurements);
-
+            BackgroundTaskService.SynchronizeMeasurementsWithActiveBackgroundTasks(_globalMeasurementModel.Measurements);
+            
             SuspensionManager.RegisterFrame(ContentFrame, "ContentFrame");
             if (ContentFrame.Content == null)
             {
@@ -113,21 +116,27 @@ namespace BackgroundTask
             this.HideLoader();
         }
 
-        private void SaveMeasurementList(object sender, EventArgs e)
-        {
-            Debug.WriteLine("'{0}' Measurement has been saved.", _mainMeasurementListModel.Measurements.Count);
-            FileService.SaveMeasurementListAsync(_mainMeasurementListModel.Measurements);
-        }
-
         void HardwareButtons_BackPressed(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
         {
             if (ContentFrame.CanGoBack)
             {
                 ContentFrame.GoBack();
-
                 //Indicate the back button press is handled so the app does not exit
                 e.Handled = true;
+                ResetNotifyMessage();
             }
+        }
+
+        private void SaveMeasurementList(object sender, EventArgs e)
+        {
+            Debug.WriteLine("'{0}' Measurement has been saved.", _globalMeasurementModel.Measurements.Count);
+            FileService.SaveMeasurementListAsync(_globalMeasurementModel.Measurements);
+        }
+
+        private void SaveGlobalSetting(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Global setting model has been saved.");
+            FileService.SaveMainSettingModelAysnc(_globalMeasurementModel.GlobalSetting);
         }
 
         public void ShowLoader()
@@ -149,7 +158,7 @@ namespace BackgroundTask
             bool isStarted = false;
             if (measurementId != null && measurementId.Length > 0 )
             {
-                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                MeasurementModel measurement = this._globalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
                     isStarted = await BackgroundTaskService.StartBackgroundTaskForMeasurement(measurement);
@@ -163,7 +172,7 @@ namespace BackgroundTask
             bool isStopped = false;
             if (measurementId != null && measurementId.Length > 0)
             {
-                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                MeasurementModel measurement = this._globalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
                     isStopped = BackgroundTaskService.StopBackgroundTaskForMeasurement(measurement);
@@ -178,7 +187,7 @@ namespace BackgroundTask
 
             if (measurementId != null && measurementId.Length > 0)
             {
-                Measurement measurement = this._mainMeasurementListModel.GetById(measurementId);
+                MeasurementModel measurement = this._globalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
                     oxyplotData = await FileService.LoadOxyplotDataAsync(measurement.Filename);

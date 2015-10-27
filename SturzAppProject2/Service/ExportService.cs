@@ -11,7 +11,7 @@ namespace BackgroundTask.Service
 {
     internal static class ExportService
     {
-        public static async void ExportMeasurementData(Measurement measurement)
+        public static async void ExportMeasurementData(MeasurementModel measurement)
         {
             var savePicker = new Windows.Storage.Pickers.FileSavePicker();
             

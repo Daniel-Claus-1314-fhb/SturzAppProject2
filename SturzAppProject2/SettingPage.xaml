@@ -1,0 +1,40 @@
+﻿<Page
+    x:Class="BackgroundTask.SettingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BackgroundTask"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="using:BackgroundTask.View.Setting"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Path=PageViewModel, RelativeSource={RelativeSource Mode=Self}}">
+    
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="SaveAppBarButton" Icon="Save" Label="Speichern" Click="SaveAppBarButton_Click" />
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
+    
+    <Grid x:Name="LayoutRoot">
+        <Pivot Title="Einstellungen">
+            <PivotItem Header="Auswertung">
+                <view:EvaluationSettingControl x:Name="EvaluationSettingsControl" DataContext="{Binding Path=SettingViewModel.EvaluationSettingViewModel}"/>
+            </PivotItem>
+            <PivotItem Header="Accelerometer">
+                <view:AccerlerometerSettingControl x:Name="AccelerometerSettingControl" DataContext="{Binding Path=SettingViewModel.AccerlerometerSettingViewModel}"/>
+            </PivotItem>
+            <PivotItem Header="Gyrometer">
+                <view:GyrometerSettingControl x:Name="GyrometerSettingControl" DataContext="{Binding Path=SettingViewModel.GyrometerSettingViewModel}"/>
+            </PivotItem>
+            <PivotItem Header="Quaternion">
+                <view:QuaternionSettingControl x:Name="QuaternionSettingControl" DataContext="{Binding Path=SettingViewModel.QuaternionSettingViewModel}"/>
+            </PivotItem>
+            <PivotItem Header="Geolocation">
+                <view:GeolocationSettingControl x:Name="GeolocationSettingControl" DataContext="{Binding Path=SettingViewModel.GeolocationSettingViewModel}"/>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</Page>

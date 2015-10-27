@@ -22,6 +22,7 @@
             <CommandBar.PrimaryCommands>
                 <AppBarButton x:Name="NewMeasurementAppBarButton" Icon="Add" Label="Neue Messung"
                               Command="{Binding CreateMeasurementCommand}" CommandParameter="{Binding}"/>
+                <AppBarButton x:Name="SettingsAppBarButton" Icon="Setting" Label="Globale Einstellung" Click="SettingsAppBarButton_Click" />
             </CommandBar.PrimaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

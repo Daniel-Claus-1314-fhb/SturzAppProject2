@@ -27,6 +27,10 @@ namespace BackgroundTask.Common.Converter
                                 return String.Format("Abtastrate {0:G} ms", convertUnsignedInteger);
                             case "ReportIntervalSimple":
                                 return String.Format("{0:G} ms", convertUnsignedInteger);
+                            case "GPSReportIntervalFull":
+                                return String.Format("Abtastrate {0:G} s", convertUnsignedInteger);
+                            case "GPSReportIntervalSimple":
+                                return String.Format("{0:G} s", convertUnsignedInteger);
                             case "ProcessedSampleCountFull":
                                 return String.Format("Auswertung für {0:G} Messwerte", convertUnsignedInteger);
                             case "ProcessedSampleCountSimple":

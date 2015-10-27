@@ -96,6 +96,7 @@
     <Compile Include="Common\Converter\StringToProperNameConverter.cs" />
     <Compile Include="DataModel\EvaluationState.cs" />
     <Compile Include="DataModel\ExportData.cs" />
+    <Compile Include="DataModel\Setting\SettingModel.cs" />
     <Compile Include="EvaluationPage.xaml.cs">
       <DependentUpon>EvaluationPage.xaml</DependentUpon>
     </Compile>
@@ -120,7 +121,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\Selector\MeasurementTypeSelector.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="DataModel\Measurement.cs" />
+    <Compile Include="DataModel\MeasurementModel.cs" />
     <Compile Include="DataModel\MeasurementSetting.cs" />
     <Compile Include="DataModel\MeasurementsList.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -133,7 +134,9 @@
     <Compile Include="Service\BackgroundTaskService.cs" />
     <Compile Include="Service\ExportService.cs" />
     <Compile Include="Service\FileService.cs" />
-    <Compile Include="Service\MappingService.cs" />
+    <Compile Include="SettingPage.xaml.cs">
+      <DependentUpon>SettingPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\EvaluationPageViewModel.cs" />
     <Compile Include="ViewModel\GraphPageViewModel.cs" />
     <Compile Include="ViewModel\MeasurementPageViewModel.cs" />
@@ -141,6 +144,14 @@
     <Compile Include="ViewModel\MeasurementViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\OverviewPageViewModel.cs" />
+    <Compile Include="ViewModel\Page\SettingPageViewModel.cs" />
+    <Compile Include="ViewModel\Setting\AccelerometerSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\BaseSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\EvaluationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\GeolocationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\GyrometerSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\QuaternionSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\SettingViewModel.cs" />
     <Compile Include="View\DisplaySettingsControl.xaml.cs">
       <DependentUpon>DisplaySettingsControl.xaml</DependentUpon>
     </Compile>
@@ -155,6 +166,21 @@
     </Compile>
     <Compile Include="View\MeasurementTimeControl.xaml.cs">
       <DependentUpon>MeasurementTimeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\GeolocationSettingControl.xaml.cs">
+      <DependentUpon>GeolocationSettingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\GyrometerSettingControl.xaml.cs">
+      <DependentUpon>GyrometerSettingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\AccerlerometerSettingControl.xaml.cs">
+      <DependentUpon>AccerlerometerSettingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\EvaluationSettingControl.xaml.cs">
+      <DependentUpon>EvaluationSettingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\QuaternionSettingControl.xaml.cs">
+      <DependentUpon>QuaternionSettingControl.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +230,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SettingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DisplaySettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -221,6 +251,26 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MeasurementTimeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\GeolocationSettingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\GyrometerSettingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Setting\AccerlerometerSettingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\EvaluationSettingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\QuaternionSettingControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

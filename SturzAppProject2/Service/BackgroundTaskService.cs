@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel;
+using BackgroundTask.DataModel.Setting;
 using BackgroundTask.ViewModel;
 using Newtonsoft.Json;
 using System;
@@ -15,13 +16,13 @@ namespace BackgroundTask.Service
 {
     public static class BackgroundTaskService
     {
-        internal static void SynchronizeMeasurementsWithActiveBackgroundTasks(List<Measurement> measurements)
+        internal static void SynchronizeMeasurementsWithActiveBackgroundTasks(List<MeasurementModel> measurements)
         {
             List<String> pairedMeasurementIds = new List<string>();
 
             // Consider all started measurements of active background tasks.
             // All started measurements without active background tasks will aborted;
-            foreach (Measurement measurement in measurements)
+            foreach (MeasurementModel measurement in measurements)
             {
                 if (measurement.MeasurementState == MeasurementState.Started)
                 {
@@ -49,7 +50,7 @@ namespace BackgroundTask.Service
             }
         }
 
-        public static async Task<bool> StartBackgroundTaskForMeasurement(Measurement measurement)
+        public static async Task<bool> StartBackgroundTaskForMeasurement(MeasurementModel measurement)
         {
             bool isStarted = false;
             if (measurement != null &&
@@ -58,10 +59,7 @@ namespace BackgroundTask.Service
                 canRegisterBackgroundTask() &&
                 measurement.Setting != null)
             {
-                TaskArguments taskArguments = new TaskArguments(measurement.Id, measurement.Filename, measurement.Setting.ReportInterval, 
-                    measurement.Setting.ProcessedSamplesCount, measurement.Setting.AccelerometerThreshold, measurement.Setting.GyrometerThreshold, 
-                    measurement.Setting.StepDistance, measurement.Setting.PeakJoinDistance);
-
+                TaskArguments taskArguments = mapTo(measurement);
                 string arguments = JsonConvert.SerializeObject(taskArguments);                
                 if (await StartAccelerometerTask(measurement.Id, arguments))
                 {
@@ -71,7 +69,7 @@ namespace BackgroundTask.Service
             return isStarted;
         }
 
-        public static bool StopBackgroundTaskForMeasurement(Measurement measurement)
+        public static bool StopBackgroundTaskForMeasurement(MeasurementModel measurement)
         {
             bool isStopped = false;
 
@@ -130,6 +128,40 @@ namespace BackgroundTask.Service
                     }
                 }
             }
+        }
+
+        private static TaskArguments mapTo(MeasurementModel measurementModel)
+        {
+            TaskArguments taskArguments = new TaskArguments();
+            taskArguments.MeasurementId = measurementModel.Id;
+            taskArguments.Filename = measurementModel.Filename;
+            taskArguments.TargetDuration = measurementModel.Setting.TargetDuration;
+            taskArguments.StartOffsetDuration = measurementModel.Setting.StartOffsetDuration;
+
+            taskArguments.IsUsedEvaluation = measurementModel.Setting.IsUsedEvaluation;
+            taskArguments.IsRecordSamplesEvaluation = measurementModel.Setting.IsRecordSamplesEvaluation;
+            taskArguments.SampleBufferSize = measurementModel.Setting.SampleBufferSize;
+            taskArguments.AccelerometerThreshold = measurementModel.Setting.AccelerometerThreshold;
+            taskArguments.GyrometerThreshold = measurementModel.Setting.GyrometerThreshold;
+            taskArguments.StepDistance = measurementModel.Setting.StepDistance;
+            taskArguments.PeakJoinDistance = measurementModel.Setting.PeakJoinDistance;
+
+            taskArguments.IsUsedAccelerometer = measurementModel.Setting.IsUsedAccelerometer;
+            taskArguments.IsRecordSamplesAccelerometer = measurementModel.Setting.IsRecordSamplesAccelerometer;
+            taskArguments.ReportIntervalAccelerometer = measurementModel.Setting.ReportIntervalAccelerometer;
+
+            taskArguments.IsUsedGyrometer = measurementModel.Setting.IsUsedGyrometer;
+            taskArguments.IsRecordSamplesGyrometer = measurementModel.Setting.IsRecordSamplesGyrometer;
+            taskArguments.ReportIntervalGyrometer = measurementModel.Setting.ReportIntervalGyrometer;
+
+            taskArguments.IsUsedQuaternion = measurementModel.Setting.IsUsedQuaternion;
+            taskArguments.IsRecordSamplesQuaternion = measurementModel.Setting.IsRecordSamplesQuaternion;
+            taskArguments.ReportIntervalQuaternion = measurementModel.Setting.ReportIntervalQuaternion;
+
+            taskArguments.IsUsedGeolocation = measurementModel.Setting.IsUsedGeolocation;
+            taskArguments.IsRecordSamplesGeolocation = measurementModel.Setting.IsRecordSamplesGeolocation;
+            taskArguments.ReportIntervalGeolocation = measurementModel.Setting.ReportIntervalGeolocation;
+            return taskArguments;
         }
         
         //#############################################################################

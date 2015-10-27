@@ -1,5 +1,6 @@
 ﻿using BackgroundTask.Common;
 using BackgroundTask.DataModel;
+using BackgroundTask.DataModel.Setting;
 using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -85,7 +86,7 @@ namespace BackgroundTask
         /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            _overViewPageViewModel.MeasurementViewModels = _mainPage.mapping.mapTo(_mainPage.MainMeasurementListModel.Measurements);
+
         }
 
         /// <summary>
@@ -118,6 +119,10 @@ namespace BackgroundTask
         /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            foreach (MeasurementModel measurementModel in _mainPage.GlobalMeasurementModel.Measurements)
+            {
+                _overViewPageViewModel.MeasurementViewModels.Add(new MeasurementViewModel(measurementModel));
+            }
             this.navigationHelper.OnNavigatedTo(e);
         }
 
@@ -130,11 +135,12 @@ namespace BackgroundTask
 
         public bool AddNewMeasurement()
         {
+            SettingModel settingModel = _mainPage.GlobalSettingModel;
             // create new measurementModel
-            Measurement createdMeasurement = new Measurement();
+            MeasurementModel createdMeasurement = MeasurementModel.NewMeasurementModel(settingModel);
 
             // add measurementModel to mainpage modelList
-            _mainPage.MainMeasurementListModel.Insert(createdMeasurement);
+            _mainPage.GlobalMeasurementModel.Insert(createdMeasurement);
 
             // map created measurementModel to viewModel and add measuermentViewmodel to viewmodelList
             this._overViewPageViewModel.InsertMeasurement(new MeasurementViewModel(createdMeasurement));
@@ -155,6 +161,15 @@ namespace BackgroundTask
                     _mainPage.ShowNotifyMessage(String.Format("Messung mit dem Namen '{0}' wurde ausgewählt.", selectedMeasurementViewModel.Name), NotifyLevel.Info);
                     contentFrame.Navigate(typeof(MeasurementPage), selectedMeasurementViewModel.Id);
                 }
+            }
+        }
+
+        private void SettingsAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
+            if (contentFrame != null)
+            {
+                contentFrame.Navigate(typeof(SettingPage));
             }
         }
     }

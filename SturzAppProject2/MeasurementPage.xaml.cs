@@ -36,15 +36,9 @@ using Windows.UI.Popups;
 
 namespace BackgroundTask
 {
-    /// <summary>
-    /// Eine leere Seite, die eigenständig verwendet werden kann oder auf die innerhalb eines Frames navigiert werden kann.
-    /// </summary>
     public sealed partial class MeasurementPage : Page, IFileSavePickerContinuable
     {
         MainPage _mainPage = MainPage.Current;
-
-        private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
         private MeasurementPageViewModel _measurementPageViewModel = null;
         private ThreadPoolTimer _periodicUpdateTimer = null;
@@ -53,105 +47,37 @@ namespace BackgroundTask
         public MeasurementPage()
         {
             _measurementPageViewModel = new MeasurementPageViewModel(StartMeasurement, StopMeasurement, ExportMeasurement, ShowMeasurementGraph, RedoEvaluationGraph, DeleteMeasurement);
-
             this.InitializeComponent();
-
-            this.navigationHelper = new NavigationHelper(this);
-            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
-            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
         }
-
-        /// <summary>
-        /// Ruft den <see cref="NavigationHelper"/> ab, der mit dieser <see cref="Page"/> verknüpft ist.
-        /// </summary>
-        public NavigationHelper NavigationHelper
-        {
-            get { return this.navigationHelper; }
-        }
-
-        /// <summary>
-        /// Ruft das Anzeigemodell für diese <see cref="Page"/> ab.
-        /// Dies kann in ein stark typisiertes Anzeigemodell geändert werden.
-        /// </summary>
-        public ObservableDictionary DefaultViewModel
-        {
-            get { return this.defaultViewModel; }
-        }
-
+        
         public MeasurementPageViewModel MeasurementPageViewModel
         {
             get { return this._measurementPageViewModel; }
         }
 
-        /// <summary>
-        /// Füllt die Seite mit Inhalt auf, der bei der Navigation übergeben wird.  Gespeicherte Zustände werden ebenfalls
-        /// bereitgestellt, wenn eine Seite aus einer vorherigen Sitzung neu erstellt wird.
-        /// </summary>
-        /// <param name="sender">
-        /// Die Quelle des Ereignisses, normalerweise <see cref="NavigationHelper"/>
-        /// </param>
-        /// <param name="e">Ereignisdaten, die die Navigationsparameter bereitstellen, die an
-        /// <see cref="Frame.Navigate(Type, Object)"/> als diese Seite ursprünglich angefordert wurde und
-        /// ein Wörterbuch des Zustands, der von dieser Seite während einer früheren
-        /// beibehalten wurde.  Der Zustand ist beim ersten Aufrufen einer Seite NULL.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
-        {
-        }
-
-        /// <summary>
-        /// Behält den dieser Seite zugeordneten Zustand bei, wenn die Anwendung angehalten oder
-        /// die Seite im Navigationscache verworfen wird.  Die Werte müssen den Serialisierungsanforderungen
-        /// von <see cref="SuspensionManager.SessionState"/> entsprechen.
-        /// </summary>
-        /// <param name="sender">Die Quelle des Ereignisses, normalerweise <see cref="NavigationHelper"/></param>
-        /// <param name="e">Ereignisdaten, die ein leeres Wörterbuch zum Auffüllen bereitstellen
-        /// serialisierbarer Zustand.</param>
-        private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
-        {
-        }
-
-        #region NavigationHelper-Registrierung
-
-        /// <summary>
-        /// Die in diesem Abschnitt bereitgestellten Methoden werden einfach verwendet, um
-        /// damit NavigationHelper auf die Navigationsmethoden der Seite reagieren kann.
-        /// <para>
-        /// Platzieren Sie seitenspezifische Logik in Ereignishandlern für  
-        /// <see cref="NavigationHelper.LoadState"/>
-        /// und <see cref="NavigationHelper.SaveState"/>.
-        /// Der Navigationsparameter ist in der LoadState-Methode verfügbar 
-        /// zusätzlich zum Seitenzustand, der während einer früheren Sitzung beibehalten wurde.
-        /// </para>
-        /// </summary>
-        /// <param name="e">Stellt Daten für Navigationsmethoden und -ereignisse bereit.
-        /// Handler, bei denen die Navigationsanforderung nicht abgebrochen werden kann.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             string measurementId = e.Parameter as string;
             if (measurementId != null)
             {
-                Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementId);
+                MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
                     _measurementPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
                     VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
-
                     // Add timer event and attach eventlistner
                     StartUpdateTimer();
                     SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
                 }
             }
-            this.navigationHelper.OnNavigatedTo(e);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            this.navigationHelper.OnNavigatedFrom(e);
-
             // If the measurement has not started yet, then save settings of measurment
             if (_measurementPageViewModel.MeasurementViewModel.MeasurementState == MeasurementState.Initialized)
             {
-                _mainPage.MainMeasurementListModel.Update(_measurementPageViewModel.MeasurementViewModel);
+                _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(_measurementPageViewModel.MeasurementViewModel);
                 RaiseCanExecuteChanged();
                 _mainPage.ShowNotifyMessage("Messung wurde gespeichert.", NotifyLevel.Info);
             }
@@ -161,17 +87,12 @@ namespace BackgroundTask
             DetachOnProgressEventListner(_measurementPageViewModel.MeasurementViewModel.Id);
         }
 
-        #endregion
-
         //############################################################################################################################################
         //################################################### AppbarButton Methods ###################################################################
         //############################################################################################################################################
+
         #region DelegateMethods
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="measurementViewModel"></param>
         private async void StartMeasurement(MeasurementViewModel measurementViewModel)
         {
             // Show loader
@@ -179,70 +100,50 @@ namespace BackgroundTask
 
             bool isStarted = false;
             // first update for settings
-            _mainPage.MainMeasurementListModel.Update(measurementViewModel);
-
+            _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(measurementViewModel);
             //start functionality
             isStarted = await _mainPage.StartBackgroundTask(measurementViewModel.Id);
-
             if (isStarted)
             {
                 _measurementPageViewModel.MeasurementViewModel.StartMeasurement();
                 //second update for successfully started measurement.
-                _mainPage.MainMeasurementListModel.Update(measurementViewModel);
+                _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(measurementViewModel);
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 StartUpdateTimer();
                 SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
                 _mainPage.ShowNotifyMessage("Messung wurde gestarted.", NotifyLevel.Info);
             }
-            else
-            {
-                _mainPage.ShowNotifyMessage("Messung konnte nicht gestarted werden.", NotifyLevel.Error);
-            }
+            else { _mainPage.ShowNotifyMessage("Messung konnte nicht gestarted werden.", NotifyLevel.Error); }
 
             // Hide loader
             _mainPage.HideLoader();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="measurementViewModel"></param>
         private void StopMeasurement(MeasurementViewModel measurementViewModel)
         {
             // Show loader
             _mainPage.ShowLoader();
 
             bool isStopped = false;
-
             // stop functionality
             isStopped = _mainPage.StopBackgroundTask(measurementViewModel.Id);
-
             if (isStopped)
             {
                 _measurementPageViewModel.MeasurementViewModel.StopMeasurement();
-                _mainPage.MainMeasurementListModel.Update(measurementViewModel);
-
+                _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(measurementViewModel);
                 // its importent to raise the change of measurementstate to all commands
                 RaiseCanExecuteChanged();
                 StopUpdateTimer();
                 SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
-
                 _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info);
             }
-            else
-            {
-                _mainPage.ShowNotifyMessage("Messung konnte nicht gestoppt werden.", NotifyLevel.Error);
-            }
+            else { _mainPage.ShowNotifyMessage("Messung konnte nicht gestoppt werden.", NotifyLevel.Error); }
 
             // Hide loader
             _mainPage.HideLoader();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="measurementViewModel"></param>
         private void ExportMeasurement(MeasurementViewModel measurementViewModel)
         {
             // Show loader
@@ -251,7 +152,7 @@ namespace BackgroundTask
 
             if (measurementViewModel.Id != null && measurementViewModel.Id.Length > 0)
             {
-                Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementViewModel.Id);
+                MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(measurementViewModel.Id);
                 if (measurement != null)
                 {
                     var savePicker = new Windows.Storage.Pickers.FileSavePicker();
@@ -268,10 +169,6 @@ namespace BackgroundTask
             _mainPage.HideLoader();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="measurementViewModel"></param>
         private void RedoEvaluationGraph(MeasurementViewModel measurementViewModel)
         {
             if (measurementViewModel != null)
@@ -281,10 +178,15 @@ namespace BackgroundTask
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="measurementViewModel"></param>
+        public void EditSetting(object sender, RoutedEventArgs e)
+        {
+            if (_measurementPageViewModel != null && _measurementPageViewModel.MeasurementViewModel != null)
+            {
+                Frame contentFrame = _mainPage.FindName("ContentFrame") as Frame;
+                contentFrame.Navigate(typeof(SettingPage), _measurementPageViewModel.MeasurementViewModel.Id);
+            }
+        }
+
         private void ShowMeasurementGraph(MeasurementViewModel measurementViewModel)
         {
             if (measurementViewModel != null)
@@ -294,10 +196,6 @@ namespace BackgroundTask
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="measurementViewModel"></param>
         private async void DeleteMeasurement(MeasurementViewModel measurementViewModel)
         {
             MessageDialog dialog = new MessageDialog("Messung löschen?");
@@ -309,7 +207,7 @@ namespace BackgroundTask
             if (dialogResult.Label.Equals("OK"))
             {
                 bool isDeleted = false;
-                isDeleted = await _mainPage.MainMeasurementListModel.Delete(measurementViewModel.Id);
+                isDeleted = await _mainPage.GlobalMeasurementModel.Delete(measurementViewModel.Id);
 
                 if (isDeleted)
                 {
@@ -321,25 +219,20 @@ namespace BackgroundTask
                     if (contentFrame != null && contentFrame.CanGoBack)
                         contentFrame.GoBack();
                 }
-                else
-                {
-                    _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Error);
-                }
+                else { _mainPage.ShowNotifyMessage("Messung konnte nicht gelöscht werden.", NotifyLevel.Error); }
             }
-            if (dialogResult.Label.Equals("Abbrechen"))
-            {
-                _mainPage.ShowNotifyMessage("Messung wurden nicht gelöscht.", NotifyLevel.Info);
-            }
+            if (dialogResult.Label.Equals("Abbrechen")) { _mainPage.ShowNotifyMessage("Messung wurden nicht gelöscht.", NotifyLevel.Info); }
         }
 
         private void RaiseCanExecuteChanged()
         {
-            ((StartMeasurementCommand)_measurementPageViewModel.StartMeasurementCommand).OnCanExecuteChanged();
-            ((StopMeasurementCommand)_measurementPageViewModel.StopMeasurementCommand).OnCanExecuteChanged();
-            ((ExportMeasurementCommand)_measurementPageViewModel.ExportMeasurementCommand).OnCanExecuteChanged();
-            ((ShowMeasurementGraphCommand)_measurementPageViewModel.ShowMeasurementGraphCommand).OnCanExecuteChanged();
-            ((RedoEvaluationCommand)_measurementPageViewModel.RedoEvaluationCommand).OnCanExecuteChanged();
-            ((DeleteMeasurementCommand)_measurementPageViewModel.DeleteMeasurementCommand).OnCanExecuteChanged();
+            _measurementPageViewModel.StartMeasurementCommand.OnCanExecuteChanged();
+            _measurementPageViewModel.StopMeasurementCommand.OnCanExecuteChanged();
+            _measurementPageViewModel.ExportMeasurementCommand.OnCanExecuteChanged();
+            _measurementPageViewModel.ShowMeasurementGraphCommand.OnCanExecuteChanged();
+            _measurementPageViewModel.RedoEvaluationCommand.OnCanExecuteChanged();
+            _measurementPageViewModel.EditSettingCommand.OnCanExecuteChanged();
+            _measurementPageViewModel.DeleteMeasurementCommand.OnCanExecuteChanged();
             VisualStateManager.GoToState(this, _measurementPageViewModel.MeasurementViewModel.MeasurementState.ToString(), true);
         }
 
@@ -382,7 +275,7 @@ namespace BackgroundTask
             Dispatcher.RunAsync(CoreDispatcherPriority.High,() => 
             {
                 _measurementPageViewModel.MeasurementViewModel.TotalSteps = args.Progress;
-                _mainPage.MainMeasurementListModel.Update(_measurementPageViewModel.MeasurementViewModel);
+                _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(_measurementPageViewModel.MeasurementViewModel);
             });
         }
 
@@ -437,7 +330,8 @@ namespace BackgroundTask
         {
             // Show loader
             _mainPage.ShowLoader();
-            Measurement measurement = _mainPage.MainMeasurementListModel.GetById(this.MeasurementPageViewModel.MeasurementViewModel.Id);
+
+            MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(this.MeasurementPageViewModel.MeasurementViewModel.Id);
             StorageFile file = args.File;
             if (file != null && measurement != null)
             {
@@ -465,19 +359,15 @@ namespace BackgroundTask
 
                 if (status == FileUpdateStatus.Complete)
                 {
-                    _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von '{0:f4}' Sekunden exportiert.", stopwatch.Elapsed.Duration().TotalSeconds + stopwatch2.Elapsed.Duration().TotalSeconds), NotifyLevel.Info);
+                    _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von '{0:f4}' Sekunden exportiert.", 
+                        stopwatch.Elapsed.Duration().TotalSeconds + stopwatch2.Elapsed.Duration().TotalSeconds), NotifyLevel.Info);
                 }
-                else
-                {
-                    _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn);
-                }
+                else { _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn); }
             }
-            else
-            {
-                _mainPage.ShowNotifyMessage("Exportiervorgang abgebrochen.", NotifyLevel.Warn);
-            }
+            else { _mainPage.ShowNotifyMessage("Exportiervorgang abgebrochen.", NotifyLevel.Warn); }
             // Hide loader
             _mainPage.HideLoader();
         }
+
     }
 }

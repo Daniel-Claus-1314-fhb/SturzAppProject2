@@ -10,6 +10,7 @@ namespace BackgroundTask.Common.Converter
     class SilderValueConverter : IValueConverter
     {
         private const string reportIntervalParam = "ReportInterval";
+        private const string gpsReportIntervalParam = "GPSReportInterval";
         private const string processedSampleCountParam = "ProcessedSampleCount";
         private const string AccelerometerThresholdParam = "AccelerometerThreshold";
         private const string GyrometerThresholdParam = "GyrometerThreshold";
@@ -17,6 +18,7 @@ namespace BackgroundTask.Common.Converter
         private const string PeakJoinDistanceParam = "PeakJoinDistance";
 
         private readonly uint[] reportInterval = new uint[6] { 10, 16, 20, 40, 50, 100 };
+        private readonly uint[] gpsReportInterval = new uint[7] { 1, 2, 5, 10, 15, 20, 30 };
         private readonly uint[] processedSampleCount = new uint[7] { 100, 200, 250, 500, 1000, 2000, 5000 };
         private readonly double[] accelerometerThreshold = new double[13] { 1.2d, 1.3d, 1.35d, 1.4d, 1.45d, 1.5d, 1.55d, 1.6d, 1.65d, 1.7d, 1.75d, 1.8d, 1.9d };
         private readonly double[] gyrometerThreshold = new double[13] { 50d, 75d, 100d, 125d, 150d, 175d, 200d, 225d, 250d, 275d, 300d, 325d, 350d };
@@ -40,6 +42,9 @@ namespace BackgroundTask.Common.Converter
                         {
                             case reportIntervalParam:
                                 resultValue = (double) Array.IndexOf(reportInterval, convertValue);
+                                break;
+                            case gpsReportIntervalParam:
+                                resultValue = (double)Array.IndexOf(gpsReportInterval, convertValue);
                                 break;
                             case processedSampleCountParam:
                                 resultValue = (double) Array.IndexOf(processedSampleCount, convertValue);
@@ -98,6 +103,12 @@ namespace BackgroundTask.Common.Converter
                                 if (convertValue >= 0 && convertValue < reportInterval.Length)
                                 {
                                     resultValue = reportInterval.ElementAt(convertValue);
+                                }
+                                break;
+                            case gpsReportIntervalParam:
+                                if (convertValue >= 0 && convertValue < gpsReportInterval.Length)
+                                {
+                                    resultValue = gpsReportInterval.ElementAt(convertValue);
                                 }
                                 break;
                             case processedSampleCountParam:

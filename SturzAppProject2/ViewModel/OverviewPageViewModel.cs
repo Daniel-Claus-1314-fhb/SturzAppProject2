@@ -58,7 +58,6 @@ namespace BackgroundTask.ViewModel
             }
         }
 
-
         // property changed logic by jump start
         public event PropertyChangedEventHandler PropertyChanged;
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)

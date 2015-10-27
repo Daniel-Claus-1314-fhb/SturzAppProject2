@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel;
+using BackgroundTask.ViewModel.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,7 +31,7 @@ namespace BackgroundTask.ViewModel
         /// Constructor to create a new measurementViewModel by a given measurementModel.
         /// </summary>
         /// <param name="measurement"></param>
-        public MeasurementViewModel(Measurement measurement) : this()
+        public MeasurementViewModel(MeasurementModel measurement) : this()
         {
             this.Name = measurement.Name;
             this.Id = measurement.Id;
@@ -38,7 +39,8 @@ namespace BackgroundTask.ViewModel
             this.StartTime = measurement.StartTime;
             this.EndTime = measurement.EndTime;
             this.MeasurementState = measurement.MeasurementState;
-            this.MeasurementSetting = new MeasurementSettingViewModel(measurement.Setting);
+            this.Setting = new SettingViewModel(measurement.Setting);
+            this.MeasurementSetting = new MeasurementSettingViewModel(measurement.MeasurementSettings);
             this.TotalSteps = measurement.TotalSteps;
         }
 
@@ -76,6 +78,12 @@ namespace BackgroundTask.ViewModel
         {
             get { return _measuermentSetting; }
             set { this.SetProperty(ref this._measuermentSetting, value); }
+        }
+        private SettingViewModel _setting;
+        public SettingViewModel Setting
+        {
+            get { return _setting; }
+            set { this.SetProperty(ref this._setting, value); }
         }
         /// <summary>
         /// Enumation which discribes the current state of the measurment

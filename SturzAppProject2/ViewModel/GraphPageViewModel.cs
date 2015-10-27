@@ -27,7 +27,7 @@ namespace BackgroundTask.ViewModel
             this.ShowGroup3 = false;
             this.ShowGroup4 = false;
             this.ShowGroup5 = false;
-            this.ShowGroup6 = true;
+            this.ShowGroup6 = false;
             this.ShowGroup1Command = new ShowGroup1Command(plotShownGraphsAction);
             this.ShowGroup2Command = new ShowGroup2Command(plotShownGraphsAction);
             this.ShowGroup3Command = new ShowGroup3Command(plotShownGraphsAction);

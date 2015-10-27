@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel;
+using BackgroundTask.DataModel.Setting;
 using Newtonsoft.Json;
 using SensorDataEvaluation.DataModel;
 using System;
@@ -18,6 +19,7 @@ namespace BackgroundTask.Service
     internal static class FileService
     {
         private static readonly string _measurementsMetaDataFilename = "Measurements.json";
+        private static readonly string _settingMetaDataFilename = "Settings.json";
 
         private static readonly string _measurementsMetaDataPath = @"";
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
@@ -28,10 +30,10 @@ namespace BackgroundTask.Service
         #region Save/Load MeasurementList
 
         //##################################################################################################################################
-        //################################################## Save Measurements #############################################################
+        //################################################## Save Meta Data ################################################################
         //##################################################################################################################################
 
-        internal static async void SaveMeasurementListAsync(List<Measurement> measurements)
+        internal static async void SaveMeasurementListAsync(List<MeasurementModel> measurements)
         {
             if (measurements != null)
             {
@@ -40,16 +42,22 @@ namespace BackgroundTask.Service
                 await SaveJsonStringToFile(jsonString, targetFolder, _measurementsMetaDataFilename);
             }
         }
+
+        internal static async void SaveMainSettingModelAysnc(SettingModel settingModel)
+        {
+            if (settingModel != null)
+            {
+                string jsonString = JsonConvert.SerializeObject(settingModel);
+                StorageFolder targetFolder = await FindStorageFolder(_measurementsMetaDataPath);
+                await SaveJsonStringToFile(jsonString, targetFolder, _settingMetaDataFilename);
+            }
+        }
+
         //##################################################################################################################################
         //################################################## Save Evaluation data ##########################################################
         //##################################################################################################################################
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="evaluationResultModel"></param>
-        /// <returns></returns>
-        public static async Task SaveEvaluationDataToFileAsync(String filename, EvaluationResultModel evaluationResultModel)
+        internal static async Task SaveEvaluationDataToFileAsync(String filename, EvaluationResultModel evaluationResultModel)
         {
             if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
             {
@@ -72,7 +80,7 @@ namespace BackgroundTask.Service
         //################################################## Save export data ##############################################################
         //##################################################################################################################################
 
-        public static async Task SaveExportDataToFileAsync(StorageFile file, ExportData exportData)
+        internal static async Task SaveExportDataToFileAsync(StorageFile file, ExportData exportData)
         {
             using (IRandomAccessStream textStream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
@@ -135,10 +143,10 @@ namespace BackgroundTask.Service
         //################################################## Load Measurements #############################################################
         //##################################################################################################################################
 
-        internal static async Task<List<Measurement>> LoadMeasurementListAsync()
+        internal static async Task<List<MeasurementModel>> LoadMeasurementListAsync()
         {
             bool isFileCorrupted = false;
-            List<Measurement> measurements = new List<Measurement>();
+            List<MeasurementModel> measurements = new List<MeasurementModel>();
             StorageFolder measurementFolder = await FindStorageFolder(_measurementsMetaDataPath);
             string jsonString = await LoadJsonStringFromFile(measurementFolder, _measurementsMetaDataFilename);
 
@@ -146,7 +154,7 @@ namespace BackgroundTask.Service
             {
                 try
                 {
-                    measurements = JsonConvert.DeserializeObject<List<Measurement>>(jsonString);
+                    measurements = JsonConvert.DeserializeObject<List<MeasurementModel>>(jsonString);
                 }
                 catch (JsonReaderException)
                 {
@@ -161,6 +169,39 @@ namespace BackgroundTask.Service
                 }
             }
             return measurements;
+        }
+
+        internal static async Task<SettingModel> LoadGlobalSettingAsync()
+        {
+            bool isFileCorrupted = false;
+            SettingModel settingModel = null;
+            StorageFolder measurementFolder = await FindStorageFolder(_measurementsMetaDataPath);
+            string jsonString = await LoadJsonStringFromFile(measurementFolder, _settingMetaDataFilename);
+
+            if (jsonString != null && jsonString.Length > 0)
+            {
+                try
+                {
+                    settingModel = JsonConvert.DeserializeObject<SettingModel>(jsonString);
+                }
+                catch (JsonReaderException)
+                {
+                    Debug.WriteLine("[BackgroundTask.Service.FileService] Sersialized list of measurements could not read.");
+                    // Delete corrupted file.
+                    isFileCorrupted = true;
+                }
+
+                if (isFileCorrupted)
+                {
+                    await DeleteFileAsync(measurementFolder, _settingMetaDataFilename);
+                }
+            }
+
+            if (settingModel == null)
+            {
+                settingModel = SettingModel.DefaultSettingModel();
+            }
+            return settingModel;
         }
 
         #endregion

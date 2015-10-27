@@ -22,7 +22,7 @@ namespace SensorDataEvaluation.DataModel
             this._filename = MeasurementFilename;
             this._startDateTime = DateTimeOffset.MinValue;
             this._listChangeCounter = 0;
-            this._processingListCount = 1000;
+            this._sampleBufferSize = 1000;
             this._accelerometerListEven = new List<AccelerometerSample>();
             this._accelerometerListOdd = new List<AccelerometerSample>();
 
@@ -39,7 +39,7 @@ namespace SensorDataEvaluation.DataModel
         public MeasurementData(string measurementFilename, uint processingListSize)
             : this(measurementFilename)
         {
-            this._processingListCount = processingListSize;
+            this._sampleBufferSize = processingListSize;
         }
 
         //###################################################################################################################
@@ -59,7 +59,7 @@ namespace SensorDataEvaluation.DataModel
         }
 
         private DateTimeOffset _startDateTime;
-        private uint _processingListCount;
+        private uint _sampleBufferSize;
 
         private List<AccelerometerSample> _accelerometerListEven { get; set; }
         private List<AccelerometerSample> _accelerometerListOdd { get; set; }
@@ -113,7 +113,7 @@ namespace SensorDataEvaluation.DataModel
         {
             GetActivAccelerometerList().Add(accelerometerSample);
             // Decides whether a list switch is necessary.
-            if (GetActivAccelerometerList().Count >= _processingListCount)
+            if (GetActivAccelerometerList().Count >= _sampleBufferSize)
             {
                 SwitchBetweenLists();
             }
@@ -190,7 +190,7 @@ namespace SensorDataEvaluation.DataModel
         {
             GetActivGyrometerList().Add(gyrometerSample);
             // Decides whether a list switch is necessary.
-            if (GetActivGyrometerList().Count >= _processingListCount)
+            if (GetActivGyrometerList().Count >= _sampleBufferSize)
             {
                 SwitchBetweenLists();
             }
@@ -266,7 +266,7 @@ namespace SensorDataEvaluation.DataModel
         {
             GetActivQuaternionList().Add(quaternionSample);
             // Decides whether a list switch is necessary.
-            if (GetActivQuaternionList().Count >= _processingListCount)
+            if (GetActivQuaternionList().Count >= _sampleBufferSize)
             {
                 SwitchBetweenLists();
             }
@@ -342,7 +342,7 @@ namespace SensorDataEvaluation.DataModel
         {
             GetActivLocationList().Add(locationSample);
             // Decides whether a list switch is necessary.
-            if (GetActivLocationList().Count >= _processingListCount)
+            if (GetActivLocationList().Count >= _sampleBufferSize)
             {
                 SwitchBetweenLists();
             }

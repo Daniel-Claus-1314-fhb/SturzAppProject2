@@ -55,7 +55,7 @@ namespace BackgroundTask
             string measurementId = e.Parameter as string;
             if (measurementId != null && measurementId != String.Empty)
             {
-                Measurement measurement = _mainPage.MainMeasurementListModel.GetById(measurementId);
+                MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
                     // Show loader
@@ -105,8 +105,8 @@ namespace BackgroundTask
             _evaluationPageViewModel.MeasurementViewModel.TotalSteps = totalDetectedSteps;
 
             //propagate update
-            Measurement measurement = _mainPage.MainMeasurementListModel.GetById(_evaluationPageViewModel.MeasurementViewModel.Id);
-            _mainPage.MainMeasurementListModel.Update(_evaluationPageViewModel.MeasurementViewModel);
+            MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(_evaluationPageViewModel.MeasurementViewModel.Id);
+            _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(_evaluationPageViewModel.MeasurementViewModel);
             await FileService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
 
             //set evaluation state to stopped

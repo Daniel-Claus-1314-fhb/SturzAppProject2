@@ -23,15 +23,37 @@ namespace BackgroundTask.Service
         private static readonly string _measurementGeolocationPath = @"Measurement\Geolocation";
         private static readonly string _evaluationPath = @"Evaluation";
 
-        public static async Task AppendMeasurementDataToFileAsync(String filename, MeasurementData measurementData, bool isActiveListChoosen)
+        public static async Task AppendMeasurementDataToFileAsync(TaskArguments taskArguments, MeasurementData measurementData, bool isActiveListChoosen)
         {
-            Task accelerometerDataTask = AppendAccelerometerDataToFileAsync(filename, measurementData, isActiveListChoosen);
-            Task gyrometerDataTask = AppendGyrometerDataToFileAsync(filename, measurementData, isActiveListChoosen);
-            Task quaterionDataTask = AppendQuaternionDataToFileAsync(filename, measurementData, isActiveListChoosen);
+            Task accelerometerDataTask = null;
+            Task gyrometerDataTask = null;
+            Task quaterionDataTask = null;
 
-            await accelerometerDataTask;
-            await gyrometerDataTask;
-            await quaterionDataTask;
+            if (taskArguments.IsUsedAccelerometer && taskArguments.IsRecordSamplesAccelerometer) 
+            { 
+                accelerometerDataTask = AppendAccelerometerDataToFileAsync(taskArguments.Filename, measurementData, isActiveListChoosen);
+            }
+            if (taskArguments.IsUsedGyrometer && taskArguments.IsRecordSamplesGyrometer)
+            {
+                gyrometerDataTask = AppendGyrometerDataToFileAsync(taskArguments.Filename, measurementData, isActiveListChoosen);
+            }
+            if (taskArguments.IsUsedQuaternion && taskArguments.IsRecordSamplesQuaternion)
+            {
+                quaterionDataTask = AppendQuaternionDataToFileAsync(taskArguments.Filename, measurementData, isActiveListChoosen);
+            }
+
+            if (accelerometerDataTask != null)
+            {
+                await accelerometerDataTask;
+            }
+            if (gyrometerDataTask != null)
+            {
+                await gyrometerDataTask;
+            }
+            if (quaterionDataTask != null)
+            {
+                await quaterionDataTask;
+            }
         }
 
         //##################################################################################################################################
@@ -157,9 +179,11 @@ namespace BackgroundTask.Service
         /// </summary>
         /// <param name="evaluationResultModel"></param>
         /// <returns></returns>
-        public static async Task AppendEvaluationDataToFileAsync(String filename, EvaluationResultModel evaluationResultModel)
+        public static async Task AppendEvaluationDataToFileAsync(TaskArguments taskArguments, EvaluationResultModel evaluationResultModel)
         {
-            if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
+            if (taskArguments.IsRecordSamplesEvaluation && 
+                taskArguments.Filename != null && taskArguments.Filename != String.Empty && 
+                evaluationResultModel.EvaluationResultList.Count > 0)
             {
                 // convert data into byte array
                 byte[] bytes = evaluationResultModel.ToEvaluationBytes();
@@ -168,7 +192,7 @@ namespace BackgroundTask.Service
                     // find folder
                     StorageFolder folder = await FindStorageFolder(_evaluationPath);
                     // save byte array
-                    await SaveBytesToEndOfFileAsync(bytes, folder, filename);
+                    await SaveBytesToEndOfFileAsync(bytes, folder, taskArguments.Filename);
                 }
             }
             return;

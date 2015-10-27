@@ -28,6 +28,7 @@ namespace BackgroundTask.ViewModel
             this.ExportMeasurementCommand = new ExportMeasurementCommand(exportMeasurementMethod);
             this.ShowMeasurementGraphCommand = new ShowMeasurementGraphCommand(showMeasurementGraphMethod);
             this.RedoEvaluationCommand = new RedoEvaluationCommand(RedoEvaluationMethod);
+            this.EditSettingCommand = new EditSettingCommand();
             this.DeleteMeasurementCommand = new DeleteMeasurementCommand(deleteMeasurementMethod);
         }
 
@@ -45,13 +46,14 @@ namespace BackgroundTask.ViewModel
             get { return _measurementViewModel; }
             set { this.SetProperty(ref this._measurementViewModel, value); }
         }
-        
-        public ICommand StartMeasurementCommand { get; set; }
-        public ICommand StopMeasurementCommand { get; set; }
-        public ICommand ExportMeasurementCommand { get; set; }
-        public ICommand RedoEvaluationCommand { get; set; }
-        public ICommand ShowMeasurementGraphCommand { get; set; }
-        public ICommand DeleteMeasurementCommand { get; set; }
+
+        public StartMeasurementCommand StartMeasurementCommand { get; set; }
+        public StopMeasurementCommand StopMeasurementCommand { get; set; }
+        public ExportMeasurementCommand ExportMeasurementCommand { get; set; }
+        public RedoEvaluationCommand RedoEvaluationCommand { get; set; }
+        public EditSettingCommand EditSettingCommand { get; set; }
+        public ShowMeasurementGraphCommand ShowMeasurementGraphCommand { get; set; }
+        public DeleteMeasurementCommand DeleteMeasurementCommand { get; set; }
 
         #endregion
 
@@ -412,6 +414,35 @@ namespace BackgroundTask.ViewModel
                 }
             }
         }
+    }
+
+    public class EditSettingCommand : ICommand
+    {
+        public bool CanExecute(object parameter)
+        {
+            bool canExecute = false;
+
+            if (parameter != null &&
+                parameter.GetType() == typeof(MeasurementViewModel))
+            {
+                MeasurementViewModel measurementViewModel = parameter as MeasurementViewModel;
+                if (measurementViewModel != null &&
+                    measurementViewModel.MeasurementState == MeasurementState.Initialized)
+                {
+                    canExecute = true;
+                }
+            }
+            return canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged;
+        public void OnCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+                CanExecuteChanged(this, EventArgs.Empty);
+        }
+
+        public void Execute(object parameter) { }
     }
 
     #endregion

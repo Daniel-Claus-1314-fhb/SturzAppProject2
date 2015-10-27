@@ -53,23 +53,21 @@ namespace BackgroundTask
             // GET TASKARGRUMENTS
             _taskArguments = GetTaskArgumentsFromTriggerDetails((DeviceUseDetails)_taskInstance.TriggerDetails);
 
-            if (_taskArguments != null && 
-                    _taskArguments.Filename != null && _taskArguments.Filename != String.Empty &&
-                    _taskArguments.ReportInterval > 0 && _taskArguments.ProcessedSampleCount > 0)
+            if (_taskArguments != null)
             {
                 // init different sensors
-                InitAccelerometer(_taskArguments.ReportInterval);
-                InitGyrometer(_taskArguments.ReportInterval);
-                InitOrientationSensor(_taskArguments.ReportInterval);
+                InitAccelerometer(_taskArguments);
+                InitGyrometer(_taskArguments);
+                InitOrientationSensor(_taskArguments);
 
                 taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
 
                 // create new measurement data model
-                _measurementData = new MeasurementData(_taskArguments.Filename, _taskArguments.ProcessedSampleCount);
+                _measurementData = new MeasurementData(_taskArguments.Filename, _taskArguments.SampleBufferSize);
                 _measurementData.ListsHasSwitched += MeasurementData_ReadingsListsHasSwitched;
 
                 //set evaluation setting model
-                _evaluationSettingModel = new EvaluationSettingModel(_taskArguments.ProcessedSampleCount, _taskArguments.AccelerometerThreshold, 
+                _evaluationSettingModel = new EvaluationSettingModel(_taskArguments.SampleBufferSize, _taskArguments.AccelerometerThreshold, 
                     _taskArguments.GyrometerThreshold, _taskArguments.StepDistance, _taskArguments.PeakJoinDistance);
 
                 _deferral = _taskInstance.GetDeferral();
@@ -117,7 +115,7 @@ namespace BackgroundTask
             _measurementData.ListsHasSwitched -= MeasurementData_ReadingsListsHasSwitched;
 
             // save the current measurement.
-            await TaskFileService.AppendMeasurementDataToFileAsync(_taskArguments.Filename, _measurementData, true);
+            await TaskFileService.AppendMeasurementDataToFileAsync(_taskArguments, _measurementData, true);
             // process step analysis
             await ProcessAnalysis(_measurementData, true);
 
@@ -150,14 +148,18 @@ namespace BackgroundTask
         //########################### Accelerometer #################################
         //###########################################################################
 
-        private void InitAccelerometer(uint targetSensorReportInterval)
+        private void InitAccelerometer(TaskArguments taskArguments)
         {
-            _accelerometer = Accelerometer.GetDefault();
-            if (_accelerometer != null)
-            {
-                _accelerometer.ReportInterval = targetSensorReportInterval >= _accelerometer.MinimumReportInterval ? targetSensorReportInterval : _accelerometer.MinimumReportInterval; 
-                _accelerometerEventHandler = new TypedEventHandler<Accelerometer, AccelerometerReadingChangedEventArgs>(AccelerometerReadingChanged);
-                _accelerometer.ReadingChanged += _accelerometerEventHandler;
+            if (taskArguments.IsUsedAccelerometer) 
+            { 
+                _accelerometer = Accelerometer.GetDefault();
+                if (_accelerometer != null)
+                {
+                    uint targetSensorReportInterval = taskArguments.ReportIntervalAccelerometer;
+                    _accelerometer.ReportInterval = targetSensorReportInterval >= _accelerometer.MinimumReportInterval ? targetSensorReportInterval : _accelerometer.MinimumReportInterval; 
+                    _accelerometerEventHandler = new TypedEventHandler<Accelerometer, AccelerometerReadingChangedEventArgs>(AccelerometerReadingChanged);
+                    _accelerometer.ReadingChanged += _accelerometerEventHandler;
+                }
             }
         }
 
@@ -171,14 +173,18 @@ namespace BackgroundTask
         //########################### Gyrometer #####################################
         //###########################################################################
 
-        private void InitGyrometer(uint targetSensorReportInterval)
+        private void InitGyrometer(TaskArguments taskArguments)
         {
-            _gyrometer = Gyrometer.GetDefault();
-            if (_gyrometer != null)
-            {
-                _gyrometer.ReportInterval = targetSensorReportInterval >= _gyrometer.MinimumReportInterval ? targetSensorReportInterval : _gyrometer.MinimumReportInterval;
-                _gyrometerEventHandler = new TypedEventHandler<Gyrometer, GyrometerReadingChangedEventArgs>(GyrometerReadingChanged);
-                _gyrometer.ReadingChanged += _gyrometerEventHandler;
+            if (taskArguments.IsUsedGyrometer) 
+            { 
+                _gyrometer = Gyrometer.GetDefault();
+                if (_gyrometer != null)
+                {
+                    uint targetSensorReportInterval = taskArguments.ReportIntervalGyrometer;
+                    _gyrometer.ReportInterval = targetSensorReportInterval >= _gyrometer.MinimumReportInterval ? targetSensorReportInterval : _gyrometer.MinimumReportInterval;
+                    _gyrometerEventHandler = new TypedEventHandler<Gyrometer, GyrometerReadingChangedEventArgs>(GyrometerReadingChanged);
+                    _gyrometer.ReadingChanged += _gyrometerEventHandler;
+                }
             }
         }
 
@@ -192,14 +198,18 @@ namespace BackgroundTask
         //########################### OrientationSensor #############################
         //###########################################################################
 
-        private void InitOrientationSensor(uint targetSensorReportInterval)
+        private void InitOrientationSensor(TaskArguments taskArguments)
         {
-            _orientationSensor = OrientationSensor.GetDefault();
-            if (_orientationSensor != null)
+            if (taskArguments.IsUsedQuaternion)
             {
-                _orientationSensor.ReportInterval = targetSensorReportInterval >= _orientationSensor.MinimumReportInterval ? targetSensorReportInterval : _orientationSensor.MinimumReportInterval;
-                _orientationSensorEventHandler = new TypedEventHandler<OrientationSensor, OrientationSensorReadingChangedEventArgs>(OrientationSensorReadingChanged);
-                _orientationSensor.ReadingChanged += _orientationSensorEventHandler;
+                _orientationSensor = OrientationSensor.GetDefault();
+                if (_orientationSensor != null)
+                {
+                    uint targetSensorReportInterval = taskArguments.ReportIntervalQuaternion;
+                    _orientationSensor.ReportInterval = targetSensorReportInterval >= _orientationSensor.MinimumReportInterval ? targetSensorReportInterval : _orientationSensor.MinimumReportInterval;
+                    _orientationSensorEventHandler = new TypedEventHandler<OrientationSensor, OrientationSensorReadingChangedEventArgs>(OrientationSensorReadingChanged);
+                    _orientationSensor.ReadingChanged += _orientationSensorEventHandler;
+                }
             }
         }
 
@@ -219,7 +229,7 @@ namespace BackgroundTask
             if (sender.GetType().Equals(typeof(MeasurementData)))
             {
                 MeasurementData measurementData = sender as MeasurementData;
-                await TaskFileService.AppendMeasurementDataToFileAsync(_taskArguments.Filename, measurementData, false);
+                await TaskFileService.AppendMeasurementDataToFileAsync(_taskArguments, measurementData, false);
                 await ProcessAnalysis(measurementData, false);
             }
             return;
@@ -227,24 +237,26 @@ namespace BackgroundTask
 
         private async Task ProcessAnalysis(MeasurementData measurementData, bool isActiveListChoosen)
         {
-            EvaluationDataModel evaluationDataModel = new EvaluationDataModel();
-            if (isActiveListChoosen)
+            if (_taskArguments.IsUsedEvaluation)
             {
-                evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetActivAccelerometerList());
-                evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetActivGyrometerList());
-                evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetActivQuaternionList());
+                EvaluationDataModel evaluationDataModel = new EvaluationDataModel();
+                if (isActiveListChoosen)
+                {
+                    evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetActivAccelerometerList());
+                    evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetActivGyrometerList());
+                    evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetActivQuaternionList());
+                }
+                else
+                {
+                    evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetPassivAccelerometerList());
+                    evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetPassivGyrometerList());
+                    evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetPassivQuaternionList());
+                }
+                EvaluationResultModel evaluationResultModel = await _measurementEvaluationService.RunEvaluationDuringMeasurementAsync(evaluationDataModel, _evaluationSettingModel);
+                _totalSteps += evaluationResultModel.DetectedSteps;
+                await TaskFileService.AppendEvaluationDataToFileAsync(_taskArguments, evaluationResultModel);
+                _taskInstance.Progress = _totalSteps;
             }
-            else
-            {
-                evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetPassivAccelerometerList());
-                evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetPassivGyrometerList());
-                evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetPassivQuaternionList());
-            }
-            EvaluationResultModel evaluationResultModel = await _measurementEvaluationService.RunEvaluationDuringMeasurementAsync(evaluationDataModel, _evaluationSettingModel);
-            _totalSteps += evaluationResultModel.DetectedSteps;
-            await TaskFileService.AppendEvaluationDataToFileAsync(_taskArguments.Filename, evaluationResultModel);
-            _taskInstance.Progress = _totalSteps;
-            return;
         }
     }
 }
