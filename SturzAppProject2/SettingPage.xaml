@@ -20,8 +20,11 @@
     
     <Grid x:Name="LayoutRoot">
         <Pivot Title="Einstellungen">
-            <PivotItem Header="Messung">
+            <PivotItem Header="Messungsdetails">
                 <view:MeasurementSettingControl x:Name="MeasurementSettingControl" DataContext="{Binding Path=SettingViewModel.BaseSettingViewModel}"/>
+            </PivotItem>
+            <PivotItem Header="Auswertung">
+                <view:EvaluationSettingControl x:Name="EvaluationSettingControl" DataContext="{Binding Path=SettingViewModel.EvaluationSettingViewModel}"/>
             </PivotItem>
             <PivotItem Header="Accelerometer">
                 <view:AccerlerometerSettingControl x:Name="AccelerometerSettingControl" DataContext="{Binding Path=SettingViewModel.AccerlerometerSettingViewModel}"/>
@@ -32,12 +35,9 @@
             <PivotItem Header="Quaternion">
                 <view:QuaternionSettingControl x:Name="QuaternionSettingControl" DataContext="{Binding Path=SettingViewModel.QuaternionSettingViewModel}"/>
             </PivotItem>
-            <PivotItem Header="Geolocation">
+            <!--<PivotItem Header="Geolocation">
                 <view:GeolocationSettingControl x:Name="GeolocationSettingControl" DataContext="{Binding Path=SettingViewModel.GeolocationSettingViewModel}"/>
-            </PivotItem>
-            <PivotItem Header="Auswertung">
-                <view:EvaluationSettingControl x:Name="EvaluationSettingControl" DataContext="{Binding Path=SettingViewModel.EvaluationSettingViewModel}"/>
-            </PivotItem>
+            </PivotItem>-->
         </Pivot>
     </Grid>
 </Page>

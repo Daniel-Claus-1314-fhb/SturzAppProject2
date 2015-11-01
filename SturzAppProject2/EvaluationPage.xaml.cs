@@ -1,6 +1,7 @@
 ﻿using BackgroundTask.DataModel;
 using BackgroundTask.Service;
 using BackgroundTask.ViewModel;
+using BackgroundTask.ViewModel.Setting;
 using SensorDataEvaluation.DataModel;
 using SensorDataEvaluation.Service;
 using System;
@@ -84,12 +85,13 @@ namespace BackgroundTask
             //prepare timer
             Stopwatch stopwatch = new Stopwatch();
 
+            SettingViewModel setting = _evaluationPageViewModel.MeasurementViewModel.Setting;
             //prepare evaluation settings and evaluation data
-            uint processedSampleCount = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.SampleBufferSize;
-            double accelerometerThreshold = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.AccelerometerThreshold;
-            double gyrometerThreshold = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.GyrometerThreshold;
-            uint stepDistance = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.StepDistance;
-            uint peakJoinDistance = _evaluationPageViewModel.MeasurementViewModel.Setting.EvaluationSettingViewModel.PeakJoinDistance;
+            uint processedSampleCount = setting.EvaluationSettingViewModel.SampleBufferSize;
+            double accelerometerThreshold = setting.EvaluationSettingViewModel.AccelerometerThreshold;
+            double gyrometerThreshold = setting.EvaluationSettingViewModel.GyrometerThreshold;
+            uint stepDistance = setting.EvaluationSettingViewModel.StepDistance;
+            uint peakJoinDistance = setting.EvaluationSettingViewModel.PeakJoinDistance;
             EvaluationSettingModel evaluationSettingModel = new EvaluationSettingModel(processedSampleCount, accelerometerThreshold, gyrometerThreshold, stepDistance, peakJoinDistance);
             
             EvaluationDataModel evaluationDataModel = _evaluationPageViewModel.EvaluationDataModel;
@@ -107,7 +109,12 @@ namespace BackgroundTask
             //propagate update
             MeasurementModel measurement = _mainPage.GlobalMeasurementModel.GetMeasurementById(_evaluationPageViewModel.MeasurementViewModel.Id);
             _mainPage.GlobalMeasurementModel.UpdateMeasurementInList(_evaluationPageViewModel.MeasurementViewModel);
-            await FileService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
+
+            // Save evaluation if necessary
+            if (setting.EvaluationSettingViewModel.IsRecordSamples)
+            {
+                await FileService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
+            }
 
             //set evaluation state to stopped
             stopwatch.Stop();

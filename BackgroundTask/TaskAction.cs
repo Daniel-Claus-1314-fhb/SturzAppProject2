@@ -244,13 +244,11 @@ namespace BackgroundTask
                 {
                     evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetActivAccelerometerList());
                     evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetActivGyrometerList());
-                    evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetActivQuaternionList());
                 }
                 else
                 {
                     evaluationDataModel.AddAllAccelerometerAnalysisFromSampleList(measurementData.GetPassivAccelerometerList());
                     evaluationDataModel.AddAllGyrometerAnalysisFromSampleList(measurementData.GetPassivGyrometerList());
-                    evaluationDataModel.AddAllQuaternionAnalysisFromSampleList(measurementData.GetPassivQuaternionList());
                 }
                 EvaluationResultModel evaluationResultModel = await _measurementEvaluationService.RunEvaluationDuringMeasurementAsync(evaluationDataModel, _evaluationSettingModel);
                 _totalSteps += evaluationResultModel.DetectedSteps;

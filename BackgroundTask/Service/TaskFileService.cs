@@ -21,7 +21,7 @@ namespace BackgroundTask.Service
         private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
         private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
         private static readonly string _measurementGeolocationPath = @"Measurement\Geolocation";
-        private static readonly string _evaluationPath = @"Evaluation";
+        private static readonly string _evaluationPath = @"Measurement\Evaluation";
 
         public static async Task AppendMeasurementDataToFileAsync(TaskArguments taskArguments, MeasurementData measurementData, bool isActiveListChoosen)
         {
@@ -181,7 +181,7 @@ namespace BackgroundTask.Service
         /// <returns></returns>
         public static async Task AppendEvaluationDataToFileAsync(TaskArguments taskArguments, EvaluationResultModel evaluationResultModel)
         {
-            if (taskArguments.IsRecordSamplesEvaluation && 
+            if (taskArguments.IsUsedEvaluation && taskArguments.IsRecordSamplesEvaluation && 
                 taskArguments.Filename != null && taskArguments.Filename != String.Empty && 
                 evaluationResultModel.EvaluationResultList.Count > 0)
             {

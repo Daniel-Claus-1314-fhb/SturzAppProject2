@@ -33,10 +33,11 @@ namespace BackgroundTask.ViewModel.Setting
 
         #region Properties
 
+        // Baseconfig
         public BaseSettingViewModel BaseSettingViewModel { get; set; }
-
+        // Evaluation
         public EvaluationSettingViewModel EvaluationSettingViewModel { get; set; }
-
+        // Sensors
         public AccelerometerSettingViewModel AccerlerometerSettingViewModel { get; set; }
         public GyrometerSettingViewModel GyrometerSettingViewModel { get; set; }
         public QuaternionSettingViewModel QuaternionSettingViewModel { get; set; }

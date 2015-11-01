@@ -13,6 +13,8 @@ namespace SensorDataEvaluation.DataModel
         /// long + double + double + bool + bool + bool = 8 + 4 + 4 + 1 + 1 + 1 = 19
         /// </summary>
         public const int AmountOfBytes = 8 + 4 + 4 + 1 + 1 + 1;
+        public const int BytesOfHeaderString = 278;
+        public const string HeaderString = "Evaluation:TimeInTicks(8b),AccelerometerVectorLength(4b),GyrometerVectorLength(4b),AccelerometerPeak(1b),GyrometerPeak(1b),DetectedStep(1b)";
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
@@ -67,6 +69,10 @@ namespace SensorDataEvaluation.DataModel
         //################################################## Methods ########################################################
         //###################################################################################################################
 
+        /// <summary>
+        /// Is used to create a byte array which represents the current EvaluationSample.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ToByteArray()
         {
             List<byte[]> listOfArrays = new List<byte[]>();
@@ -79,37 +85,17 @@ namespace SensorDataEvaluation.DataModel
             return listOfArrays.SelectMany(a => a).ToArray();
         }
 
-        public string GetExportHeader()
+        public static string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Evaluation(2byte),MeasurementTimeInTicks(8byte),AccelerometerVectorLength(4byte),GyrometerVectorLength(4byte),AccelerometerPeak(1byte),GyrometerPeak(1byte),DetectedStep(1byte)\n");
+            return HeaderString;
         }
 
-        /// <summary>
-        /// Is used to create a csv string which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public string ToExportCSVString()
-        {
-            return String.Format(String.Format(new CultureInfo("en-US"), "3,{0},{1:f3},{2:f3},{3:g},{4:g},{5:g}\n",
-                    this.MeasurementTime.TotalMilliseconds, this.AccelerometerVectorLength, this.GyrometerVectorLength,
-                    this.IsAssumedAccelerometerStep ? 1 : 0, this.IsAssumedGyrometerStep ? 1 : 0, this.IsDetectedStep ? 1 : 0));
-        }
-
-        /// <summary>
-        /// Is used to create a byte array which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public byte[] ToExportByteArray()
+        public static byte[] GetExportDataDescription(int sampleCount)
         {
             List<byte[]> listOfArrays = new List<byte[]>();
-            listOfArrays.Add(BitConverter.GetBytes((short) 3));
-            listOfArrays.Add(BitConverter.GetBytes(this.MeasurementTime.Ticks));
-            listOfArrays.Add(BitConverter.GetBytes(this.AccelerometerVectorLength));
-            listOfArrays.Add(BitConverter.GetBytes(this.GyrometerVectorLength));
-            listOfArrays.Add(BitConverter.GetBytes(this.IsAssumedAccelerometerStep));
-            listOfArrays.Add(BitConverter.GetBytes(this.IsAssumedGyrometerStep));
-            listOfArrays.Add(BitConverter.GetBytes(this.IsDetectedStep));
-            listOfArrays.Add(BitConverter.GetBytes((char)13));
+            listOfArrays.Add(BitConverter.GetBytes(AmountOfBytes));
+            listOfArrays.Add(BitConverter.GetBytes(sampleCount));
+            listOfArrays.Add(BitConverter.GetBytes(BytesOfHeaderString));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
     }

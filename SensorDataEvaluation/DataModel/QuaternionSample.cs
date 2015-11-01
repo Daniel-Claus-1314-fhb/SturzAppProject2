@@ -15,6 +15,8 @@ namespace SensorDataEvaluation.DataModel
         /// long + float + float + float + float = 8 + 4 + 4 + 4 + 4 = 24
         /// </summary>
         public const int AmountOfBytes = 8 + 4 + 4 + 4 + 4;
+        public const int BytesOfHeaderString = 170;
+        public const string HeaderString = "Quaternion:TimeInTicks(8b),AngleW(4b),CoordinateX(4b),CoordinateY(4b),CoordinateZ(4b)";
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
@@ -67,6 +69,10 @@ namespace SensorDataEvaluation.DataModel
         //################################################## Methods ########################################################
         //###################################################################################################################
 
+        /// <summary>
+        /// Is used to create a byte array which represents the current EvaluationSample.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ToByteArray()
         {
             List<byte[]> listOfArrays = new List<byte[]>();
@@ -77,35 +83,18 @@ namespace SensorDataEvaluation.DataModel
             listOfArrays.Add(BitConverter.GetBytes(this.CoordinateZ));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
-        
-        public string GetExportHeader()
+
+        public static string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Quaternion(2byte),MeasurementTimeInTicks(8byte),AngleW(4byte),CoordinateX(4byte),CoordinateY(4byte),CoordinateZ(4byte)\n");
+            return HeaderString;
         }
 
-        /// <summary>
-        /// Is used to create a csv string which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public string ToExportCSVString()
-        {
-            return String.Format(new CultureInfo("en-US"), "2,{0},{1:f3},{2:f3},{3:f3},{4:f3}\n", this.MeasurementTime.Ticks, this.AngleW, this.CoordinateX, this.CoordinateY, this.CoordinateZ);
-        }
-
-        /// <summary>
-        /// Is used to create a byte array which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public byte[] ToExportByteArray()
+        public static byte[] GetExportDataDescription(int sampleCount)
         {
             List<byte[]> listOfArrays = new List<byte[]>();
-            listOfArrays.Add(BitConverter.GetBytes((short) 2));
-            listOfArrays.Add(BitConverter.GetBytes(this.MeasurementTime.Ticks));
-            listOfArrays.Add(BitConverter.GetBytes(this.AngleW));
-            listOfArrays.Add(BitConverter.GetBytes(this.CoordinateX));
-            listOfArrays.Add(BitConverter.GetBytes(this.CoordinateY));
-            listOfArrays.Add(BitConverter.GetBytes(this.CoordinateZ));
-            listOfArrays.Add(BitConverter.GetBytes((char)13));
+            listOfArrays.Add(BitConverter.GetBytes(AmountOfBytes));
+            listOfArrays.Add(BitConverter.GetBytes(sampleCount));
+            listOfArrays.Add(BitConverter.GetBytes(BytesOfHeaderString));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
     }

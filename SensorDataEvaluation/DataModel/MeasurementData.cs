@@ -136,23 +136,6 @@ namespace SensorDataEvaluation.DataModel
             return _listChangeCounter % 2 == 1 ? _accelerometerListEven : _accelerometerListOdd;
         }
 
-        /// <summary>
-        /// Creates a csv string of the accelerometer list.
-        /// </summary>
-        /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
-        /// <returns></returns>
-        public string ToAccelerometerExportCSVString(bool useActiveList)
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            IList<AccelerometerSample> accelerometerSampleList = useActiveList ? this.GetActivAccelerometerList() : this.GetPassivAccelerometerList();
-            var enumerator = accelerometerSampleList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                stringbuilder.Append(enumerator.Current.ToExportCSVString());
-            }
-            return stringbuilder.ToString();
-        }
-
         public byte[] ToAccelerometerBytes(bool useActiveList)
         {
             IList<AccelerometerSample> accelerometerSampleList = useActiveList ? this.GetActivAccelerometerList() : this.GetPassivAccelerometerList();
@@ -212,24 +195,7 @@ namespace SensorDataEvaluation.DataModel
         {
             return _listChangeCounter % 2 == 1 ? _gyrometerListEven : _gyrometerListOdd;
         }
-
-        /// <summary>
-        /// Creates a csv string of the gyrometer list.
-        /// </summary>
-        /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
-        /// <returns></returns>
-        public string ToGyrometerExportCSVString(bool useActiveList)
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            IList<GyrometerSample> gyrometerList = useActiveList ? this.GetActivGyrometerList() : this.GetPassivGyrometerList();
-            var enumerator = gyrometerList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                stringbuilder.Append(enumerator.Current.ToExportCSVString());
-            }
-            return stringbuilder.ToString();
-        }
-
+        
         public byte[] ToGyrometerBytes(bool useActiveList)
         {
             IList<GyrometerSample> gyrometerList = useActiveList ? this.GetActivGyrometerList() : this.GetPassivGyrometerList();
@@ -287,23 +253,6 @@ namespace SensorDataEvaluation.DataModel
         public List<QuaternionSample> GetPassivQuaternionList()
         {
             return _listChangeCounter % 2 == 1 ? _quaternionListEven : _quaternionListOdd;
-        }
-
-        /// <summary>
-        /// Creates a csv string of the quaternion list.
-        /// </summary>
-        /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
-        /// <returns></returns>
-        public string ToQuaternionExportCSVString(bool useActiveList)
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            IList<QuaternionSample> quaternionList = useActiveList ? this.GetActivQuaternionList() : this.GetPassivQuaternionList();
-            var enumerator = quaternionList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                stringbuilder.Append(enumerator.Current.ToExportCSVString());
-            }
-            return stringbuilder.ToString();
         }
 
         public byte[] ToQuaternionBytes(bool useActiveList)

@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converter="using:BackgroundTask.Common.Converter"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="500"
     d:DesignWidth="400">
 
     <UserControl.Resources>
@@ -45,18 +45,22 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Aktiv" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="0" Grid.Column="2" Text="Aufzeichen" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="0" Grid.Column="3" Text="Abtastrate" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
+                
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Accelerometer" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6"/>
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=AccerlerometerSettingViewModel.IsUsed}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=AccerlerometerSettingViewModel.IsRecordSamples}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Path=AccerlerometerSettingViewModel.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalSimple}" Margin="0,6" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center"/>
+                
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Gyrometer" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6"/>
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=GyrometerSettingViewModel.IsUsed}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=GyrometerSettingViewModel.IsRecordSamples}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Path=GyrometerSettingViewModel.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalSimple}" Margin="0,6" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center"/>
+                
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Quaternion" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6"/>
                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=QuaternionSettingViewModel.IsUsed}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Path=QuaternionSettingViewModel.IsRecordSamples}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Path=QuaternionSettingViewModel.ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=ReportIntervalSimple}" Margin="0,6" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center"/>
+                
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Geolocation" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6"/>
                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Path=GeolocationSettingViewModel.IsUsed}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
                 <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding Path=GeolocationSettingViewModel.IsRecordSamples}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
@@ -64,7 +68,7 @@
             </Grid>
         </Border>
 
-        <TextBlock Grid.Row="2" Text="Auswertungseinstellung" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,6"/>
+        <TextBlock Grid.Row="2" Text="Auswertungseinstellungen" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,6"/>
         <Border Grid.Row="3" BorderThickness="0,1,0,0" BorderBrush="White" Padding="0,8">
             <Grid>
                 <Grid.RowDefinitions>
@@ -110,7 +114,7 @@
                         <TextBlock Text="{Binding Path=EvaluationSettingViewModel.AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
                     </StackPanel>
                     <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,6">
-                        <TextBlock Text="Peakabstand als Schritte erkennen" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                        <TextBlock Text="Peakabstand" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
                         <TextBlock Text="{Binding Path=EvaluationSettingViewModel.PeakJoinDistance, Converter={StaticResource NumberConverter}, ConverterParameter=PeakJoinDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
                     </StackPanel>
 

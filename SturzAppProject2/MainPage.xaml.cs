@@ -96,7 +96,7 @@ namespace BackgroundTask
             if (_globalMeasurementModel == null)
             {
                 _globalMeasurementModel = new GlobalMeasurementModel();
-                _globalMeasurementModel.Measurements = await FileService.LoadMeasurementListAsync();
+                _globalMeasurementModel.Measurements = await FileService.LoadGlobalMeasurementListAsync();
                 _globalMeasurementModel.GlobalSetting = await FileService.LoadGlobalSettingAsync();
                 _globalMeasurementModel.MeasurementListUpdated += SaveMeasurementList;
                 _globalMeasurementModel.GlobalSettingUpdated += SaveGlobalSetting;
@@ -130,13 +130,13 @@ namespace BackgroundTask
         private void SaveMeasurementList(object sender, EventArgs e)
         {
             Debug.WriteLine("'{0}' Measurement has been saved.", _globalMeasurementModel.Measurements.Count);
-            FileService.SaveMeasurementListAsync(_globalMeasurementModel.Measurements);
+            FileService.SaveGlobalMeasurementListAsync(_globalMeasurementModel.Measurements);
         }
 
         private void SaveGlobalSetting(object sender, EventArgs e)
         {
             Debug.WriteLine("Global setting model has been saved.");
-            FileService.SaveMainSettingModelAysnc(_globalMeasurementModel.GlobalSetting);
+            FileService.SaveGlobalSettingModelAysnc(_globalMeasurementModel.GlobalSetting);
         }
 
         public void ShowLoader()

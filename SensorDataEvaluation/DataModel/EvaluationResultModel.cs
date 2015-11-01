@@ -52,18 +52,6 @@ namespace SensorDataEvaluation.DataModel
             }
             return detectedStepsCount;
         }
-        
-        public string ToEvaluationExportCSVString()
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            var enumerator = _evaluationResultList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                EvaluationSample evaluationSample = enumerator.Current;
-                stringbuilder.Append(evaluationSample.ToExportCSVString());
-            }
-            return stringbuilder.ToString();
-        }
 
         public byte[] ToEvaluationBytes()
         {

@@ -61,7 +61,6 @@ namespace BackgroundTask.ViewModel
             get { return _evaluationState; }
             set { _evaluationState = value; }
         }
-        
 
         public ICommand StartEvaluationCommand { get; set; }
 
@@ -120,9 +119,6 @@ namespace BackgroundTask.ViewModel
 
                     evaluationPageViewModel.EvaluationDataModel.GyrometerSampleAnalysisList != null &&
                     evaluationPageViewModel.EvaluationDataModel.GyrometerSampleAnalysisList.Count > 0 &&
-
-                    evaluationPageViewModel.EvaluationDataModel.QuaternionSampleAnalysisList != null &&
-                    evaluationPageViewModel.EvaluationDataModel.QuaternionSampleAnalysisList.Count > 0 &&
 
                     evaluationPageViewModel.EvaluationState == EvaluationState.Stopped)
                 {

@@ -14,6 +14,8 @@ namespace SensorDataEvaluation.DataModel
         /// long + float + float + float = 8 + 4 + 4 + 4 = 20
         /// </summary>
         public const int AmountOfBytes = 8 + 4 + 4 + 4;
+        public const int BytesOfHeaderString = 134;
+        public const string HeaderString = "Gyrometer:TimeInTicks(8b),VelocityX(4b),VelocityY(4b),VelocityZ(4b)";
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
@@ -61,6 +63,10 @@ namespace SensorDataEvaluation.DataModel
         //################################################## Methods ########################################################
         //###################################################################################################################
 
+        /// <summary>
+        /// Is used to create a byte array which represents the current EvaluationSample.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ToByteArray()
         {
             List<byte[]> listOfArrays = new List<byte[]>();
@@ -71,33 +77,17 @@ namespace SensorDataEvaluation.DataModel
             return listOfArrays.SelectMany(a => a).ToArray();
         }
 
-        public string GetExportHeader()
+        public static string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Gyrometer(2byte),MeasurementTimeInTicks(8byte),VelocityX(4byte),VelocityY(4byte),VelocityZ(4byte)\n");
+            return HeaderString;
         }
 
-        /// <summary>
-        /// Is used to create a csv string which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public string ToExportCSVString()
-        {
-            return String.Format(new CultureInfo("en-US"), "1,{0},{1:f3},{2:f3},{3:f3}\n", this.MeasurementTime.Ticks, this.VelocityX, this.VelocityY, this.VelocityZ);
-        }
-
-        /// <summary>
-        /// Is used to create a byte array which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public byte[] ToExportByteArray()
+        public static byte[] GetExportDataDescription(int sampleCount)
         {
             List<byte[]> listOfArrays = new List<byte[]>();
-            listOfArrays.Add(BitConverter.GetBytes((short) 1));
-            listOfArrays.Add(BitConverter.GetBytes(this.MeasurementTime.Ticks));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityX));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityY));
-            listOfArrays.Add(BitConverter.GetBytes(this.VelocityZ));
-            listOfArrays.Add(BitConverter.GetBytes((char)13));
+            listOfArrays.Add(BitConverter.GetBytes(AmountOfBytes));
+            listOfArrays.Add(BitConverter.GetBytes(sampleCount));
+            listOfArrays.Add(BitConverter.GetBytes(BytesOfHeaderString));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
     }

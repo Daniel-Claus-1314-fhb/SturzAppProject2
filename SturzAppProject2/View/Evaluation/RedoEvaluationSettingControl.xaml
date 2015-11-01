@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="BackgroundTask.View.Evaluation.RedoEvaluationSettingControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BackgroundTask.View.Evaluation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="using:BackgroundTask.Common.Converter"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:NumberToFormattedStringConverter x:Key="NumberConverter"/>
+        <converter:SilderValueConverter x:Key="SliderConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="White" Margin="0,12" Padding="0,12">
+            <ScrollViewer HorizontalScrollMode="Disabled" Padding="0,0,36,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Slider Grid.Row="0" Value="{Binding Path=SampleBufferSize, Converter={StaticResource SliderConverter}, ConverterParameter=SampleBufferSize, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="6"
+                        Header="{Binding Path=SampleBufferSize, Converter={StaticResource NumberConverter}, ConverterParameter=SampleBufferSizeFull}"
+                        IsEnabled="{Binding Path=IsUsed}"/>
+
+                    <Slider Grid.Row="1" Value="{Binding Path=AccelerometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=AccelerometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                        Header="{Binding Path=AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdFull}"
+                        IsEnabled="{Binding Path=IsUsed}"/>
+
+                    <Slider Grid.Row="2" Value="{Binding Path=GyrometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=GyrometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                        Header="{Binding Path=GyrometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=GyrometerThresholdFull}"
+                        IsEnabled="{Binding Path=IsUsed}"/>
+
+                    <Slider Grid.Row="3" Value="{Binding Path=StepDistance, Converter={StaticResource SliderConverter}, ConverterParameter=StepDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="8" LargeChange="1"
+                        Header="{Binding Path=StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceFull}"
+                        IsEnabled="{Binding Path=IsUsed}"/>
+
+                    <Slider Grid.Row="4" Value="{Binding Path=PeakJoinDistance, Converter={StaticResource SliderConverter}, ConverterParameter=PeakJoinDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="5" LargeChange="1"
+                        Header="{Binding Path=PeakJoinDistance, Converter={StaticResource NumberConverter}, ConverterParameter=PeakJoinDistanceFull}"
+                        IsEnabled="{Binding Path=IsUsed}"/>
+
+                    <ToggleSwitch Grid.Row="5" Header="Messwerte aufzeichnen" IsOn="{Binding Path=IsRecordSamples, Mode=TwoWay}"
+                        IsEnabled="{Binding Path=IsUsed}"/>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
+

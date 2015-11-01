@@ -25,7 +25,7 @@ namespace BackgroundTask.Service
         private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
         private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
         private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
-        private static readonly string _evaluationPath = @"Evaluation";
+        private static readonly string _evaluationPath = @"Measurement\Evaluation";
 
         #region Save/Load MeasurementList
 
@@ -33,7 +33,7 @@ namespace BackgroundTask.Service
         //################################################## Save Meta Data ################################################################
         //##################################################################################################################################
 
-        internal static async void SaveMeasurementListAsync(List<MeasurementModel> measurements)
+        internal static async void SaveGlobalMeasurementListAsync(List<MeasurementModel> measurements)
         {
             if (measurements != null)
             {
@@ -43,7 +43,7 @@ namespace BackgroundTask.Service
             }
         }
 
-        internal static async void SaveMainSettingModelAysnc(SettingModel settingModel)
+        internal static async void SaveGlobalSettingModelAysnc(SettingModel settingModel)
         {
             if (settingModel != null)
             {
@@ -90,11 +90,13 @@ namespace BackgroundTask.Service
                     if (exportData.AccelerometerSamples != null && exportData.AccelerometerSamples.Count > 0)
                     {
                         // insert header for accelerometer data
-                        textWriter.WriteString(exportData.AccelerometerSamples.ElementAt(0).GetExportHeader());
+                        int sampleCount = exportData.AccelerometerSamples.Count;
+                        textWriter.WriteBytes(AccelerometerSample.GetExportDataDescription(sampleCount));
+                        textWriter.WriteString(AccelerometerSample.GetExportHeader());
                         var enumerator = exportData.AccelerometerSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
+                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
                         }
                         await textWriter.StoreAsync();
                     }
@@ -102,11 +104,13 @@ namespace BackgroundTask.Service
                     if (exportData.GyrometerSamples != null && exportData.GyrometerSamples.Count > 0)
                     {
                         // insert header for gyrometer data
-                        textWriter.WriteString(exportData.GyrometerSamples.ElementAt(0).GetExportHeader());
+                        int sampleCount = exportData.GyrometerSamples.Count;
+                        textWriter.WriteBytes(GyrometerSample.GetExportDataDescription(sampleCount));
+                        textWriter.WriteString(GyrometerSample.GetExportHeader());
                         var enumerator = exportData.GyrometerSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
+                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
                         }
                         await textWriter.StoreAsync();
                     }
@@ -114,11 +118,13 @@ namespace BackgroundTask.Service
                     if (exportData.QuaternionSamples != null && exportData.QuaternionSamples.Count > 0)
                     {
                         // insert header for quaternion data
-                        textWriter.WriteString(exportData.QuaternionSamples.ElementAt(0).GetExportHeader());
+                        int sampleCount = exportData.QuaternionSamples.Count;
+                        textWriter.WriteBytes(QuaternionSample.GetExportDataDescription(sampleCount));
+                        textWriter.WriteString(QuaternionSample.GetExportHeader());
                         var enumerator = exportData.QuaternionSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
+                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
                         }
                         await textWriter.StoreAsync();
                     }
@@ -126,11 +132,13 @@ namespace BackgroundTask.Service
                     if (exportData.EvaluationSamples != null && exportData.EvaluationSamples.Count > 0)
                     {
                         // insert header for evaluation data
-                        textWriter.WriteString(exportData.EvaluationSamples.ElementAt(0).GetExportHeader());
+                        int sampleCount = exportData.EvaluationSamples.Count;
+                        textWriter.WriteBytes(EvaluationSample.GetExportDataDescription(sampleCount));
+                        textWriter.WriteString(EvaluationSample.GetExportHeader());
                         var enumerator = exportData.EvaluationSamples.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            textWriter.WriteBytes(enumerator.Current.ToExportByteArray());
+                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
                         }
                         await textWriter.StoreAsync();
                     }
@@ -143,7 +151,7 @@ namespace BackgroundTask.Service
         //################################################## Load Measurements #############################################################
         //##################################################################################################################################
 
-        internal static async Task<List<MeasurementModel>> LoadMeasurementListAsync()
+        internal static async Task<List<MeasurementModel>> LoadGlobalMeasurementListAsync()
         {
             bool isFileCorrupted = false;
             List<MeasurementModel> measurements = new List<MeasurementModel>();
@@ -284,15 +292,10 @@ namespace BackgroundTask.Service
             {
                 StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
                 StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                StorageFolder quaternionFolder = await FindStorageFolder(_measurementQuaternionPath);
-
                 Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
                 Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
-                Task<List<QuaternionSample>> loadQuaternionTask = LoadQuaternionSamplesFromFile(quaternionFolder, filename);
-
                 evaluationData.AddAllAccelerometerAnalysisFromSampleList(await loadAccelerometerTask);
                 evaluationData.AddAllGyrometerAnalysisFromSampleList(await loadGyrometerTask);
-                evaluationData.AddAllQuaternionAnalysisFromSampleList(await loadQuaternionTask);
             }
             return evaluationData;
         }

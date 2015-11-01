@@ -16,7 +16,6 @@ namespace SensorDataEvaluation.DataModel
         {
             this.AccelerometerSampleAnalysisList = new List<AccelerometerSample>();
             this.GyrometerSampleAnalysisList = new List<GyrometerSample>();
-            this.QuaternionSampleAnalysisList = new List<QuaternionSample>();
         }
 
         //###################################################################################################################
@@ -33,11 +32,6 @@ namespace SensorDataEvaluation.DataModel
         /// </summary>
         public List<GyrometerSample> GyrometerSampleAnalysisList;
 
-        /// <summary>
-        /// List of quaternion tuples which will analysed.
-        /// </summary>
-        public List<QuaternionSample> QuaternionSampleAnalysisList;
-
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -53,12 +47,6 @@ namespace SensorDataEvaluation.DataModel
         {
             this.GyrometerSampleAnalysisList.Clear();
             this.GyrometerSampleAnalysisList.AddRange(gyrometerSampleList);
-        }
-
-        public void AddAllQuaternionAnalysisFromSampleList(List<QuaternionSample> quaternionSampleList)
-        {
-            this.QuaternionSampleAnalysisList.Clear();
-            this.QuaternionSampleAnalysisList.AddRange(quaternionSampleList);
         }
     }
 }

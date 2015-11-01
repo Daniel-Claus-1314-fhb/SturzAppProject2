@@ -15,11 +15,11 @@ using Windows.UI.Xaml.Navigation;
 
 // Die Elementvorlage "Benutzersteuerelement" ist unter http://go.microsoft.com/fwlink/?LinkId=234236 dokumentiert.
 
-namespace BackgroundTask.View
+namespace BackgroundTask.View.Evaluation
 {
-    public sealed partial class DisplaySettingsControl : UserControl
+    public sealed partial class RedoEvaluationSettingControl : UserControl
     {
-        public DisplaySettingsControl()
+        public RedoEvaluationSettingControl()
         {
             this.InitializeComponent();
         }
