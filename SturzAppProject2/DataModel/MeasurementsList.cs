@@ -157,5 +157,22 @@ namespace BackgroundTask.DataModel
             }
             return isUpdated;
         }
+
+        public async Task<bool> AnalyseDataSetsOfMeasurementByIdAsync(string measurmentId)
+        {
+            bool isAnalysed = false;
+
+            if (measurmentId != null)
+            {
+                MeasurementModel measurementFromList = GetMeasurementById(measurmentId);
+                if (measurementFromList != null)
+                {
+                    await measurementFromList.AnalyseMeasurementDataSetsAsync();
+                    isAnalysed = true;
+                    OnMeasurementListUpdated(EventArgs.Empty);
+                }
+            }
+            return isAnalysed;
+        }
     }
 }

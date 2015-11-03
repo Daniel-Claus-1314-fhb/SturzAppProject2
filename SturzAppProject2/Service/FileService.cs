@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 using Windows.Devices.Sensors;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -18,27 +19,51 @@ namespace BackgroundTask.Service
 {
     internal static class FileService
     {
+        private static ResourceLoader FolderResource = ResourceLoader.GetForCurrentView("FolderResources");
+
         private static readonly string _measurementsMetaDataFilename = "Measurements.json";
         private static readonly string _settingMetaDataFilename = "Settings.json";
 
-        private static readonly string _measurementsMetaDataPath = @"";
-        private static readonly string _measurementAccelerometerPath = @"Measurement\Accelerometer";
-        private static readonly string _measurementGyrometerPath = @"Measurement\Gyrometer";
-        private static readonly string _measurementQuaternionPath = @"Measurement\Quaternion";
-        private static readonly string _evaluationPath = @"Measurement\Evaluation";
+        private static readonly string _metaDataPath = FolderResource.GetString("MetaDataPath");
+        private static readonly string _accelerometerPath = FolderResource.GetString("AccelerometerPath");
+        private static readonly string _gyrometerPath = FolderResource.GetString("GyrometerPath");
+        private static readonly string _quaternionPath = FolderResource.GetString("QuaternionPath");
+        private static readonly string _geolocationPath = FolderResource.GetString("GeolocationPath");
+        private static readonly string _evaluationPath = FolderResource.GetString("EvaluationPath");
 
-        #region Save/Load MeasurementList
+        internal static string GetAccelerometerPath()
+        {
+            return _accelerometerPath;
+        }
+        internal static string GetGyrometerPath()
+        {
+            return _gyrometerPath;
+        }
+        internal static string GetQuaterionPath()
+        {
+            return _quaternionPath;
+        }
+        internal static string GetGeolocationPath()
+        {
+            return _geolocationPath;
+        }
+        internal static string GetEvaluationPath()
+        {
+            return _evaluationPath;
+        }
 
         //##################################################################################################################################
         //################################################## Save Meta Data ################################################################
         //##################################################################################################################################
+
+        #region Save/Load MeasurementList
 
         internal static async void SaveGlobalMeasurementListAsync(List<MeasurementModel> measurements)
         {
             if (measurements != null)
             {
                 string jsonString = JsonConvert.SerializeObject(measurements);
-                StorageFolder targetFolder = await FindStorageFolder(_measurementsMetaDataPath);
+                StorageFolder targetFolder = await FindStorageFolder(_metaDataPath);
                 await SaveJsonStringToFile(jsonString, targetFolder, _measurementsMetaDataFilename);
             }
         }
@@ -48,114 +73,20 @@ namespace BackgroundTask.Service
             if (settingModel != null)
             {
                 string jsonString = JsonConvert.SerializeObject(settingModel);
-                StorageFolder targetFolder = await FindStorageFolder(_measurementsMetaDataPath);
+                StorageFolder targetFolder = await FindStorageFolder(_metaDataPath);
                 await SaveJsonStringToFile(jsonString, targetFolder, _settingMetaDataFilename);
             }
         }
 
         //##################################################################################################################################
-        //################################################## Save Evaluation data ##########################################################
-        //##################################################################################################################################
-
-        internal static async Task SaveEvaluationDataToFileAsync(String filename, EvaluationResultModel evaluationResultModel)
-        {
-            if (filename != null && filename != String.Empty && evaluationResultModel.EvaluationResultList.Count > 0)
-            {
-                // convert data into byte array
-                byte[] bytes = evaluationResultModel.ToEvaluationBytes();
-                if (bytes != null && bytes.Length > 0)
-                {
-                    // find folder
-                    StorageFolder folder = await FindStorageFolder(_evaluationPath);
-                    // delete old evaluationData
-                    await DeleteFileAsync(folder, filename);
-                    // save byte array
-                    await SaveBytesToEndOfFileAsync(bytes, folder, filename);
-                }
-            }
-            return;
-        }
-
-        //##################################################################################################################################
-        //################################################## Save export data ##############################################################
-        //##################################################################################################################################
-
-        internal static async Task SaveExportDataToFileAsync(StorageFile file, ExportData exportData)
-        {
-            using (IRandomAccessStream textStream = await file.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                using (DataWriter textWriter = new DataWriter(textStream.GetOutputStreamAt(textStream.Size)))
-                {
-                    // Append accelerometer header and accelerometer samples
-                    if (exportData.AccelerometerSamples != null && exportData.AccelerometerSamples.Count > 0)
-                    {
-                        // insert header for accelerometer data
-                        int sampleCount = exportData.AccelerometerSamples.Count;
-                        textWriter.WriteBytes(AccelerometerSample.GetExportDataDescription(sampleCount));
-                        textWriter.WriteString(AccelerometerSample.GetExportHeader());
-                        var enumerator = exportData.AccelerometerSamples.GetEnumerator();
-                        while (enumerator.MoveNext())
-                        {
-                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
-                        }
-                        await textWriter.StoreAsync();
-                    }
-                    // Append gyrometer header and gyrometer samples
-                    if (exportData.GyrometerSamples != null && exportData.GyrometerSamples.Count > 0)
-                    {
-                        // insert header for gyrometer data
-                        int sampleCount = exportData.GyrometerSamples.Count;
-                        textWriter.WriteBytes(GyrometerSample.GetExportDataDescription(sampleCount));
-                        textWriter.WriteString(GyrometerSample.GetExportHeader());
-                        var enumerator = exportData.GyrometerSamples.GetEnumerator();
-                        while (enumerator.MoveNext())
-                        {
-                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
-                        }
-                        await textWriter.StoreAsync();
-                    }
-                    // Append quaternion header and quaternion samples
-                    if (exportData.QuaternionSamples != null && exportData.QuaternionSamples.Count > 0)
-                    {
-                        // insert header for quaternion data
-                        int sampleCount = exportData.QuaternionSamples.Count;
-                        textWriter.WriteBytes(QuaternionSample.GetExportDataDescription(sampleCount));
-                        textWriter.WriteString(QuaternionSample.GetExportHeader());
-                        var enumerator = exportData.QuaternionSamples.GetEnumerator();
-                        while (enumerator.MoveNext())
-                        {
-                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
-                        }
-                        await textWriter.StoreAsync();
-                    }
-                    // Append evaluation header and evaluation samples
-                    if (exportData.EvaluationSamples != null && exportData.EvaluationSamples.Count > 0)
-                    {
-                        // insert header for evaluation data
-                        int sampleCount = exportData.EvaluationSamples.Count;
-                        textWriter.WriteBytes(EvaluationSample.GetExportDataDescription(sampleCount));
-                        textWriter.WriteString(EvaluationSample.GetExportHeader());
-                        var enumerator = exportData.EvaluationSamples.GetEnumerator();
-                        while (enumerator.MoveNext())
-                        {
-                            textWriter.WriteBytes(enumerator.Current.ToByteArray());
-                        }
-                        await textWriter.StoreAsync();
-                    }
-                }
-            }
-            return;
-        }
-
-        //##################################################################################################################################
-        //################################################## Load Measurements #############################################################
+        //################################################## Load Meta Data ###############################################################
         //##################################################################################################################################
 
         internal static async Task<List<MeasurementModel>> LoadGlobalMeasurementListAsync()
         {
             bool isFileCorrupted = false;
             List<MeasurementModel> measurements = new List<MeasurementModel>();
-            StorageFolder measurementFolder = await FindStorageFolder(_measurementsMetaDataPath);
+            StorageFolder measurementFolder = await FindStorageFolder(_metaDataPath);
             string jsonString = await LoadJsonStringFromFile(measurementFolder, _measurementsMetaDataFilename);
 
             if (jsonString != null && jsonString.Length > 0)
@@ -183,7 +114,7 @@ namespace BackgroundTask.Service
         {
             bool isFileCorrupted = false;
             SettingModel settingModel = null;
-            StorageFolder measurementFolder = await FindStorageFolder(_measurementsMetaDataPath);
+            StorageFolder measurementFolder = await FindStorageFolder(_metaDataPath);
             string jsonString = await LoadJsonStringFromFile(measurementFolder, _settingMetaDataFilename);
 
             if (jsonString != null && jsonString.Length > 0)
@@ -214,99 +145,11 @@ namespace BackgroundTask.Service
 
         #endregion
 
-
-        //##################################################################################################################################
-        //################################################## Load Oxyplot data #############################################################
-        //##################################################################################################################################
-
-        #region Load OxyplotData
-
-        internal static async Task<OxyplotData> LoadOxyplotDataAsync(string filename)
-        {
-            OxyplotData oxyplotData = new OxyplotData();
-            if (filename != null & filename != String.Empty)
-            {
-                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                StorageFolder quaternionFolder = await FindStorageFolder(_measurementQuaternionPath);
-                StorageFolder evaluationFolder = await FindStorageFolder(_evaluationPath);
-
-                Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
-                Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
-                Task<List<QuaternionSample>> loadQuaternionTask = LoadQuaternionSamplesFromFile(quaternionFolder, filename);
-                Task<List<EvaluationSample>> loadEvaluationSamplesTask = LoadEvaluationSamplesFromFile(evaluationFolder, filename);
-
-                oxyplotData.AccelerometerSamples = await loadAccelerometerTask;
-                oxyplotData.GyrometerSamples = await loadGyrometerTask;
-                oxyplotData.QuaternionSamples = await loadQuaternionTask;
-                oxyplotData.EvaluationSamples = await loadEvaluationSamplesTask;
-            }
-            return oxyplotData;
-        }
-
-        #endregion
-
-        //##################################################################################################################################
-        //################################################## Load Export Data ##############################################################
-        //##################################################################################################################################
-
-        #region Load Evaluation Data
-
-        internal static async Task<ExportData> LoadSamplesForExportAsync(string filename)
-        {
-            ExportData exportData = new ExportData();
-
-            if (filename != null && filename != string.Empty)
-            {
-                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                StorageFolder quaternionFolder = await FindStorageFolder(_measurementQuaternionPath);
-                StorageFolder evaluationFolder = await FindStorageFolder(_evaluationPath);
-
-                Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
-                Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
-                Task<List<QuaternionSample>> loadQuaternionTask = LoadQuaternionSamplesFromFile(quaternionFolder, filename);
-                Task<List<EvaluationSample>> loadEvaluationSamplesTask = LoadEvaluationSamplesFromFile(evaluationFolder, filename);
-
-                exportData.AccelerometerSamples = await loadAccelerometerTask;
-                exportData.GyrometerSamples = await loadGyrometerTask;
-                exportData.QuaternionSamples = await loadQuaternionTask;
-                exportData.EvaluationSamples = await loadEvaluationSamplesTask;
-            }
-            return exportData;
-        }
-
-        #endregion
-
-        //##################################################################################################################################
-        //################################################## Load Evaluation Data ##########################################################
-        //##################################################################################################################################
-
-        #region Load Evaluation Data
-
-        internal static async Task<EvaluationDataModel> LoadSamplesForEvaluationAsync(string filename)
-        {
-            EvaluationDataModel evaluationData = new EvaluationDataModel();
-
-            if (filename != null && filename != string.Empty)
-            {
-                StorageFolder accelerometerFolder = await FindStorageFolder(_measurementAccelerometerPath);
-                StorageFolder gyrometerFolder = await FindStorageFolder(_measurementGyrometerPath);
-                Task<List<AccelerometerSample>> loadAccelerometerTask = LoadAccelerometerSamplesFromFile(accelerometerFolder, filename);
-                Task<List<GyrometerSample>> loadGyrometerTask = LoadGyrometerSamplesFromFile(gyrometerFolder, filename);
-                evaluationData.AddAllAccelerometerAnalysisFromSampleList(await loadAccelerometerTask);
-                evaluationData.AddAllGyrometerAnalysisFromSampleList(await loadGyrometerTask);
-            }
-            return evaluationData;
-        }
-
-        #endregion
-
         //##################################################################################################################################
         //################################################## find folder ###################################################################
         //##################################################################################################################################
 
-        private static async Task<StorageFolder> FindStorageFolder(string folderPath)
+        internal static async Task<StorageFolder> FindStorageFolder(string folderPath)
         {
             StorageFolder resultFolder = ApplicationData.Current.LocalFolder;
             if (folderPath != null && folderPath.Length > 0)
@@ -327,31 +170,92 @@ namespace BackgroundTask.Service
             return resultFolder;
         }
 
-        #region Load accelerometerReadings
-
         //##################################################################################################################################
         //################################################## load AccerlerometerSamples ####################################################
         //##################################################################################################################################
-        
-        private static async Task<List<AccelerometerSample>> LoadAccelerometerSamplesFromFile(StorageFolder targetFolder, string filename)
+
+        #region Load accelerometerReadings
+
+        internal static async Task<bool> IsAccelerometerSamplesAvailable(string filename)
         {
-            List<AccelerometerSample> accelerometerSampleList = new List<AccelerometerSample>();
+            bool isAvailable = false;
             try
             {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetAccelerometerPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                if (file != null)
+                {
+                    isAvailable = true;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsAccelerometerSamplesAvailable] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsAccelerometerSamplesAvailable] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return isAvailable;
+        }
+
+        internal static async Task<int> GetAccelerometerSamplesCount(string filename)
+        {
+            int totalSampleCount = 0;
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetAccelerometerPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename); 
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
+                {
+                    int bytesOfSample = AccelerometerSample.AmountOfBytes;
+                    long totalBytesCount = stream.BaseStream.Length;
+
+                    double result1 = totalBytesCount / bytesOfSample;
+                    double roundResult = Math.Round(result1, 0, MidpointRounding.ToEven);
+                    totalSampleCount = Convert.ToInt32(roundResult);                    
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetAccelerometerSamplesCount] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetAccelerometerSamplesCount] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return totalSampleCount;
+        }
+
+        internal static async Task<List<AccelerometerSample>> LoadAccelerometerSamplesFromFileAsync(string filename)
+        {
+            return await LoadAccelerometerSamplesFromFileAsync(filename, 0, 0);
+        }
+
+        internal static async Task<List<AccelerometerSample>> LoadAccelerometerSamplesFromFileAsync(string filename, int startOffset, int sampleCount)
+        {
+            List<AccelerometerSample> resultSamples = new List<AccelerometerSample>();
+            int bytesOfSample = AccelerometerSample.AmountOfBytes;
+
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetAccelerometerPath());
                 StorageFile file = await targetFolder.GetFileAsync(filename);
                 using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    int subArrayLength = GyrometerSample.AmountOfBytes;
                     // Set Position to the beginning of the stream.
-                    stream.BaseStream.Position = 0;
+                    stream.BaseStream.Position = startOffset * bytesOfSample;
                     byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
-                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
+
+                    int readBytes = CalculateBytesToRead(startOffset, sampleCount, bytesOfSample, byteArray.Length);
+
+                    for (int i = 0; i < readBytes; i += bytesOfSample)
                     {
-                        byte[] subArray = new byte[subArrayLength];
-                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
-                        accelerometerSampleList.Add(new AccelerometerSample(subArray));
+                        byte[] sampleBytes = new byte[bytesOfSample];
+                        Array.Copy(byteArray, i, sampleBytes, 0, bytesOfSample);
+                        resultSamples.Add(new AccelerometerSample(sampleBytes));
                     }
-                }
+                } 
             }
             catch (FileNotFoundException)
             {
@@ -361,7 +265,7 @@ namespace BackgroundTask.Service
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadAccelerometerReadingsFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
-            return accelerometerSampleList;
+            return resultSamples;
         }
 
         #endregion
@@ -370,23 +274,84 @@ namespace BackgroundTask.Service
         //################################################## load GyrometerSamples #########################################################
         //##################################################################################################################################
 
-        private static async Task<List<GyrometerSample>> LoadGyrometerSamplesFromFile(StorageFolder targetFolder, string filename)
+        internal static async Task<bool> IsGyrometerSamplesAvailable(string filename)
         {
-            List<GyrometerSample> gyrometerSampleList = new List<GyrometerSample>();
+            bool isAvailable = false;
             try
             {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetGyrometerPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                if (file != null)
+                {
+                    isAvailable = true;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsGyrometerSamplesAvailable] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsGyrometerSamplesAvailable] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return isAvailable;
+        }
+
+        internal static async Task<int> GetGyrometerSamplesCount(string filename)
+        {
+            int totalSampleCount = 0;
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetGyrometerPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
+                {
+                    int bytesOfSample = GyrometerSample.AmountOfBytes;
+                    long totalBytesCount = stream.BaseStream.Length;
+
+                    double result1 = totalBytesCount / bytesOfSample;
+                    double roundResult = Math.Round(result1, 0, MidpointRounding.ToEven);
+                    totalSampleCount = Convert.ToInt32(roundResult);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetGyrometerSamplesCount] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetGyrometerSamplesCount] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return totalSampleCount;
+        }
+
+        internal static async Task<List<GyrometerSample>> LoadGyrometerSamplesFromFileAsync(string filename)
+        {
+            return await LoadGyrometerSamplesFromFileAsync(filename, 0, 0);
+        }
+
+        internal static async Task<List<GyrometerSample>> LoadGyrometerSamplesFromFileAsync(string filename, int startOffset, int sampleCount)
+        {
+            List<GyrometerSample> resultSamples = new List<GyrometerSample>();
+            int bytesOfSample = GyrometerSample.AmountOfBytes;
+
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetGyrometerPath());
                 StorageFile file = await targetFolder.GetFileAsync(filename); 
                 using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    int subArrayLength = GyrometerSample.AmountOfBytes;
                     // Set Position to the beginning of the stream.
-                    stream.BaseStream.Position = 0;
+                    stream.BaseStream.Position = startOffset * bytesOfSample;
                     byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
-                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
+
+                    int readBytes = CalculateBytesToRead(startOffset, sampleCount, bytesOfSample, byteArray.Length);
+
+                    for (int i = 0; i < readBytes; i += bytesOfSample)
                     {
-                        byte[] subArray = new byte[subArrayLength];
-                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
-                        gyrometerSampleList.Add(new GyrometerSample(subArray));
+                        byte[] sampleBytes = new byte[bytesOfSample];
+                        Array.Copy(byteArray, i, sampleBytes, 0, bytesOfSample);
+                        resultSamples.Add(new GyrometerSample(sampleBytes));
                     }
                 } 
             }
@@ -398,30 +363,91 @@ namespace BackgroundTask.Service
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadGyrometerSamplesFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
-            return gyrometerSampleList;
+            return resultSamples;
         }
 
         //##################################################################################################################################
         //################################################## load QuaternionSamples ########################################################
         //##################################################################################################################################
-
-        private static async Task<List<QuaternionSample>> LoadQuaternionSamplesFromFile(StorageFolder targetFolder, string filename)
+        
+        internal static async Task<bool> IsQuaterionSamplesAvailable(string filename)
         {
-            List<QuaternionSample> quaternionSampleList = new List<QuaternionSample>();
+            bool isAvailable = false;
             try
             {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetQuaterionPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                if (file != null)
+                {
+                    isAvailable = true;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsQuaterionSamplesAvailable] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsQuaterionSamplesAvailable] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return isAvailable;
+        }
+
+        internal static async Task<int> GetQuaterionSamplesCount(string filename)
+        {
+            int totalSampleCount = 0;
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetQuaterionPath());
                 StorageFile file = await targetFolder.GetFileAsync(filename);
                 using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    int subArrayLength = QuaternionSample.AmountOfBytes;
-                    // Set Position to the beginning of the stream.
-                    stream.BaseStream.Position = 0;
+                    int bytesOfSample = QuaternionSample.AmountOfBytes;
+                    long totalBytesCount = stream.BaseStream.Length;
+
+                    double result1 = totalBytesCount / bytesOfSample;
+                    double roundResult = Math.Round(result1, 0, MidpointRounding.ToEven);
+                    totalSampleCount = Convert.ToInt32(roundResult);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetQuaterionSamplesCount] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetQuaterionSamplesCount] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return totalSampleCount;
+        }
+
+        internal static async Task<List<QuaternionSample>> LoadQuaternionSamplesFromFileAsync(string filename)
+        {
+            return await LoadQuaternionSamplesFromFileAsync(filename, 0, 0);
+        }
+
+        internal static async Task<List<QuaternionSample>> LoadQuaternionSamplesFromFileAsync(string filename, int startOffset, int sampleCount)
+        {
+            List<QuaternionSample> resultSamples = new List<QuaternionSample>();
+            int bytesOfSample = QuaternionSample.AmountOfBytes;
+
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetQuaterionPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
+                {
+                    // Set Position to the beginning of the stream plus offsett.
+                    stream.BaseStream.Position = 0 + startOffset * bytesOfSample;
                     byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
-                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
+
+                    int readBytes = CalculateBytesToRead(startOffset, sampleCount, bytesOfSample, byteArray.Length);
+
+                    for (int i = 0; i < readBytes; i += bytesOfSample)
                     {
-                        byte[] subArray = new byte[subArrayLength];
-                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
-                        quaternionSampleList.Add(new QuaternionSample(subArray));
+                        byte[] sampleBytes = new byte[bytesOfSample];
+                        Array.Copy(byteArray, i, sampleBytes, 0, bytesOfSample);
+                        resultSamples.Add(new QuaternionSample(sampleBytes));
                     }
                 }
             }
@@ -433,30 +459,187 @@ namespace BackgroundTask.Service
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadQuaternionSamplesFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
-            return quaternionSampleList;
+            return resultSamples;
+        }
+
+        //##################################################################################################################################
+        //################################################## load Geolocation ##############################################################
+        //##################################################################################################################################
+        
+        internal static async Task<bool> IsGeolocationSamplesAvailable(string filename)
+        {
+            bool isAvailable = false;
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetGeolocationPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                if (file != null)
+                {
+                    isAvailable = true;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsGeolocationSamplesAvailable] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsGeolocationSamplesAvailable] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return isAvailable;
+        }
+
+        internal static async Task<int> GetGeolocationSamplesCount(string filename)
+        {
+            int totalSampleCount = 0;
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetGeolocationPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
+                {
+                    int bytesOfSample = GeolocationSample.AmountOfBytes;
+                    long totalBytesCount = stream.BaseStream.Length;
+
+                    double result1 = totalBytesCount / bytesOfSample;
+                    double roundResult = Math.Round(result1, 0, MidpointRounding.ToEven);
+                    totalSampleCount = Convert.ToInt32(roundResult);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetGeolocationSamplesCount] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetGeolocationSamplesCount] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return totalSampleCount;
+        }
+
+        internal static async Task<List<GeolocationSample>> LoadGeolocationSamplesFromFileAsync(string filename)
+        {
+            return await LoadGeolocationSamplesFromFileAsync(filename, 0, 0);
+        }
+
+        internal static async Task<List<GeolocationSample>> LoadGeolocationSamplesFromFileAsync(string filename, int startOffset, int sampleCount)
+        {
+            List<GeolocationSample> resultSamples = new List<GeolocationSample>();
+            int bytesOfSample = GeolocationSample.AmountOfBytes;
+
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetGeolocationPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
+                {
+                    // Set Position to the beginning of the stream plus offsett.
+                    stream.BaseStream.Position = 0 + startOffset * bytesOfSample;
+                    byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
+
+                    int readBytes = CalculateBytesToRead(startOffset, sampleCount, bytesOfSample, byteArray.Length);
+
+                    for (int i = 0; i < readBytes; i += bytesOfSample)
+                    {
+                        byte[] sampleBytes = new byte[bytesOfSample];
+                        Array.Copy(byteArray, i, sampleBytes, 0, bytesOfSample);
+                        resultSamples.Add(new GeolocationSample(sampleBytes));
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadGeolocationSamplesFromFile] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.LoadGeolocationSamplesFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return resultSamples;
         }
 
         //##################################################################################################################################
         //################################################## load Evaluations ##############################################################
         //##################################################################################################################################
 
-        private static async Task<List<EvaluationSample>> LoadEvaluationSamplesFromFile(StorageFolder targetFolder, string filename)
+        internal static async Task<bool> IsEvaluationSamplesAvailable(string filename)
         {
-            List<EvaluationSample> evaluationData = new List<EvaluationSample>();
+            bool isAvailable = false;
             try
             {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetEvaluationPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                if (file != null)
+                {
+                    isAvailable = true;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsEvaluationSamplesAvailable] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.IsEvaluationSamplesAvailable] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return isAvailable;
+        }
+
+        internal static async Task<int> GetEvaluationSamplesCount(string filename)
+        {
+            int totalSampleCount = 0;
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetEvaluationPath());
                 StorageFile file = await targetFolder.GetFileAsync(filename);
                 using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
                 {
-                    int subArrayLength = EvaluationSample.AmountOfBytes;
-                    // Set Position to the beginning of the stream.
-                    stream.BaseStream.Position = 0;
+                    int bytesOfSample = EvaluationSample.AmountOfBytes;
+                    long totalBytesCount = stream.BaseStream.Length;
+
+                    double result1 = totalBytesCount / bytesOfSample;
+                    double roundResult = Math.Round(result1, 0, MidpointRounding.ToEven);
+                    totalSampleCount = Convert.ToInt32(roundResult);
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetEvaluationSamplesCount] Datei: '{0}' konnte nicht gefunden werden.", filename);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Debug.WriteLine("[SturzAppProject2.FileService.GetEvaluationSamplesCount] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
+            }
+            return totalSampleCount;
+        }
+
+        internal static async Task<List<EvaluationSample>> LoadEvaluationSamplesFromFileAsync(string filename)
+        {
+            return await LoadEvaluationSamplesFromFileAsync(filename, 0, 0);
+        }
+
+        internal static async Task<List<EvaluationSample>> LoadEvaluationSamplesFromFileAsync(string filename, int startOffset, int sampleCount)
+        {
+            List<EvaluationSample> resultSamples = new List<EvaluationSample>();
+            int bytesOfSample = EvaluationSample.AmountOfBytes;
+
+            try
+            {
+                StorageFolder targetFolder = await FileService.FindStorageFolder(FileService.GetEvaluationPath());
+                StorageFile file = await targetFolder.GetFileAsync(filename);
+                using (BinaryReader stream = new BinaryReader(await file.OpenStreamForReadAsync()))
+                {
+                    // Set Position to the beginning of the stream plus offsett.
+                    stream.BaseStream.Position = 0 + startOffset * bytesOfSample;
                     byte[] byteArray = stream.ReadBytes((int)stream.BaseStream.Length);
-                    for (int i = 0; i < byteArray.Length; i += subArrayLength)
+
+                    int readBytes = CalculateBytesToRead(startOffset, sampleCount, bytesOfSample, byteArray.Length);
+
+                    for (int i = 0; i < readBytes; i += bytesOfSample)
                     {
-                        byte[] subArray = new byte[subArrayLength];
-                        Array.Copy(byteArray, i, subArray, 0, subArrayLength);
-                        evaluationData.Add(new EvaluationSample(subArray));
+                        byte[] sampleBytes = new byte[bytesOfSample];
+                        Array.Copy(byteArray, i, sampleBytes, 0, bytesOfSample);
+                        resultSamples.Add(new EvaluationSample(sampleBytes));
                     }
                 }
             }
@@ -468,7 +651,7 @@ namespace BackgroundTask.Service
             {
                 Debug.WriteLine("[SturzAppProject2.FileService.LoadEvaluationFromFile] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
-            return evaluationData;
+            return resultSamples;
         }
 
         //##################################################################################################################################
@@ -477,7 +660,7 @@ namespace BackgroundTask.Service
 
         #region Save/Load JSONString
 
-        private static async Task SaveJsonStringToFile(string jsonString, StorageFolder targetFolder, string filename)
+        internal static async Task SaveJsonStringToFile(string jsonString, StorageFolder targetFolder, string filename)
         {
             try
             {
@@ -505,7 +688,7 @@ namespace BackgroundTask.Service
             return;
         }
 
-        private static async Task SaveBytesToEndOfFileAsync(byte[] appendBytes, StorageFolder targetFolder, string filename)
+        internal static async Task SaveBytesToEndOfFileAsync(byte[] appendBytes, StorageFolder targetFolder, string filename)
         {
             try
             {
@@ -578,9 +761,9 @@ namespace BackgroundTask.Service
 
         public static async Task DeleteAllMeasurementFilesAsync(string filename)
         {
-            Task accelerometerDeleteTask = DeleteFileFromFolderAsync(_measurementAccelerometerPath, filename);
-            Task gyrometerDeleteTask = DeleteFileFromFolderAsync(_measurementGyrometerPath, filename);
-            Task quaternionDeleteTask = DeleteFileFromFolderAsync(_measurementQuaternionPath, filename);
+            Task accelerometerDeleteTask = DeleteFileFromFolderAsync(_accelerometerPath, filename);
+            Task gyrometerDeleteTask = DeleteFileFromFolderAsync(_gyrometerPath, filename);
+            Task quaternionDeleteTask = DeleteFileFromFolderAsync(_quaternionPath, filename);
             Task evaluationDeleteTask = DeleteFileFromFolderAsync(_evaluationPath, filename);
 
             await accelerometerDeleteTask;
@@ -601,7 +784,7 @@ namespace BackgroundTask.Service
             return;
         }
 
-        private static async Task DeleteFileAsync(StorageFolder targetFolder, string filename)
+        internal static async Task DeleteFileAsync(StorageFolder targetFolder, string filename)
         {
             try
             {
@@ -623,6 +806,24 @@ namespace BackgroundTask.Service
                 Debug.WriteLine("[SturzAppProject2.FileService.DeleteFileAsync] Datei: '{0}' konnte nicht zugegriffen werden.", filename);
             }
             return;
+        }
+
+        //##################################################################################################################################
+        //################################################## helper method #################################################################
+        //##################################################################################################################################
+
+        private static int CalculateBytesToRead(int startOffset, int sampleCount, int bytesOfSample, int totalBytesCount)
+        {
+            int sampleBytes = sampleCount * bytesOfSample;
+            int startOffsettBytes = startOffset * bytesOfSample;
+
+            int resultReadBytes = totalBytesCount - startOffsettBytes;
+            if (sampleBytes > 0 &&
+                sampleBytes <= totalBytesCount - startOffsettBytes)
+            {
+                resultReadBytes = sampleBytes;
+            }
+            return resultReadBytes;
         }
     }
 }

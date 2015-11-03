@@ -14,6 +14,8 @@ namespace SensorDataEvaluation.DataModel
         /// long + double + double + double = 8 + 8 + 8 + 8 = 32
         /// </summary>
         public const int AmountOfBytes = 8 + 8 + 8 + 8;
+        public const int BytesOfHeaderString = 134;
+        public const string HeaderString = "Geolocation:TimeInTicks(8b),Latitude(8b),Longitude(8b),Altitude(8b)";
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
@@ -49,11 +51,14 @@ namespace SensorDataEvaluation.DataModel
         private double Longitude { get; set; }
         private double Altitude { get; set; }
 
-
         //###################################################################################################################
         //################################################## Methods ########################################################
         //###################################################################################################################
 
+        /// <summary>
+        /// Is used to create a byte array which represents the current EvaluationSample.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ToByteArray()
         {
             List<byte[]> listOfArrays = new List<byte[]>();
@@ -64,33 +69,17 @@ namespace SensorDataEvaluation.DataModel
             return listOfArrays.SelectMany(a => a).ToArray();
         }
 
-        public string GetExportHeader()
+        public static string GetExportHeader()
         {
-            return String.Format(new CultureInfo("en-US"), "Geolocation(2byte),MeasurementTimeInTicks(8byte),Latitude(8byte),Longitude(8byte),Altitude(8byte)\n");
+            return HeaderString;
         }
 
-        /// <summary>
-        /// Is used to create a csv string which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public string ToExportCSVString()
-        {
-            return String.Format(new CultureInfo("en-US"), "0,{0},{1:f3},{2:f3},{3:f3}\n", this.MeasurementTime.Ticks, this.Latitude, this.Longitude, this.Altitude);
-        }
-
-        /// <summary>
-        /// Is used to create a byte array which represents the current EvaluationSample.
-        /// </summary>
-        /// <returns></returns>
-        public byte[] ToExportByteArray()
+        public static byte[] GetExportDataDescription(int sampleCount)
         {
             List<byte[]> listOfArrays = new List<byte[]>();
-            listOfArrays.Add(BitConverter.GetBytes((short)4));
-            listOfArrays.Add(BitConverter.GetBytes(this.MeasurementTime.Ticks));
-            listOfArrays.Add(BitConverter.GetBytes(this.Latitude));
-            listOfArrays.Add(BitConverter.GetBytes(this.Longitude));
-            listOfArrays.Add(BitConverter.GetBytes(this.Altitude));
-            listOfArrays.Add(BitConverter.GetBytes((char)13));
+            listOfArrays.Add(BitConverter.GetBytes(AmountOfBytes));
+            listOfArrays.Add(BitConverter.GetBytes(sampleCount));
+            listOfArrays.Add(BitConverter.GetBytes(BytesOfHeaderString));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
     }

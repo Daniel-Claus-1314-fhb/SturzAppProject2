@@ -319,18 +319,6 @@ namespace SensorDataEvaluation.DataModel
         /// </summary>
         /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
         /// <returns></returns>
-        public string ToLocationExportCSVString(bool useActiveList)
-        {
-            StringBuilder stringbuilder = new StringBuilder();
-            IList<GeolocationSample> locationList = useActiveList ? this.GetActivLocationList() : this.GetPassivLocationList();
-            var enumerator = locationList.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                stringbuilder.Append(enumerator.Current.ToExportCSVString());
-            }
-            return stringbuilder.ToString();
-        }
-
         public byte[] ToLocationBytes(bool useActiveList)
         {
             IList<GeolocationSample> locationList = useActiveList ? this.GetActivLocationList() : this.GetPassivLocationList();

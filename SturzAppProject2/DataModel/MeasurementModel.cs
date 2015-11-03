@@ -1,4 +1,5 @@
-﻿using BackgroundTask.DataModel.Setting;
+﻿using BackgroundTask.DataModel.DataSets;
+using BackgroundTask.DataModel.Setting;
 using BackgroundTask.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,10 @@ namespace BackgroundTask.DataModel
         /// </summary>
         public DateTime EndTime { get; set; }
         /// <summary>
+        /// Contains informations about the availability of data sets in the filesystem
+        /// </summary>
+        public MeasurementDataSets DataSets { get; set; }
+        /// <summary>
         /// Total detected steps during the measurement.
         /// </summary>
         public uint TotalSteps { get; set; }
@@ -74,7 +79,7 @@ namespace BackgroundTask.DataModel
         //##################################### Methods #####################################
         //###################################################################################
 
-        public static MeasurementModel NewMeasurementModel(SettingModel settingModel)
+        public static MeasurementModel NewDefaultMeasurementModel(SettingModel settingModel)
         {
             MeasurementModel createMeasurementModel = new MeasurementModel();
             createMeasurementModel.Id = String.Format("{0}", DateTime.Now.Ticks);
@@ -88,7 +93,14 @@ namespace BackgroundTask.DataModel
             {
                 createMeasurementModel.Setting = SettingModel.DefaultSettingModel();
             }
+            createMeasurementModel.DataSets = MeasurementDataSets.NewDefaultMeasurementDataSets();
             return createMeasurementModel;
+        }
+
+        public async Task AnalyseMeasurementDataSetsAsync()
+        {
+            await DataSets.AnalyseDataSetsAsync(this.Filename, this.Setting);
+            return;
         }
     }
 }

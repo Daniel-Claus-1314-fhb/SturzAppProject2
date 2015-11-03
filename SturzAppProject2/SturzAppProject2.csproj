@@ -94,8 +94,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Converter\StringToProperNameConverter.cs" />
+    <Compile Include="DataModel\DataSets\EvaluationDataSet.cs" />
+    <Compile Include="DataModel\DataSets\GeolocationDataSet.cs" />
+    <Compile Include="DataModel\DataSets\QuaterionDataSet.cs" />
+    <Compile Include="DataModel\DataSets\GyrometerDataSet.cs" />
+    <Compile Include="DataModel\DataSets\AccelerometerDataSet.cs" />
+    <Compile Include="DataModel\DataSets\DataSetType.cs" />
+    <Compile Include="DataModel\DataSets\MeasurementDataSets.cs" />
     <Compile Include="DataModel\EvaluationState.cs" />
     <Compile Include="DataModel\ExportData.cs" />
+    <Compile Include="DataModel\Export\ExportSettingModel.cs" />
     <Compile Include="DataModel\Setting\SettingModel.cs" />
     <Compile Include="EvaluationPage.xaml.cs">
       <DependentUpon>EvaluationPage.xaml</DependentUpon>
@@ -131,8 +139,11 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\BackgroundTaskService.cs" />
+    <Compile Include="Service\EvaluationService.cs" />
     <Compile Include="Service\ExportService.cs" />
     <Compile Include="Service\FileService.cs" />
+    <Compile Include="Service\GraphService.cs" />
+    <Compile Include="Service\SensorDataSetService.cs" />
     <Compile Include="SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
     </Compile>
@@ -287,6 +298,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <PRIResource Include="Resource\FolderResources.resw" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

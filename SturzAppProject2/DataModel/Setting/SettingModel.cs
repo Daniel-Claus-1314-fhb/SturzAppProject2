@@ -133,7 +133,7 @@ namespace BackgroundTask.DataModel.Setting
             defaultSettingModel.IsUsedGyrometer = true;
             defaultSettingModel.IsRecordSamplesGyrometer = true;
             defaultSettingModel.ReportIntervalGyrometer = 20;
-            defaultSettingModel.IsUsedQuaternion = false;
+            defaultSettingModel.IsUsedQuaternion = true;
             defaultSettingModel.IsRecordSamplesQuaternion = true;
             defaultSettingModel.ReportIntervalQuaternion = 20;
             defaultSettingModel.IsUsedGeolocation = false;

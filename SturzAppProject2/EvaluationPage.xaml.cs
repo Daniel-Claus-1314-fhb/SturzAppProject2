@@ -62,7 +62,7 @@ namespace BackgroundTask
                     // Show loader
                     _mainPage.ShowLoader();
                     _evaluationPageViewModel.MeasurementViewModel = new MeasurementViewModel(measurement);
-                    _evaluationPageViewModel.EvaluationDataModel = await FileService.LoadSamplesForEvaluationAsync(measurement.Filename);
+                    _evaluationPageViewModel.EvaluationDataModel = await EvaluationService.LoadSamplesForEvaluationAsync(measurement.Filename);
                     ((StartEvaluationCommand)_evaluationPageViewModel.StartEvaluationCommand).OnCanExecuteChanged();
                     // hide loader
                     _mainPage.HideLoader();
@@ -113,7 +113,7 @@ namespace BackgroundTask
             // Save evaluation if necessary
             if (setting.EvaluationSettingViewModel.IsRecordSamples)
             {
-                await FileService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
+                await EvaluationService.SaveEvaluationDataToFileAsync(measurement.Filename, _evaluationPageViewModel.EvalautionResultModel);
             }
 
             //set evaluation state to stopped

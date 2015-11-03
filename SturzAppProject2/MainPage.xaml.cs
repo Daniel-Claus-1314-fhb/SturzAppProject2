@@ -190,7 +190,7 @@ namespace BackgroundTask
                 MeasurementModel measurement = this._globalMeasurementModel.GetMeasurementById(measurementId);
                 if (measurement != null)
                 {
-                    oxyplotData = await FileService.LoadOxyplotDataAsync(measurement.Filename);
+                    oxyplotData = await GraphService.LoadGraphDataAsync(measurement.Filename);
                 }
             }
             return oxyplotData;

@@ -31,6 +31,7 @@ using Windows.Storage.Provider;
 using Windows.Storage.Streams;
 using SensorDataEvaluation.DataModel;
 using Windows.UI.Popups;
+using BackgroundTask.DataModel.Export;
 
 // Die Elementvorlage "Standardseite" ist unter "http://go.microsoft.com/fwlink/?LinkID=390556" dokumentiert.
 
@@ -136,12 +137,27 @@ namespace BackgroundTask
                 RaiseCanExecuteChanged();
                 StopUpdateTimer();
                 SetOnProgressEventListnerByMeasurementState(_measurementPageViewModel.MeasurementViewModel.Id, _measurementPageViewModel.MeasurementViewModel.MeasurementState);
+                AnalyseMeasurementDatasetsAsync(measurementViewModel.Id);
                 _mainPage.ShowNotifyMessage("Messung wurde gestoppt.", NotifyLevel.Info);
             }
             else { _mainPage.ShowNotifyMessage("Messung konnte nicht gestoppt werden.", NotifyLevel.Error); }
 
             // Hide loader
             _mainPage.HideLoader();
+        }
+
+        private async void AnalyseMeasurementDatasetsAsync(string measurementId)
+        {
+            await System.Threading.Tasks.Task.Delay(1000);
+            bool isAnalysed = await _mainPage.GlobalMeasurementModel.AnalyseDataSetsOfMeasurementByIdAsync(measurementId);
+            if (isAnalysed)
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.High, () =>
+                {
+                    MeasurementModel updatedMeasuerment = _mainPage.GlobalMeasurementModel.GetMeasurementById(measurementId);
+                    _measurementPageViewModel.MeasurementViewModel = new MeasurementViewModel(updatedMeasuerment);
+                });
+            }
         }
 
         private void ExportMeasurement(MeasurementViewModel measurementViewModel)
@@ -335,32 +351,26 @@ namespace BackgroundTask
             StorageFile file = args.File;
             if (file != null && measurement != null)
             {
+                await System.Threading.Tasks.Task.Delay(500);
                 _mainPage.ShowNotifyMessage(String.Format("Messung wird exportiert! Dies kann einige Zeit dauern."), NotifyLevel.Info);
 
-                Stopwatch stopwatch = new Stopwatch();
-                Stopwatch stopwatch2 = new Stopwatch();
-                
-                stopwatch.Start();
-                // load data for export
-                ExportData exportData = await FileService.LoadSamplesForExportAsync(measurement.Filename);
-                stopwatch.Stop();
-                Debug.WriteLine("Load export data from file: {0}", stopwatch.Elapsed.Duration());
-
-                stopwatch2.Start();
                 // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
                 CachedFileManager.DeferUpdates(file);
-                // write data into file
-                await FileService.SaveExportDataToFileAsync(file, exportData);
+
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                await ExportService.ExportSamplesAsync(file, measurement.Filename, new ExportSettingModel(true, true, true, false, true));
+                stopwatch.Stop();
+                Debug.WriteLine("Export data within: {0}", stopwatch.Elapsed.Duration());
+
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
                 // Completing updates may require Windows to ask for user input.
                 FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
-                stopwatch2.Stop();
-                Debug.WriteLine("Write export data to file: {0}", stopwatch2.Elapsed.Duration());
 
                 if (status == FileUpdateStatus.Complete)
                 {
                     _mainPage.ShowNotifyMessage(String.Format("Messung wurde innerhalb von '{0:f4}' Sekunden exportiert.", 
-                        stopwatch.Elapsed.Duration().TotalSeconds + stopwatch2.Elapsed.Duration().TotalSeconds), NotifyLevel.Info);
+                        stopwatch.Elapsed.Duration().TotalSeconds), NotifyLevel.Info);
                 }
                 else { _mainPage.ShowNotifyMessage("Messung konnte nicht exportiert werden.", NotifyLevel.Warn); }
             }

@@ -137,7 +137,7 @@ namespace BackgroundTask
         {
             SettingModel settingModel = _mainPage.GlobalSettingModel;
             // create new measurementModel
-            MeasurementModel createdMeasurement = MeasurementModel.NewMeasurementModel(settingModel);
+            MeasurementModel createdMeasurement = MeasurementModel.NewDefaultMeasurementModel(settingModel);
 
             // add measurementModel to mainpage modelList
             _mainPage.GlobalMeasurementModel.Insert(createdMeasurement);
