@@ -18,6 +18,13 @@ namespace BackgroundTask.DataModel.DataSets
 
         #region Construtors
 
+        public GeolocationDataSet(bool isAvailable, int totalcount) 
+            : this()
+        {
+            this.IsAvailable = isAvailable;
+            this.TotalCount = totalcount;
+        }
+
         public GeolocationDataSet()
         {
             this._currentDataSetOffset = 0;
@@ -33,9 +40,6 @@ namespace BackgroundTask.DataModel.DataSets
 
         #region Properties
 
-        public const DataSetType dataSetType = DataSetType.Geolocation;
-
-        public bool IsAnalysed { get; set; }
         public bool IsAvailable { get; set; }
         public int TotalCount { get; set; }
 
@@ -59,7 +63,6 @@ namespace BackgroundTask.DataModel.DataSets
         public static GeolocationDataSet NewDefaultDataSet()
         {
             GeolocationDataSet result = new GeolocationDataSet();
-            result.IsAnalysed = false;
             result.IsAvailable = false;
             result.TotalCount = 0;
             return result;
@@ -74,7 +77,6 @@ namespace BackgroundTask.DataModel.DataSets
                 this.TotalCount = await FileService.GetGeolocationSamplesCount(filename);
                 Debug.WriteLine("Geolocation Sample Count: {0}", TotalCount);
             }
-            this.IsAnalysed = true;
         }
 
         public async Task<List<GeolocationSample>> GetDataSamples(string filename, int dataSetOffset, int dataSetCount)

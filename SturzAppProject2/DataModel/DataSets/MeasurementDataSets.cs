@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel.Setting;
+using BackgroundTask.ViewModel.DataSets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,17 @@ namespace BackgroundTask.DataModel.DataSets
         //###################################################################################
 
         #region Construtors
+
+        public MeasurementDataSets() { }
+
+        public MeasurementDataSets(DataSetsViewModel dataSetsViewModel)
+        {
+            this.accelerometerDataSet = new AccelerometerDataSet(dataSetsViewModel.IsAvailableAccelerometer, dataSetsViewModel.TotalCountAccelerometer);
+            this.gyrometerDataSet = new GyrometerDataSet(dataSetsViewModel.IsAvailableGyrometer, dataSetsViewModel.TotalCountGyrometer);
+            this.quaterionDataSet = new QuaterionDataSet(dataSetsViewModel.IsAvailableQuaternion, dataSetsViewModel.TotalCountQuaternion);
+            this.geolocationDataSet = new GeolocationDataSet(dataSetsViewModel.IsAvailableGeolocation, dataSetsViewModel.TotalCountGeolocation);
+            this.evaluationDataSet = new EvaluationDataSet(dataSetsViewModel.IsAvailableEvaluation, dataSetsViewModel.TotalCountEvaluation);
+        }
         
         #endregion
 

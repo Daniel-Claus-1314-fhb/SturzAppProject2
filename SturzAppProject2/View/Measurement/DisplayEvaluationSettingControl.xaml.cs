@@ -17,9 +17,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace BackgroundTask.View.Measurement
 {
-    public sealed partial class DisplaySettingControl : UserControl
+    public sealed partial class DisplayEvaluationSettingControl : UserControl
     {
-        public DisplaySettingControl()
+        public DisplayEvaluationSettingControl()
         {
             this.InitializeComponent();
         }

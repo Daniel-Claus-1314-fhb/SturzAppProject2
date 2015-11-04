@@ -14,15 +14,15 @@
         <converter:TimeToFormattedStringConverter x:Key="TimeConverter"/>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource AppLightBlue}" Background="{StaticResource AppBlue}" Padding="19,6,19,10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Zeit und Schritte" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,6"/>
-        <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="White" Padding="0,8">
-            <Grid>
+            <TextBlock Grid.Row="0" Text="Zeit und Schritte" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,0,0,10"/>
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -50,6 +50,6 @@
                     <TextBlock Text="{Binding Path=TotalSteps}" Style="{StaticResource BodyTextBlockStyle}"/>
                 </StackPanel>
             </Grid>
-        </Border>
-    </Grid>
+        </Grid>
+    </Border>
 </UserControl>

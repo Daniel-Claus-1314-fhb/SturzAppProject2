@@ -18,6 +18,13 @@ namespace BackgroundTask.DataModel.DataSets
 
         #region Construtors
 
+        public AccelerometerDataSet(bool isAvailable, int totalcount) 
+            : this()
+        {
+            this.IsAvailable = isAvailable;
+            this.TotalCount = totalcount;
+        }
+
         public AccelerometerDataSet()
         {
             this._currentDataSetOffset = 0;
@@ -33,9 +40,6 @@ namespace BackgroundTask.DataModel.DataSets
 
         #region Properties
 
-        public const DataSetType dataSetType = DataSetType.Accelerometer;
-
-        public bool IsAnalysed { get; set; }
         public bool IsAvailable { get; set; }
         public int TotalCount { get; set; }
 
@@ -59,7 +63,6 @@ namespace BackgroundTask.DataModel.DataSets
         public static AccelerometerDataSet NewDefaultDataSet()
         {
             AccelerometerDataSet result = new AccelerometerDataSet();
-            result.IsAnalysed = false;
             result.IsAvailable = false;
             result.TotalCount = 0;
             return result;
@@ -74,7 +77,6 @@ namespace BackgroundTask.DataModel.DataSets
                 this.TotalCount = await FileService.GetAccelerometerSamplesCount(filename);
                 Debug.WriteLine("Acceleromter Sample Count: {0}", TotalCount);
             }
-            this.IsAnalysed = true;
         }
 
         public async Task<List<AccelerometerSample>> GetDataSamples(string filename, int dataSetOffset, int dataSetCount)

@@ -20,24 +20,24 @@
     
     <Grid x:Name="LayoutRoot">
         <Pivot Title="Einstellungen">
-            <PivotItem Header="Messungsdetails">
+            <PivotItem Header="Allgemein" Padding="-19,0">
                 <view:MeasurementSettingControl x:Name="MeasurementSettingControl" DataContext="{Binding Path=SettingViewModel.BaseSettingViewModel}"/>
             </PivotItem>
-            <PivotItem Header="Auswertung">
+            <PivotItem Header="Auswertung" Padding="-19,0">
                 <view:EvaluationSettingControl x:Name="EvaluationSettingControl" DataContext="{Binding Path=SettingViewModel.EvaluationSettingViewModel}"/>
             </PivotItem>
-            <PivotItem Header="Accelerometer">
+            <PivotItem Header="Accelerometer" Padding="-19,0">
                 <view:AccerlerometerSettingControl x:Name="AccelerometerSettingControl" DataContext="{Binding Path=SettingViewModel.AccerlerometerSettingViewModel}"/>
             </PivotItem>
-            <PivotItem Header="Gyrometer">
+            <PivotItem Header="Gyrometer" Padding="-19,0">
                 <view:GyrometerSettingControl x:Name="GyrometerSettingControl" DataContext="{Binding Path=SettingViewModel.GyrometerSettingViewModel}"/>
             </PivotItem>
-            <PivotItem Header="Quaternion">
+            <PivotItem Header="Quaternion" Padding="-19,0">
                 <view:QuaternionSettingControl x:Name="QuaternionSettingControl" DataContext="{Binding Path=SettingViewModel.QuaternionSettingViewModel}"/>
             </PivotItem>
-            <!--<PivotItem Header="Geolocation">
+            <PivotItem Header="Geolocation" Padding="-19,0">
                 <view:GeolocationSettingControl x:Name="GeolocationSettingControl" DataContext="{Binding Path=SettingViewModel.GeolocationSettingViewModel}"/>
-            </PivotItem>-->
+            </PivotItem>
         </Pivot>
     </Grid>
 </Page>

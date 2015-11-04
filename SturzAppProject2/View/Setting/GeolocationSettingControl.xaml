@@ -16,28 +16,22 @@
         <converter:SilderValueConverter x:Key="SliderConverter"/>
     </UserControl.Resources>
 
-    <Grid Background="Black">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource AppLightBlue}" Background="{StaticResource AppBlue}" Padding="19,6,19,10">
+        <Grid Margin="0,0,50,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <ToggleSwitch Grid.Row="0" Header="GPS verwenden" IsOn="{Binding Path=IsUsed, Mode=TwoWay}" Margin="0,0,36,0"/>
+            <ToggleSwitch Grid.Row="0" Header="GPS verwenden" IsOn="{Binding Path=IsUsed, Mode=TwoWay}"/>
 
-        <Border Grid.Row="1" BorderThickness="0,2" BorderBrush="White" Margin="0,12" Padding="0,12">
-            <Grid Margin="0,0,36,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Slider Grid.Row="0" Value="{Binding Path=ReportInterval, Converter={StaticResource SliderConverter}, ConverterParameter=GPSReportInterval, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="6"
+            <Slider Grid.Row="1" Value="{Binding Path=ReportInterval, Converter={StaticResource SliderConverter}, ConverterParameter=GPSReportInterval, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="6"
                         Header="{Binding Path=ReportInterval, Converter={StaticResource NumberConverter}, ConverterParameter=GPSReportIntervalFull}"
                         IsEnabled="{Binding Path=IsUsed}"/>
 
-                <ToggleSwitch Grid.Row="1" Header="Messwerte aufzeichnen" IsOn="{Binding Path=IsRecordSamples, Mode=TwoWay}"
+            <ToggleSwitch Grid.Row="2" Header="Messwerte aufzeichnen" IsOn="{Binding Path=IsRecordSamples, Mode=TwoWay}"
                         IsEnabled="{Binding Path=IsUsed}"/>
-            </Grid>
-        </Border>
-    </Grid>
+        </Grid>
+    </Border>
 </UserControl>

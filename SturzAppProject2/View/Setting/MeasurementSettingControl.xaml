@@ -16,27 +16,19 @@
         <converter:StringToProperNameConverter x:Key="NameConverter"/>
     </UserControl.Resources>
 
-    <Grid Background="Black">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,36,0">
-            <TextBlock Text="Messungsname" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
-            <TextBox Text="{Binding Path=Name, Converter={StaticResource NameConverter}, Mode=TwoWay}"/>
-        </StackPanel>
+    <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource AppLightBlue}" Background="{StaticResource AppBlue}" Padding="19,6,19,10">
+        <Grid Margin="0,0,50,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <Border Grid.Row="1" BorderThickness="0,2" BorderBrush="White" Margin="0,12" Padding="0,12">
-            <ScrollViewer HorizontalScrollMode="Disabled" Padding="0,0,36,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Name der Messung" Style="{StaticResource ControlHeaderTextBlockStyle}"/>
+                <TextBox Text="{Binding Path=Name, Converter={StaticResource NameConverter}, Mode=TwoWay}"/>
+            </StackPanel>
 
-                </Grid>
-            </ScrollViewer>
-        </Border>
-    </Grid>
+        </Grid>
+    </Border>
 </UserControl>

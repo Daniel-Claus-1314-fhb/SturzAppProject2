@@ -93,13 +93,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\Converter\StringToProperNameConverter.cs" />
     <Compile Include="DataModel\DataSets\EvaluationDataSet.cs" />
     <Compile Include="DataModel\DataSets\GeolocationDataSet.cs" />
     <Compile Include="DataModel\DataSets\QuaterionDataSet.cs" />
     <Compile Include="DataModel\DataSets\GyrometerDataSet.cs" />
     <Compile Include="DataModel\DataSets\AccelerometerDataSet.cs" />
-    <Compile Include="DataModel\DataSets\DataSetType.cs" />
     <Compile Include="DataModel\DataSets\MeasurementDataSets.cs" />
     <Compile Include="DataModel\EvaluationState.cs" />
     <Compile Include="DataModel\ExportData.cs" />
@@ -143,10 +143,10 @@
     <Compile Include="Service\ExportService.cs" />
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\GraphService.cs" />
-    <Compile Include="Service\SensorDataSetService.cs" />
     <Compile Include="SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\DataSets\DataSetsViewModel.cs" />
     <Compile Include="ViewModel\EvaluationPageViewModel.cs" />
     <Compile Include="ViewModel\GraphPageViewModel.cs" />
     <Compile Include="ViewModel\MeasurementPageViewModel.cs" />
@@ -167,8 +167,11 @@
     <Compile Include="View\Measurement\DisplayDataControl.xaml.cs">
       <DependentUpon>DisplayDataControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Measurement\DisplaySettingControl.xaml.cs">
-      <DependentUpon>DisplaySettingControl.xaml</DependentUpon>
+    <Compile Include="View\Measurement\DisplayEvaluationSettingControl.xaml.cs">
+      <DependentUpon>DisplayEvaluationSettingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Measurement\DisplaySensorSettingControl.xaml.cs">
+      <DependentUpon>DisplaySensorSettingControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Measurement\DisplayTimeControl.xaml.cs">
       <DependentUpon>DisplayTimeControl.xaml</DependentUpon>
@@ -250,7 +253,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Measurement\DisplaySettingControl.xaml">
+    <Page Include="View\Measurement\DisplayEvaluationSettingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Measurement\DisplaySensorSettingControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

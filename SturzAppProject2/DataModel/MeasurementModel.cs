@@ -26,6 +26,7 @@ namespace BackgroundTask.DataModel
             this.MeasurementState = measurementViewModel.MeasurementState;
             this.TotalSteps = measurementViewModel.TotalSteps;
             this.Setting = new SettingModel(measurementViewModel.Setting);
+            this.DataSets = new MeasurementDataSets(measurementViewModel.DataSetsViewModel); 
         }
 
         #endregion

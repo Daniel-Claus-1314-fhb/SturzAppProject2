@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel;
+using BackgroundTask.ViewModel.DataSets;
 using BackgroundTask.ViewModel.Setting;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ namespace BackgroundTask.ViewModel
             this.EndTime = measurement.EndTime;
             this.MeasurementState = measurement.MeasurementState;
             this.Setting = new SettingViewModel(measurement.Setting);
+            this.DataSetsViewModel = new DataSetsViewModel(measurement.DataSets);
             this.TotalSteps = measurement.TotalSteps;
         }
 
@@ -128,6 +130,15 @@ namespace BackgroundTask.ViewModel
 
             }
             set { this.SetProperty(ref this._duration, value); }
+        }
+        /// <summary>
+        /// contains informations about to collected measuerment data sets
+        /// </summary>
+        private DataSetsViewModel _dataSetsViewModel;
+        public DataSetsViewModel DataSetsViewModel
+        {
+            get { return _dataSetsViewModel; }
+            set { this.SetProperty(ref this._dataSetsViewModel, value); }
         }
         /// <summary>
         /// Total detected steps during the measurement.

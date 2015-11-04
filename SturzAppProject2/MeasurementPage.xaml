@@ -95,8 +95,8 @@
                     			</DiscreteObjectKeyFrame.Value>
                     		</DiscreteObjectKeyFrame>
                     	</ObjectAnimationUsingKeyFrames>
-                    	<DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="DisplaySettingControl" d:IsOptimized="True"/>
-                    	<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="DisplaySettingControl">
+                        <DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="DisplaySensorSettingControl" d:IsOptimized="True"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="DisplaySensorSettingControl">
                     		<DiscreteObjectKeyFrame KeyTime="0">
                     			<DiscreteObjectKeyFrame.Value>
                     				<Visibility>Collapsed</Visibility>
@@ -134,16 +134,19 @@
             <TextBlock Text="{Binding Path=MeasurementViewModel.Setting.BaseSettingViewModel.Name}" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="1" Margin="19,0">
+        <ScrollViewer Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                
                 <view:DisplayTimeControl Grid.Row="0" x:Name="DisplayTimeControl" DataContext="{Binding Path=MeasurementViewModel}"/>
-                <view:DisplayDataControl Grid.Row="1"  x:Name="DisplayDataControl" DataContext="{Binding Path=MeasurementViewModel}"/>
-                <view:DisplaySettingControl Grid.Row="2"  x:Name="DisplaySettingControl" DataContext="{Binding Path=MeasurementViewModel.Setting}"/>
+                <view:DisplayDataControl Grid.Row="1" x:Name="DisplayDataControl" DataContext="{Binding Path=MeasurementViewModel.DataSetsViewModel}"/>
+                <view:DisplaySensorSettingControl Grid.Row="2" x:Name="DisplaySensorSettingControl" DataContext="{Binding Path=MeasurementViewModel.Setting}"/>
+                <view:DisplayEvaluationSettingControl Grid.Row="3" x:Name="DisplayEvaluationSettingControl" DataContext="{Binding Path=MeasurementViewModel.Setting}"/>
             </Grid>
         </ScrollViewer>
     </Grid>

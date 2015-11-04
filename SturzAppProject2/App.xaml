@@ -6,5 +6,13 @@
 
     <Application.Resources>
         <x:String x:Key="AppName">StepMeter</x:String>
+        <SolidColorBrush x:Key="AppBlue" Color="#FF105772"/>
+        <SolidColorBrush x:Key="AppLightBlue" Color="#FF1B779B"/>
+
+        <SolidColorBrush x:Key="AppGreen" Color="#FF096E37"/>
+        <SolidColorBrush x:Key="AppLightGreen" Color="#FF12C161"/>
+
+        <SolidColorBrush x:Key="AppRed" Color="#FF9C2525"/>
+        <SolidColorBrush x:Key="AppLightRed" Color="#FFEE3333"/>
     </Application.Resources>
 </Application>

@@ -15,50 +15,44 @@
         <converter:SilderValueConverter x:Key="SliderConverter"/>
     </UserControl.Resources>
 
-    <Grid Background="Black">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource AppLightBlue}" Background="{StaticResource AppBlue}" Padding="19,6,19,10">
+        <ScrollViewer HorizontalScrollMode="Disabled" Padding="0,0,50,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                    
+                <ToggleSwitch Grid.Row="0" Header="Beim Aufzeichnen auswerten" IsOn="{Binding Path=IsUsed, Mode=TwoWay}" Padding="0"/>
 
-        <ToggleSwitch Grid.Row="0" Header="Auswertung während der Aufnehme" IsOn="{Binding Path=IsUsed, Mode=TwoWay}" Margin="0,0,36,0" Padding="0"/>
+                <Slider Grid.Row="1" Value="{Binding Path=SampleBufferSize, Converter={StaticResource SliderConverter}, ConverterParameter=SampleBufferSize, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="6"
+                    Header="{Binding Path=SampleBufferSize, Converter={StaticResource NumberConverter}, ConverterParameter=SampleBufferSizeFull}"
+                    IsEnabled="{Binding Path=IsUsed}"/>
 
-        <Border Grid.Row="1" BorderThickness="0,2" BorderBrush="White" Margin="0,12" Padding="0,12">
-            <ScrollViewer HorizontalScrollMode="Disabled" Padding="0,0,36,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <Slider Grid.Row="2" Value="{Binding Path=AccelerometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=AccelerometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                    Header="{Binding Path=AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdFull}"
+                    IsEnabled="{Binding Path=IsUsed}"/>
 
-                    <Slider Grid.Row="0" Value="{Binding Path=SampleBufferSize, Converter={StaticResource SliderConverter}, ConverterParameter=SampleBufferSize, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="6"
-                        Header="{Binding Path=SampleBufferSize, Converter={StaticResource NumberConverter}, ConverterParameter=SampleBufferSizeFull}"
-                        IsEnabled="{Binding Path=IsUsed}"/>
+                <Slider Grid.Row="3" Value="{Binding Path=GyrometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=GyrometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
+                    Header="{Binding Path=GyrometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=GyrometerThresholdFull}"
+                    IsEnabled="{Binding Path=IsUsed}"/>
 
-                    <Slider Grid.Row="1" Value="{Binding Path=AccelerometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=AccelerometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
-                        Header="{Binding Path=AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdFull}"
-                        IsEnabled="{Binding Path=IsUsed}"/>
+                <Slider Grid.Row="4" Value="{Binding Path=StepDistance, Converter={StaticResource SliderConverter}, ConverterParameter=StepDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="8" LargeChange="1"
+                    Header="{Binding Path=StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceFull}"
+                    IsEnabled="{Binding Path=IsUsed}"/>
 
-                    <Slider Grid.Row="2" Value="{Binding Path=GyrometerThreshold, Converter={StaticResource SliderConverter}, ConverterParameter=GyrometerThreshold, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" LargeChange="1" Maximum="12"
-                        Header="{Binding Path=GyrometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=GyrometerThresholdFull}"
-                        IsEnabled="{Binding Path=IsUsed}"/>
+                <Slider Grid.Row="5" Value="{Binding Path=PeakJoinDistance, Converter={StaticResource SliderConverter}, ConverterParameter=PeakJoinDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="5" LargeChange="1"
+                    Header="{Binding Path=PeakJoinDistance, Converter={StaticResource NumberConverter}, ConverterParameter=PeakJoinDistanceFull}"
+                    IsEnabled="{Binding Path=IsUsed}"/>
 
-                    <Slider Grid.Row="3" Value="{Binding Path=StepDistance, Converter={StaticResource SliderConverter}, ConverterParameter=StepDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="8" LargeChange="1"
-                        Header="{Binding Path=StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceFull}"
-                        IsEnabled="{Binding Path=IsUsed}"/>
-
-                    <Slider Grid.Row="4" Value="{Binding Path=PeakJoinDistance, Converter={StaticResource SliderConverter}, ConverterParameter=PeakJoinDistance, Mode=TwoWay}" Minimum="0" TickFrequency="1" StepFrequency="1" SmallChange="1" Maximum="5" LargeChange="1"
-                        Header="{Binding Path=PeakJoinDistance, Converter={StaticResource NumberConverter}, ConverterParameter=PeakJoinDistanceFull}"
-                        IsEnabled="{Binding Path=IsUsed}"/>
-
-                    <ToggleSwitch Grid.Row="5" Header="Messwerte aufzeichnen" IsOn="{Binding Path=IsRecordSamples, Mode=TwoWay}"
-                        IsEnabled="{Binding Path=IsUsed}"/>
-                </Grid>
-            </ScrollViewer>
-        </Border>
-    </Grid>
+                <ToggleSwitch Grid.Row="6" Header="Messwerte aufzeichnen" IsOn="{Binding Path=IsRecordSamples, Mode=TwoWay}"
+                    IsEnabled="{Binding Path=IsUsed}"/>
+            </Grid>
+        </ScrollViewer>
+    </Border>
 </UserControl>
