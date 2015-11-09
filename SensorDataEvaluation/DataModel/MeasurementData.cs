@@ -32,8 +32,8 @@ namespace SensorDataEvaluation.DataModel
             this._quaternionListEven = new List<QuaternionSample>();
             this._quaternionListOdd = new List<QuaternionSample>();
 
-            this._locationListEven = new List<GeolocationSample>();
-            this._locationListOdd = new List<GeolocationSample>();
+            this._geolocationListEven = new List<GeolocationSample>();
+            this._geolocationListOdd = new List<GeolocationSample>();
         }
 
         public MeasurementData(string measurementFilename, uint processingListSize)
@@ -70,8 +70,8 @@ namespace SensorDataEvaluation.DataModel
         private List<QuaternionSample> _quaternionListEven { get; set; }
         private List<QuaternionSample> _quaternionListOdd { get; set; }
 
-        private List<GeolocationSample> _locationListEven { get; set; }
-        private List<GeolocationSample> _locationListOdd { get; set; }
+        private List<GeolocationSample> _geolocationListEven { get; set; }
+        private List<GeolocationSample> _geolocationListOdd { get; set; }
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -83,6 +83,7 @@ namespace SensorDataEvaluation.DataModel
             GetPassivAccelerometerList().Clear();
             GetPassivGyrometerList().Clear();
             GetPassivQuaternionList().Clear();
+            GetPassivGeolocationList().Clear();
             // exchange activ and passiv list.
             _listChangeCounter++;
             // propagate switch of lists.
@@ -280,7 +281,7 @@ namespace SensorDataEvaluation.DataModel
                 {
                     _startDateTime = geocoordinateReading.Timestamp;
                 }
-                this.AddGeolocationSample(new GeolocationSample(geocoordinateReading, _startDateTime));
+                this.AddGeolocationSample(new GeolocationSample(_startDateTime, geocoordinateReading));
             }
         }
         /// <summary>
@@ -289,9 +290,9 @@ namespace SensorDataEvaluation.DataModel
         /// <param name="LocationSample"></param>
         private void AddGeolocationSample(GeolocationSample locationSample)
         {
-            GetActivLocationList().Add(locationSample);
+            GetActivGeolocationList().Add(locationSample);
             // Decides whether a list switch is necessary.
-            if (GetActivLocationList().Count >= _sampleBufferSize)
+            if (GetActivGeolocationList().Count >= _sampleBufferSize)
             {
                 SwitchBetweenLists();
             }
@@ -301,17 +302,17 @@ namespace SensorDataEvaluation.DataModel
         /// Returns the location list which is currently used to store new location samples.
         /// </summary>
         /// <returns></returns>
-        public List<GeolocationSample> GetActivLocationList()
+        public List<GeolocationSample> GetActivGeolocationList()
         {
-            return _listChangeCounter % 2 == 0 ? _locationListEven : _locationListOdd;
+            return _listChangeCounter % 2 == 0 ? _geolocationListEven : _geolocationListOdd;
         }
         /// <summary>
         /// Returns the location list which is currently NOT used store new location samples.
         /// </summary>
         /// <returns></returns>
-        public List<GeolocationSample> GetPassivLocationList()
+        public List<GeolocationSample> GetPassivGeolocationList()
         {
-            return _listChangeCounter % 2 == 1 ? _locationListEven : _locationListOdd;
+            return _listChangeCounter % 2 == 1 ? _geolocationListEven : _geolocationListOdd;
         }
 
         /// <summary>
@@ -319,9 +320,9 @@ namespace SensorDataEvaluation.DataModel
         /// </summary>
         /// <param name="useActiveList">Decides whether active or passive list is used in csv creation.</param>
         /// <returns></returns>
-        public byte[] ToLocationBytes(bool useActiveList)
+        public byte[] ToGeolocationBytes(bool useActiveList)
         {
-            IList<GeolocationSample> locationList = useActiveList ? this.GetActivLocationList() : this.GetPassivLocationList();
+            IList<GeolocationSample> locationList = useActiveList ? this.GetActivGeolocationList() : this.GetPassivGeolocationList();
             List<byte[]> resultByteArrays = new List<byte[]>();
             var enumerator = locationList.GetEnumerator();
             while (enumerator.MoveNext())

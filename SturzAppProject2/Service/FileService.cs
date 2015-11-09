@@ -1,4 +1,5 @@
 ﻿using BackgroundTask.DataModel;
+using BackgroundTask.DataModel.DataSets;
 using BackgroundTask.DataModel.Setting;
 using Newtonsoft.Json;
 using SensorDataEvaluation.DataModel;
@@ -759,17 +760,55 @@ namespace BackgroundTask.Service
         //################################################## delete File ###################################################################
         //##################################################################################################################################
 
-        public static async Task DeleteAllMeasurementFilesAsync(string filename)
+        public static async Task DeleteAllMeasurementFilesAsync(MeasurementDataSets dataSets, string filename)
         {
-            Task accelerometerDeleteTask = DeleteFileFromFolderAsync(_accelerometerPath, filename);
-            Task gyrometerDeleteTask = DeleteFileFromFolderAsync(_gyrometerPath, filename);
-            Task quaternionDeleteTask = DeleteFileFromFolderAsync(_quaternionPath, filename);
-            Task evaluationDeleteTask = DeleteFileFromFolderAsync(_evaluationPath, filename);
+            Task accelerometerDeleteTask = null;
+            Task gyrometerDeleteTask = null;
+            Task quaternionDeleteTask = null;
+            Task geolocationDeleteTask = null;
+            Task evaluationDeleteTask = null;
 
-            await accelerometerDeleteTask;
-            await gyrometerDeleteTask;
-            await quaternionDeleteTask;
-            await evaluationDeleteTask;
+            if (dataSets.accelerometerDataSet.IsAvailable)
+            {
+                accelerometerDeleteTask = DeleteFileFromFolderAsync(_accelerometerPath, filename);
+            }
+            if (dataSets.gyrometerDataSet.IsAvailable)
+            {
+                gyrometerDeleteTask = DeleteFileFromFolderAsync(_gyrometerPath, filename);
+            }
+            if (dataSets.quaterionDataSet.IsAvailable)
+            {
+                quaternionDeleteTask = DeleteFileFromFolderAsync(_quaternionPath, filename);
+            }
+            if (dataSets.geolocationDataSet.IsAvailable)
+            {
+                geolocationDeleteTask = DeleteFileFromFolderAsync(_geolocationPath, filename);
+            }
+            if (dataSets.evaluationDataSet.IsAvailable)
+            {
+                evaluationDeleteTask = DeleteFileFromFolderAsync(_evaluationPath, filename);
+            }
+
+            if (accelerometerDeleteTask != null)
+            {
+                await accelerometerDeleteTask;
+            }
+            if (gyrometerDeleteTask != null)
+            {
+                await gyrometerDeleteTask;
+            }
+            if (quaternionDeleteTask != null)
+            {
+                await quaternionDeleteTask;
+            }
+            if (geolocationDeleteTask != null)
+            {
+                await geolocationDeleteTask;
+            }
+            if (evaluationDeleteTask != null)
+            {
+                await evaluationDeleteTask;
+            }
             return;
         }
 

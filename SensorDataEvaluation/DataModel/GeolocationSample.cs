@@ -11,22 +11,24 @@ namespace SensorDataEvaluation.DataModel
     public class GeolocationSample
     {
         /// <summary>
-        /// long + double + double + double = 8 + 8 + 8 + 8 = 32
+        /// long + double + double + double = 8 + 8 + 8 + 8 + 8 + 8 = 48
         /// </summary>
-        public const int AmountOfBytes = 8 + 8 + 8 + 8;
-        public const int BytesOfHeaderString = 134;
-        public const string HeaderString = "Geolocation:TimeInTicks(8b),Latitude(8b),Longitude(8b),Altitude(8b)";
+        public const int AmountOfBytes = 8 + 8 + 8 + 8 + 8 + 8;
+        public static readonly int BytesOfHeaderString = HeaderString.Length * 2;
+        public const string HeaderString = "Geolocation:TimeInTicks(8b),Latitude(8b),Longitude(8b),Altitude(8b),AccuracyInMeter(8b),SpeedInMeterPerSecond(8b)";
 
         //###################################################################################################################
         //################################################## Constructor ####################################################
         //###################################################################################################################
 
-        public GeolocationSample(Geocoordinate geocoordinate, DateTimeOffset _startDateTime) 
+        public GeolocationSample (DateTimeOffset _startDateTime, Geocoordinate geocoordinate) 
         {
             this.MeasurementTime = geocoordinate.Timestamp.Subtract(_startDateTime);
             this.Latitude = geocoordinate.Point.Position.Latitude;
             this.Longitude = geocoordinate.Point.Position.Longitude;
             this.Altitude = geocoordinate.Point.Position.Altitude;
+            this.Accuracy = geocoordinate.Accuracy;
+            this.Speed = geocoordinate.Speed.HasValue ? geocoordinate.Speed.Value : 0d;
         }
 
         public GeolocationSample(byte[] byteArray)
@@ -40,6 +42,10 @@ namespace SensorDataEvaluation.DataModel
             i += 8;
             this.Altitude = BitConverter.ToDouble(byteArray, i);
             i += 8;
+            this.Accuracy = BitConverter.ToDouble(byteArray, i);
+            i += 8;
+            this.Speed = BitConverter.ToDouble(byteArray, i);
+            i += 8;
         }
 
         //###################################################################################################################
@@ -50,6 +56,8 @@ namespace SensorDataEvaluation.DataModel
         private double Latitude { get; set; }
         private double Longitude { get; set; }
         private double Altitude { get; set; }
+        public double Accuracy { get; set; }
+        public double Speed { get; set; }
 
         //###################################################################################################################
         //################################################## Methods ########################################################
@@ -66,6 +74,8 @@ namespace SensorDataEvaluation.DataModel
             listOfArrays.Add(BitConverter.GetBytes(this.Latitude));
             listOfArrays.Add(BitConverter.GetBytes(this.Longitude));
             listOfArrays.Add(BitConverter.GetBytes(this.Altitude));
+            listOfArrays.Add(BitConverter.GetBytes(this.Accuracy));
+            listOfArrays.Add(BitConverter.GetBytes(this.Speed));
             return listOfArrays.SelectMany(a => a).ToArray();
         }
 

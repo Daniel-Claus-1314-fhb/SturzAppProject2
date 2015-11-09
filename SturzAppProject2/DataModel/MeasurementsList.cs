@@ -120,7 +120,7 @@ namespace BackgroundTask.DataModel
                 MeasurementModel measurementFromList = GetMeasurementById(deleteId);
                 if (measurementFromList != null)
                 {
-                    await FileService.DeleteAllMeasurementFilesAsync(measurementFromList.Filename);
+                    await FileService.DeleteAllMeasurementFilesAsync(measurementFromList.DataSets, measurementFromList.Filename);
                     isDeleted = this._measurements.Remove(measurementFromList);
                     OnMeasurementListUpdated(EventArgs.Empty);
                 }

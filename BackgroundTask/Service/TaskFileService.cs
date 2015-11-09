@@ -28,6 +28,7 @@ namespace BackgroundTask.Service
             Task accelerometerDataTask = null;
             Task gyrometerDataTask = null;
             Task quaterionDataTask = null;
+            Task geolocationDataTask = null;
 
             if (taskArguments.IsUsedAccelerometer && taskArguments.IsRecordSamplesAccelerometer) 
             { 
@@ -41,6 +42,10 @@ namespace BackgroundTask.Service
             {
                 quaterionDataTask = AppendQuaternionDataToFileAsync(taskArguments.Filename, measurementData, isActiveListChoosen);
             }
+            if (taskArguments.IsUsedGeolocation && taskArguments.IsRecordSamplesGeolocation)
+            {
+                geolocationDataTask = AppendGeolocationDataToFileAsync(taskArguments.Filename, measurementData, isActiveListChoosen);
+            }
 
             if (accelerometerDataTask != null)
             {
@@ -53,6 +58,10 @@ namespace BackgroundTask.Service
             if (quaterionDataTask != null)
             {
                 await quaterionDataTask;
+            }
+            if (geolocationDataTask != null)
+            {
+                await geolocationDataTask;
             }
         }
 
@@ -147,8 +156,8 @@ namespace BackgroundTask.Service
         //##################################################################################################################################
 
         /// <summary>
-        /// Saves quaternion tuples form the given quaternion tuples list to the end of file.
-        /// Importent: Await Task to be sure all quaternion tuples has been saved.
+        /// Saves quaternion tuples form the given geolocation data to the end of file.
+        /// Importent: Await Task to be sure all geolocation data has been saved.
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="accelerometerTupleList"></param>
@@ -158,7 +167,7 @@ namespace BackgroundTask.Service
             if (filename != null && filename != String.Empty)
             {
                 // convert data into byte array
-                byte[] bytes = measurementData.ToLocationBytes(isActiveListChoosen);
+                byte[] bytes = measurementData.ToGeolocationBytes(isActiveListChoosen);
                 if (bytes != null && bytes.Length > 0)
                 {
                     // find folder

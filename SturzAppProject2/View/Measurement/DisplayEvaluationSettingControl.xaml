@@ -1,0 +1,90 @@
+﻿<UserControl
+    x:Class="BackgroundTask.View.Measurement.DisplayEvaluationSettingControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BackgroundTask.View.Measurement"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converter="using:BackgroundTask.Common.Converter"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converter:NumberToFormattedStringConverter x:Key="NumberConverter"/>
+    </UserControl.Resources>
+
+    <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource AppLightBlue}" Background="{StaticResource AppBlue}" Padding="19,6,19,10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Einstellung der Auswertung" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,0,0,10"/>
+            
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Aktiv" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Aufzeichen" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Buffersize" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,6" HorizontalAlignment="Center"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Auswertung" Style="{StaticResource BodyTextBlockStyle}" Margin="0,2"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=EvaluationSettingViewModel.IsUsed}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,2" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=EvaluationSettingViewModel.IsRecordSamples}" Style="{StaticResource BodyTextBlockStyle}" Margin="0,2" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Path=EvaluationSettingViewModel.SampleBufferSize, Converter={StaticResource NumberConverter}}" Margin="0,2" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center"/>
+                </Grid>
+                
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,6">
+                        <TextBlock Text="Accelerometerschwellwert" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding Path=EvaluationSettingViewModel.AccelerometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=AccelerometerThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,6">
+                        <TextBlock Text="Peakabstand" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding Path=EvaluationSettingViewModel.PeakJoinDistance, Converter={StaticResource NumberConverter}, ConverterParameter=PeakJoinDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,6">
+                        <TextBlock Text="Gyrometerschwellwert" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding Path=EvaluationSettingViewModel.GyrometerThreshold, Converter={StaticResource NumberConverter}, ConverterParameter=GyrometerThresholdSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,6">
+                        <TextBlock Text="Schrittabstand" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding Path=EvaluationSettingViewModel.StepDistance, Converter={StaticResource NumberConverter}, ConverterParameter=StepDistanceSimple}" Style="{StaticResource BodyTextBlockStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

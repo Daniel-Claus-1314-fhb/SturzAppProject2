@@ -359,7 +359,7 @@ namespace BackgroundTask
 
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
-                await ExportService.ExportSamplesAsync(file, measurement.Filename, new ExportSettingModel(true, true, true, false, true));
+                await ExportService.ExportSamplesAsync(file, measurement.Filename, new ExportSettingModel(true, true, true, true, true));
                 stopwatch.Stop();
                 Debug.WriteLine("Export data within: {0}", stopwatch.Elapsed.Duration());
 

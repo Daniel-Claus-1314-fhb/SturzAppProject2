@@ -15,7 +15,7 @@ namespace SensorDataEvaluation.DataModel
         /// long + float + float + float + float = 8 + 4 + 4 + 4 + 4 = 24
         /// </summary>
         public const int AmountOfBytes = 8 + 4 + 4 + 4 + 4;
-        public const int BytesOfHeaderString = 170;
+        public static readonly int BytesOfHeaderString = HeaderString.Length * 2;
         public const string HeaderString = "Quaternion:TimeInTicks(8b),AngleW(4b),CoordinateX(4b),CoordinateY(4b),CoordinateZ(4b)";
 
         //###################################################################################################################

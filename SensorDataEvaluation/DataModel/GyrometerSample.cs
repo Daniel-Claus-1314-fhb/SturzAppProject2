@@ -14,7 +14,7 @@ namespace SensorDataEvaluation.DataModel
         /// long + float + float + float = 8 + 4 + 4 + 4 = 20
         /// </summary>
         public const int AmountOfBytes = 8 + 4 + 4 + 4;
-        public const int BytesOfHeaderString = 134;
+        public static readonly int BytesOfHeaderString = HeaderString.Length * 2;
         public const string HeaderString = "Gyrometer:TimeInTicks(8b),VelocityX(4b),VelocityY(4b),VelocityZ(4b)";
 
         //###################################################################################################################

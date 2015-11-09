@@ -14,6 +14,7 @@ using Windows.Devices.Background;
 using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.Devices.Geolocation;
+using Windows.System.Threading;
 
 namespace BackgroundTask
 {
@@ -22,12 +23,14 @@ namespace BackgroundTask
         private Accelerometer _accelerometer;      
         private Gyrometer _gyrometer;
         private OrientationSensor _orientationSensor;
-        private Geolocator _locator = new Geolocator();
+        private Geolocator _geolocator;
+        private ThreadPoolTimer _periodicUpdateTimer;
         private uint _totalSteps = 0; 
 
         TypedEventHandler<Accelerometer, AccelerometerReadingChangedEventArgs> _accelerometerEventHandler;
         TypedEventHandler<Gyrometer, GyrometerReadingChangedEventArgs> _gyrometerEventHandler;
         TypedEventHandler<OrientationSensor, OrientationSensorReadingChangedEventArgs> _orientationSensorEventHandler;
+        TypedEventHandler<Geolocator, PositionChangedEventArgs> _geolocationEventHandler;
     
         private IBackgroundTaskInstance _taskInstance;
         private BackgroundTaskDeferral _deferral;
@@ -59,6 +62,7 @@ namespace BackgroundTask
                 InitAccelerometer(_taskArguments);
                 InitGyrometer(_taskArguments);
                 InitOrientationSensor(_taskArguments);
+                InitGeolocationSensor(_taskArguments);
 
                 taskInstance.Canceled += new BackgroundTaskCanceledEventHandler(OnCanceled);
 
@@ -142,6 +146,16 @@ namespace BackgroundTask
                 _orientationSensor.ReportInterval = 0;
                 _orientationSensor = null;
             }
+            if (_geolocator != null)
+            {
+                if (_periodicUpdateTimer != null)
+                {
+                    _periodicUpdateTimer.Cancel();
+                }
+                _geolocator.PositionChanged -= _geolocationEventHandler;
+                _geolocator.ReportInterval = 0;
+                _geolocator = null;
+            }
         }
 
         //###########################################################################
@@ -217,6 +231,57 @@ namespace BackgroundTask
         {
             if (_measurementData != null)
                 _measurementData.AddOrientationSensorReading(args.Reading);
+        }
+
+        //###########################################################################
+        //########################### GeolocationSensor #############################
+        //###########################################################################
+
+        private void InitGeolocationSensor(TaskArguments taskArguments)
+        {
+            if (taskArguments.IsUsedGeolocation)
+            {
+                _geolocator = new Geolocator();
+                if (_geolocator != null && _geolocator.LocationStatus != PositionStatus.Disabled)
+                {
+                    // force gps quality readings
+                    _geolocator.DesiredAccuracy = PositionAccuracy.High;
+                    _geolocator.MovementThreshold = 0;
+                    //_geolocator.ReportInterval = taskArguments.ReportIntervalGeolocation;
+                    //_geolocationEventHandler = new TypedEventHandler<Geolocator, PositionChangedEventArgs>(GeolocationPositionChanged);
+                    //_geolocator.PositionChanged += _geolocationEventHandler;
+
+                    TimeSpan period = TimeSpan.FromSeconds(taskArguments.ReportIntervalGeolocation);
+
+                    _periodicUpdateTimer = ThreadPoolTimer.CreatePeriodicTimer(async (source) =>
+                    {
+                        Debug.WriteLine("Position read with status: {0}", _geolocator.LocationStatus);
+
+                        if (_geolocator != null && _geolocator.LocationStatus != PositionStatus.Disabled)
+                        {
+                            Geoposition currentGeoposition = await _geolocator.GetGeopositionAsync();
+                            if (currentGeoposition != null)
+                            {
+                                Debug.WriteLine("Current coordianates: {0}:{1}", 
+                                    currentGeoposition.Coordinate.Point.Position.Latitude, currentGeoposition.Coordinate.Point.Position.Longitude);
+                                _measurementData.AddGeolocationReading(currentGeoposition.Coordinate);
+                            }
+                        }
+                        else if (_periodicUpdateTimer != null)
+                        {
+                            _periodicUpdateTimer.Cancel();
+                        }
+                    }, period);
+                }
+            }
+        }
+
+        private void GeolocationPositionChanged(Geolocator sender, PositionChangedEventArgs args)
+        {
+            if (_measurementData != null)
+            {
+                _measurementData.AddGeolocationReading(args.Position.Coordinate);
+            }
         }
 
         //###########################################################################

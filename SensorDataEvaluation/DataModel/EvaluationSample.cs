@@ -13,7 +13,7 @@ namespace SensorDataEvaluation.DataModel
         /// long + double + double + bool + bool + bool = 8 + 4 + 4 + 1 + 1 + 1 = 19
         /// </summary>
         public const int AmountOfBytes = 8 + 4 + 4 + 1 + 1 + 1;
-        public const int BytesOfHeaderString = 278;
+        public static readonly int BytesOfHeaderString = HeaderString.Length * 2;
         public const string HeaderString = "Evaluation:TimeInTicks(8b),AccelerometerVectorLength(4b),GyrometerVectorLength(4b),AccelerometerPeak(1b),GyrometerPeak(1b),DetectedStep(1b)";
 
         //###################################################################################################################

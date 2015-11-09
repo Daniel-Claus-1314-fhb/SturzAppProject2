@@ -18,34 +18,45 @@
     <Border BorderThickness="0,2,0,0" BorderBrush="{StaticResource AppLightBlue}" Background="{StaticResource AppBlue}" Padding="19,6,19,10">
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Messwerte" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,0,0,10"/>
-            <StackPanel Grid.Row="1">
-                <StackPanel Margin="0,0,0,6" Visibility="{Binding Path=IsAvailableAccelerometer, Converter={StaticResource VisibilityConverter}}" Orientation="Horizontal">
-                    <TextBlock Text="Accelerometer:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Path=TotalCountAccelerometer}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,6" Visibility="{Binding Path=IsAvailableGyrometer, Converter={StaticResource VisibilityConverter}}" Orientation="Horizontal">
-                    <TextBlock Text="Gyrometer:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Path=TotalCountGyrometer}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,6" Visibility="{Binding Path=IsAvailableQuaternion, Converter={StaticResource VisibilityConverter}}" Orientation="Horizontal">
-                    <TextBlock Text="Quaternion:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Path=TotalCountQuaternion}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,6" Visibility="{Binding Path=IsAvailableGeolocation, Converter={StaticResource VisibilityConverter}}" Orientation="Horizontal">
-                    <TextBlock Text="Geolocation:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Path=TotalCountGeolocation}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Margin="0,0,0,6" Visibility="{Binding Path=IsAvailableEvaluation, Converter={StaticResource VisibilityConverter}}" Orientation="Horizontal">
-                    <TextBlock Text="Auswertung:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Path=TotalCountEvaluation}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center"/>
-                </StackPanel>
-            </StackPanel>
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Messwerte" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,0,0,10"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Accelerometer:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableAccelerometer, Converter={StaticResource VisibilityConverter}}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=TotalCountAccelerometer}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableAccelerometer, Converter={StaticResource VisibilityConverter}}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Gyrometer:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableGyrometer, Converter={StaticResource VisibilityConverter}}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=TotalCountGyrometer}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableGyrometer, Converter={StaticResource VisibilityConverter}}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Quaternion:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableQuaternion, Converter={StaticResource VisibilityConverter}}"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=TotalCountQuaternion}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableQuaternion, Converter={StaticResource VisibilityConverter}}"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Geolocation:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableGeolocation, Converter={StaticResource VisibilityConverter}}"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Path=TotalCountGeolocation}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableGeolocation, Converter={StaticResource VisibilityConverter}}"/>
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Auswertung:" Style="{StaticResource ControlHeaderTextBlockStyle}" Margin="0,0,8,0" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableEvaluation, Converter={StaticResource VisibilityConverter}}"/>
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Path=TotalCountEvaluation}" Style="{StaticResource BodyTextBlockStyle}" VerticalAlignment="Center" 
+                       Visibility="{Binding Path=IsAvailableEvaluation, Converter={StaticResource VisibilityConverter}}"/>
         </Grid>
     </Border>
 </UserControl>
