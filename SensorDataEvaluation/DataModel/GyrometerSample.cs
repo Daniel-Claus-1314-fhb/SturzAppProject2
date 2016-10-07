@@ -46,7 +46,7 @@ namespace SensorDataEvaluation.DataModel
             i += 4;
             this.VelocityY = BitConverter.ToSingle(byteArray, i);
             i += 4;
-            this.VelocityY = BitConverter.ToSingle(byteArray, i);
+            this.VelocityZ = BitConverter.ToSingle(byteArray, i);
             i += 4;
         }
 

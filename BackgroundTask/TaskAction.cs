@@ -30,7 +30,7 @@ namespace BackgroundTask
         TypedEventHandler<Accelerometer, AccelerometerReadingChangedEventArgs> _accelerometerEventHandler;
         TypedEventHandler<Gyrometer, GyrometerReadingChangedEventArgs> _gyrometerEventHandler;
         TypedEventHandler<OrientationSensor, OrientationSensorReadingChangedEventArgs> _orientationSensorEventHandler;
-        TypedEventHandler<Geolocator, PositionChangedEventArgs> _geolocationEventHandler;
+        //TypedEventHandler<Geolocator, PositionChangedEventArgs> _geolocationEventHandler;
     
         private IBackgroundTaskInstance _taskInstance;
         private BackgroundTaskDeferral _deferral;
@@ -134,26 +134,29 @@ namespace BackgroundTask
                 _accelerometer.ReportInterval = 0;
                 _accelerometer = null;
             }
+
             if (_gyrometer != null)
             {
                 _gyrometer.ReadingChanged -= _gyrometerEventHandler;
                 _gyrometer.ReportInterval = 0;
                 _gyrometer = null;
             }
+
             if (_orientationSensor != null)
             {
                 _orientationSensor.ReadingChanged -= _orientationSensorEventHandler;
                 _orientationSensor.ReportInterval = 0;
                 _orientationSensor = null;
             }
+
             if (_geolocator != null)
             {
                 if (_periodicUpdateTimer != null)
                 {
                     _periodicUpdateTimer.Cancel();
                 }
-                _geolocator.PositionChanged -= _geolocationEventHandler;
-                _geolocator.ReportInterval = 0;
+                //_geolocator.PositionChanged -= _geolocationEventHandler;
+                //_geolocator.ReportInterval = 0;
                 _geolocator = null;
             }
         }
@@ -262,8 +265,7 @@ namespace BackgroundTask
                             Geoposition currentGeoposition = await _geolocator.GetGeopositionAsync();
                             if (currentGeoposition != null)
                             {
-                                Debug.WriteLine("Current coordianates: {0}:{1}", 
-                                    currentGeoposition.Coordinate.Point.Position.Latitude, currentGeoposition.Coordinate.Point.Position.Longitude);
+                                Debug.WriteLine("Current coordianates: {0}:{1}", currentGeoposition.Coordinate.Point.Position.Latitude, currentGeoposition.Coordinate.Point.Position.Longitude);
                                 _measurementData.AddGeolocationReading(currentGeoposition.Coordinate);
                             }
                         }
